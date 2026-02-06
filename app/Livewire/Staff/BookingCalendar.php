@@ -3,9 +3,11 @@
 namespace App\Livewire\Staff;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use App\Models\Booking;
 use Carbon\Carbon;
 
+#[Layout('layouts.staff')]
 class BookingCalendar extends Component
 {
     public $selectedDate;

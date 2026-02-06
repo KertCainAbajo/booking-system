@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Customer;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -28,11 +30,20 @@ new #[Layout('layouts.guest')] class extends Component
 
         $validated['password'] = Hash::make($validated['password']);
 
+        // Assign customer role by default
+        $customerRole = Role::where('name', 'customer')->first();
+        $validated['role_id'] = $customerRole->id;
+
         event(new Registered($user = User::create($validated)));
+
+        // Create customer profile
+        Customer::create([
+            'user_id' => $user->id,
+        ]);
 
         Auth::login($user);
 
-        $this->redirect(route('dashboard', absolute: false), navigate: true);
+        $this->redirect(route('customer.dashboard', absolute: false), navigate: true);
     }
 }; ?>
 

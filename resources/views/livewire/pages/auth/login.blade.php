@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Forms\LoginForm;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -20,7 +21,19 @@ new #[Layout('layouts.guest')] class extends Component
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Redirect based on user role
+        $user = Auth::user();
+        $roleName = $user->role->name;
+        
+        $dashboardRoute = match($roleName) {
+            'it_admin' => 'admin.dashboard',
+            'business_owner' => 'owner.dashboard',
+            'staff' => 'staff.dashboard',
+            'customer' => 'customer.dashboard',
+            default => 'customer.dashboard',
+        };
+
+        $this->redirectIntended(default: route($dashboardRoute, absolute: false), navigate: true);
     }
 }; ?>
 
@@ -68,4 +81,14 @@ new #[Layout('layouts.guest')] class extends Component
             </x-primary-button>
         </div>
     </form>
+
+    <!-- Registration Link -->
+    <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+            Don't have an account?
+            <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md" wire:navigate>
+                Create an account
+            </a>
+        </p>
+    </div>
 </div>

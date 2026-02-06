@@ -11,11 +11,13 @@ class Service extends Model
         'name',
         'description',
         'base_price',
-        'estimated_duration_minutes'
+        'estimated_duration_minutes',
+        'is_active'
     ];
 
     protected $casts = [
         'base_price' => 'decimal:2',
+        'is_active' => 'boolean',
     ];
 
     public function category()

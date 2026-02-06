@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * 
+ * @phpstan-property int $id
+ * @psalm-property int $id
+ */
 class Customer extends Model
 {
     protected $fillable = ['user_id', 'address'];

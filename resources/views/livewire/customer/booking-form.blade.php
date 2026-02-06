@@ -1,4 +1,14 @@
 <div class="max-w-4xl mx-auto">
+    <!-- Back to Dashboard Button -->
+    <div class="mb-4">
+        <a href="{{ route('customer.dashboard') }}" wire:navigate class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors duration-200">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Book a Service</h2>
 
@@ -17,12 +27,12 @@
                         <option value="">Choose a vehicle</option>
                         @foreach ($vehicles as $vehicle)
                             <option value="{{ $vehicle->id }}">
-                                {{ $vehicle->make }} {{ $vehicle->model }} ({{ $vehicle->plate_number }})
+                                {{ $vehicle->year }} {{ $vehicle->make }} {{ $vehicle->model }} - {{ $vehicle->plate_number }}
                             </option>
                         @endforeach
                     </select>
                     <button type="button" wire:click="$set('showNewVehicleForm', true)" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
                         + Add Vehicle
                     </button>
                 </div>
@@ -31,77 +41,197 @@
 
             <!-- New Vehicle Form -->
             @if ($showNewVehicleForm)
-                <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <h3 class="font-bold mb-4">Add New Vehicle</h3>
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg border-2 border-blue-200">
+                    <h3 class="font-bold mb-4 text-lg text-gray-800">Add New Vehicle</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Make</label>
-                            <input type="text" wire:model="newVehicle.make" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Make (Brand) *</label>
+                            <select wire:model="newVehicle.make" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select a brand</option>
+                                @foreach ($carBrands as $brand)
+                                    <option value="{{ $brand }}">{{ $brand }}</option>
+                                @endforeach
+                            </select>
                             @error('newVehicle.make') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                            <input type="text" wire:model="newVehicle.model" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Model *</label>
+                            <input type="text" wire:model="newVehicle.model" placeholder="e.g., Civic, Camry, Mustang" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             @error('newVehicle.model') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                            <input type="number" wire:model="newVehicle.year" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Year *</label>
+                            <select wire:model="newVehicle.year" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select year</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endforeach
+                            </select>
                             @error('newVehicle.year') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Plate Number</label>
-                            <input type="text" wire:model="newVehicle.plate_number" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Plate Number *</label>
+                            <input type="text" wire:model="newVehicle.plate_number" placeholder="e.g., ABC-1234" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                             @error('newVehicle.plate_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">VIN Number (Optional)</label>
+                            <input type="text" wire:model="newVehicle.vin_number" placeholder="17-digit VIN" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            @error('newVehicle.vin_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                     </div>
                     <div class="flex gap-2 mt-4">
-                        <button type="button" wire:click="addNewVehicle" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <button type="button" wire:click="addNewVehicle" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                             Save Vehicle
                         </button>
-                        <button type="button" wire:click="$set('showNewVehicleForm', false)" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        <button type="button" wire:click="$set('showNewVehicleForm', false)" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
                             Cancel
                         </button>
                     </div>
                 </div>
             @endif
 
-            <!-- Select Service Category -->
+            <!-- Services Section with Grid Layout -->
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Service Category</label>
-                <div class="grid grid-cols-2 gap-4">
-                    @foreach ($categories as $category)
-                        <button type="button" 
-                                wire:click="$set('selectedCategory', {{ $category->id }})"
-                                class="p-4 border-2 rounded-lg text-left transition-all
-                                       {{ $selectedCategory == $category->id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300'  }}">
-                            <div class="font-bold text-gray-800">{{ $category->name }}</div>
-                            <div class="text-sm text-gray-600">{{ $category->services->count() }} services</div>
-                        </button>
-                    @endforeach
-                </div>
-            </div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Select Services</label>
 
-            <!-- Select Services -->
-            @if ($selectedCategory && $services->count() > 0)
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Services</label>
-                    <div class="space-y-2 max-h-96 overflow-y-auto">
-                        @foreach ($services as $service)
-                            <label class="flex items-start p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox" wire:model.live="selectedServices" value="{{ $service->id }}" class="mt-1 mr-3">
-                                <div class="flex-1">
-                                    <div class="font-medium text-gray-800">{{ $service->name }}</div>
-                                    <div class="text-sm text-gray-600">{{ $service->description }}</div>
-                                    <div class="text-sm text-gray-500">Duration: ~{{ $service->estimated_duration_minutes }} mins</div>
-                                </div>
-                                <div class="font-bold text-blue-600">₱{{ number_format($service->base_price, 2) }}</div>
-                            </label>
+                @if (session()->has('services-saved'))
+                    <div x-data="{ show: true }" 
+                         x-show="show" 
+                         x-init="setTimeout(() => show = false, 5000)"
+                         x-transition:leave="transition ease-in duration-1000"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0"
+                         class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ session('services-saved') }}
+                    </div>
+                @endif
+                
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Left: Categories and Services (2/3 width) -->
+                    <div class="col-span-2 space-y-3">
+                        @foreach ($categories as $category)
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <!-- Category Header -->
+                                <button type="button" 
+                                        wire:click="toggleCategory({{ $category->id }})"
+                                        class="w-full p-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-2">
+                                            {{ in_array($category->id, $expandedCategories) ? '▼' : '▶' }}
+                                        </span>
+                                        <div class="text-left">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-bold text-gray-800">{{ $category->name }}</span>
+                                                @if ($categoryCounts[$category->id] > 0)
+                                                    <span class="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-blue-600 rounded-full">
+                                                        {{ $categoryCounts[$category->id] }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="text-sm text-gray-600">{{ $category->services->count() }} services available</div>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <!-- Services List (Expandable) -->
+                                @if (in_array($category->id, $expandedCategories))
+                                    <div class="p-3 bg-white space-y-2">
+                                        @foreach ($category->services as $service)
+                                            <div wire:click="toggleService({{ $service->id }})"
+                                                 class="flex items-start p-3 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md
+                                                        {{ in_array($service->id, $selectedServices) ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300' }}">
+                                                <div class="flex-shrink-0 mt-1 mr-3">
+                                                    <div class="w-5 h-5 rounded border-2 flex items-center justify-center
+                                                                {{ in_array($service->id, $selectedServices) ? 'bg-blue-500 border-blue-500' : 'border-gray-300' }}">
+                                                        @if (in_array($service->id, $selectedServices))
+                                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                            </svg>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <div class="font-medium text-gray-800">{{ $service->name }}</div>
+                                                    <div class="text-sm text-gray-600 mt-1">{{ $service->description }}</div>
+                                                    <div class="text-sm text-gray-500 mt-1">⏱ ~{{ $service->estimated_duration_minutes }} mins</div>
+                                                </div>
+                                                <div class="flex-shrink-0 ml-3 font-bold text-blue-600">
+                                                    ₱{{ number_format($service->base_price, 2) }}
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
                         @endforeach
                     </div>
-                    @error('selectedServices') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                    <!-- Right: Selected Services Summary (1/3 width) -->
+                    <div class="col-span-1">
+                        <div class="sticky top-4 border-2 {{ $servicesConfirmed ? 'border-green-300 bg-green-50' : 'border-blue-200 bg-blue-50' }} rounded-lg overflow-hidden">
+                            <div class="{{ $servicesConfirmed ? 'bg-green-600' : 'bg-blue-600' }} text-white p-4">
+                                <h3 class="font-bold text-lg">Selected Services</h3>
+                                <p class="text-sm {{ $servicesConfirmed ? 'text-green-100' : 'text-blue-100' }}">{{ count($selectedServices) }} service(s)</p>
+                            </div>
+
+                            <div class="p-4 max-h-96 overflow-y-auto">
+                                @if (count($selectedServices) > 0)
+                                    <div class="space-y-2">
+                                        @foreach ($allSelectedServices as $service)
+                                            <div class="bg-white rounded-lg p-3 border border-gray-200 relative group">
+                                                <button type="button" 
+                                                        wire:click="removeService({{ $service->id }})"
+                                                        class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all shadow-md">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                                <div class="pr-4">
+                                                    <div class="font-medium text-gray-800 text-sm">{{ $service->name }}</div>
+                                                    <div class="text-xs text-gray-500 mt-1">~{{ $service->estimated_duration_minutes }} mins</div>
+                                                    <div class="font-semibold text-blue-600 mt-1">₱{{ number_format($service->base_price, 2) }}</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
+                                    <div class="mt-4 pt-4 border-t-2 {{ $servicesConfirmed ? 'border-green-200' : 'border-blue-200' }}">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <span class="font-semibold text-gray-700">Subtotal:</span>
+                                            <span class="text-xl font-bold {{ $servicesConfirmed ? 'text-green-600' : 'text-blue-600' }}">₱{{ number_format($estimatedTotal, 2) }}</span>
+                                        </div>
+
+                                        <button type="button" 
+                                                wire:click="confirmServices"
+                                                class="w-full py-3 {{ $servicesConfirmed ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-semibold rounded-lg transition-colors flex items-center justify-center">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            {{ $servicesConfirmed ? 'Update Services' : 'Save & Continue' }}
+                                        </button>
+
+                                        @if ($servicesConfirmed)
+                                            <p class="text-xs text-center text-gray-600 mt-2">You can still add or remove services</p>
+                                        @endif
+                                    </div>
+                                @else
+                                    <div class="text-center py-8 text-gray-500">
+                                        <svg class="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                        </svg>
+                                        <p class="text-sm">No services selected</p>
+                                        <p class="text-xs mt-1">Click on services to add</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        @error('selectedServices') 
+                            <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span> 
+                        @enderror
+                    </div>
                 </div>
-            @endif
+            </div>
 
             <!-- Date and Time -->
             <div class="grid grid-cols-2 gap-4 mb-6">

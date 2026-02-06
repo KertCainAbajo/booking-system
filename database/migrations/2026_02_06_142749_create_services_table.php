@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('base_price', 10, 2);
             $table->integer('estimated_duration_minutes');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
