@@ -21,12 +21,15 @@ class UserSeeder extends Seeder
         $staffRole = Role::where('name', 'staff')->first();
         $customerRole = Role::where('name', 'customer')->first();
 
+        // Same password for easy login during development
+        $sharedPassword = Hash::make('password');
+
         // IT Admin
         User::create([
             'name' => 'IT Administrator',
             'email' => 'admin@autoservice.com',
             'phone' => '09123456789',
-            'password' => Hash::make('admin123'),
+            'password' => $sharedPassword,
             'role_id' => $adminRole->id,
         ]);
 
@@ -35,7 +38,7 @@ class UserSeeder extends Seeder
             'name' => 'Business Owner',
             'email' => 'owner@autoservice.com',
             'phone' => '09123456788',
-            'password' => Hash::make('owner123'),
+            'password' => $sharedPassword,
             'role_id' => $ownerRole->id,
         ]);
 
@@ -44,7 +47,7 @@ class UserSeeder extends Seeder
             'name' => 'Staff Member',
             'email' => 'staff@autoservice.com',
             'phone' => '09123456787',
-            'password' => Hash::make('staff123'),
+            'password' => $sharedPassword,
             'role_id' => $staffRole->id,
         ]);
 

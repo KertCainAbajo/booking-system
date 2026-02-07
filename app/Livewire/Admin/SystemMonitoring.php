@@ -22,8 +22,8 @@ class SystemMonitoring extends Component
             'completed_bookings' => Booking::where('status', 'completed')->count(),
             'total_services' => Service::count(),
             'active_services' => Service::where('is_active', true)->count(),
-            'total_revenue' => Payment::where('status', 'completed')->sum('amount'),
-            'pending_payments' => Payment::where('status', 'pending')->sum('amount'),
+            'total_revenue' => Payment::where('payment_status', 'paid')->sum('amount'),
+            'pending_payments' => Payment::where('payment_status', 'pending')->sum('amount'),
         ];
 
         $recentBookings = Booking::with(['customer.user', 'vehicle'])

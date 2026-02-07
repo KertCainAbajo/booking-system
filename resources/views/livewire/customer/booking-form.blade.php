@@ -169,62 +169,89 @@
 
                     <!-- Right: Selected Services Summary (1/3 width) -->
                     <div class="col-span-1">
-                        <div class="sticky top-4 border-2 {{ $servicesConfirmed ? 'border-green-300 bg-green-50' : 'border-blue-200 bg-blue-50' }} rounded-lg overflow-hidden">
-                            <div class="{{ $servicesConfirmed ? 'bg-green-600' : 'bg-blue-600' }} text-white p-4">
+                        <div class="sticky top-4 flex flex-col border-2 {{ $servicesConfirmed ? 'border-green-300 bg-green-50' : 'border-blue-200 bg-blue-50' }} rounded-lg overflow-hidden transition-all duration-500 ease-in-out h-[380px]">
+                            <!-- Fixed Header -->
+                            <div class="flex-shrink-0 {{ $servicesConfirmed ? 'bg-green-600' : 'bg-blue-600' }} text-white p-4">
                                 <h3 class="font-bold text-lg">Selected Services</h3>
-                                <p class="text-sm {{ $servicesConfirmed ? 'text-green-100' : 'text-blue-100' }}">{{ count($selectedServices) }} service(s)</p>
+                                <p class="text-sm {{ $servicesConfirmed ? 'text-green-100' : 'text-blue-100' }}">
+                                    {{ count($selectedServices) }} service(s)
+                                </p>
                             </div>
 
-                            <div class="p-4 max-h-96 overflow-y-auto">
+                            <!-- Scrollable Services List -->
+                            <div class="flex-1 overflow-y-auto min-h-0" 
+                                 x-data="{ scrollToBottom: false }"
+                                 x-init="$watch('scrollToBottom', value => { if(value) { $el.scrollTop = $el.scrollHeight; scrollToBottom = false; } })"
+                                 wire:key="services-list">
                                 @if (count($selectedServices) > 0)
-                                    <div class="space-y-2">
-                                        @foreach ($allSelectedServices as $service)
-                                            <div class="bg-white rounded-lg p-3 border border-gray-200 relative group">
+                                    <div class="p-4 space-y-2">
+                                        @foreach ($allSelectedServices as $index => $service)
+                                            <div wire:key="service-{{ $service->id }}"
+                                                 x-data="{ show: false }"
+                                                 x-init="setTimeout(() => show = true, {{ $index * 50 }})"
+                                                 x-show="show"
+                                                 x-transition:enter="transition ease-out duration-300"
+                                                 x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
+                                                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                                                 class="bg-white rounded-lg p-3 border-2 border-gray-200 relative group hover:shadow-md transition-shadow">
                                                 <button type="button" 
                                                         wire:click="removeService({{ $service->id }})"
-                                                        class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all shadow-md">
+                                                        class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all shadow-md opacity-0 group-hover:opacity-100">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
                                                 </button>
                                                 <div class="pr-4">
                                                     <div class="font-medium text-gray-800 text-sm">{{ $service->name }}</div>
-                                                    <div class="text-xs text-gray-500 mt-1">~{{ $service->estimated_duration_minutes }} mins</div>
+                                                    <div class="text-xs text-gray-500 mt-1">⏱ ~{{ $service->estimated_duration_minutes }} mins</div>
                                                     <div class="font-semibold text-blue-600 mt-1">₱{{ number_format($service->base_price, 2) }}</div>
                                                 </div>
                                             </div>
                                         @endforeach
                                     </div>
-
-                                    <div class="mt-4 pt-4 border-t-2 {{ $servicesConfirmed ? 'border-green-200' : 'border-blue-200' }}">
-                                        <div class="flex justify-between items-center mb-3">
-                                            <span class="font-semibold text-gray-700">Subtotal:</span>
-                                            <span class="text-xl font-bold {{ $servicesConfirmed ? 'text-green-600' : 'text-blue-600' }}">₱{{ number_format($estimatedTotal, 2) }}</span>
-                                        </div>
-
-                                        <button type="button" 
-                                                wire:click="confirmServices"
-                                                class="w-full py-3 {{ $servicesConfirmed ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-semibold rounded-lg transition-colors flex items-center justify-center">
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            {{ $servicesConfirmed ? 'Update Services' : 'Save & Continue' }}
-                                        </button>
-
-                                        @if ($servicesConfirmed)
-                                            <p class="text-xs text-center text-gray-600 mt-2">You can still add or remove services</p>
-                                        @endif
-                                    </div>
                                 @else
-                                    <div class="text-center py-8 text-gray-500">
-                                        <svg class="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                        </svg>
-                                        <p class="text-sm">No services selected</p>
-                                        <p class="text-xs mt-1">Click on services to add</p>
+                                    <div class="p-4">
+                                        <div class="text-center py-8 text-gray-500">
+                                            <svg class="w-16 h-16 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                            </svg>
+                                            <p class="text-sm font-medium">No services selected</p>
+                                            <p class="text-xs mt-1">Click on services to add</p>
+                                        </div>
                                     </div>
                                 @endif
                             </div>
+
+                            <!-- Sticky Footer (Subtotal & Action Button) -->
+                            @if (count($selectedServices) > 0)
+                                <div class="flex-shrink-0 p-4 bg-white border-t-2 {{ $servicesConfirmed ? 'border-green-200' : 'border-blue-200' }}">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <span class="font-semibold text-gray-700">Subtotal:</span>
+                                        <span class="text-xl font-bold {{ $servicesConfirmed ? 'text-green-600' : 'text-blue-600' }}" 
+                                              x-data="{ amount: {{ $estimatedTotal }} }"
+                                              x-init="$watch('amount', value => { 
+                                                  $el.classList.add('scale-110'); 
+                                                  setTimeout(() => $el.classList.remove('scale-110'), 200);
+                                              })"
+                                              class="transition-transform duration-200">
+                                            ₱{{ number_format($estimatedTotal, 2) }}
+                                        </span>
+                                    </div>
+
+                                    <button type="button" 
+                                            wire:click="confirmServices"
+                                            class="w-full py-3 {{ $servicesConfirmed ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-semibold rounded-lg transition-all hover:shadow-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        {{ $servicesConfirmed ? 'Update Services' : 'Save & Continue' }}
+                                    </button>
+
+                                    @if ($servicesConfirmed)
+                                        <p class="text-xs text-center text-gray-600 mt-2">You can still add or remove services</p>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         @error('selectedServices') 
                             <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span> 

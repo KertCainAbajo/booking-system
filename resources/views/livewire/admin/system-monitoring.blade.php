@@ -37,8 +37,7 @@
                         <div class="flex items-center">
                             <span class="w-3 h-3 rounded-full mr-2 
                                 {{ $status->status === 'pending' ? 'bg-yellow-400' : '' }}
-                                {{ $status->status === 'confirmed' ? 'bg-blue-400' : '' }}
-                                {{ $status->status === 'in_progress' ? 'bg-purple-400' : '' }}
+                                {{ $status->status === 'approved' ? 'bg-blue-400' : '' }}
                                 {{ $status->status === 'completed' ? 'bg-green-400' : '' }}
                                 {{ $status->status === 'cancelled' ? 'bg-red-400' : '' }}
                             "></span>
@@ -94,8 +93,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 text-xs rounded-full 
                                     {{ $booking->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                    {{ $booking->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : '' }}
-                                    {{ $booking->status === 'in_progress' ? 'bg-purple-100 text-purple-800' : '' }}
+                                    {{ $booking->status === 'approved' ? 'bg-blue-100 text-blue-800' : '' }}
                                     {{ $booking->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
                                     {{ $booking->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}
                                 ">

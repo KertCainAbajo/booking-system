@@ -9,7 +9,7 @@ use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 
 #[Layout('layouts.customer')]
-class ServiceHistory extends Component
+class Dashboard extends Component
 {
     public function render()
     {
@@ -21,16 +21,16 @@ class ServiceHistory extends Component
         
         /** @var Customer $customer */
         
-        // Get all completed and cancelled bookings
-        $historyBookings = Booking::where('customer_id', $customer->id)
-            ->whereIn('status', ['completed', 'cancelled'])
-            ->with(['vehicle', 'services', 'payment'])
+        // Get all bookings for the customer, ordered by most recent
+        $allBookings = Booking::where('customer_id', $customer->id)
+            ->with(['vehicle', 'services'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('booking_time', 'desc')
+            ->limit(10) // Show last 10 bookings
             ->get();
 
-        return view('livewire.customer.service-history', [
-            'historyBookings' => $historyBookings,
+        return view('livewire.customer.dashboard', [
+            'allBookings' => $allBookings,
         ]);
     }
 }

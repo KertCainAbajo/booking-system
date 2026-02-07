@@ -78,12 +78,16 @@ class BookingForm extends Component
         } else {
             $this->selectedServices[] = $serviceId;
         }
+        // Reset confirmation when services are modified
+        $this->servicesConfirmed = false;
         $this->calculateTotal();
     }
 
     public function removeService($serviceId)
     {
         $this->selectedServices = array_values(array_diff($this->selectedServices, [$serviceId]));
+        // Reset confirmation when services are modified
+        $this->servicesConfirmed = false;
         $this->calculateTotal();
     }
 
@@ -146,7 +150,7 @@ class BookingForm extends Component
         $this->validate([
             'selectedVehicle' => 'required|exists:vehicles,id',
             'selectedServices' => 'required|array|min:1',
-            'bookingDate' => 'required|date|after:today',
+            'bookingDate' => 'required|date|after_or_equal:today',
             'bookingTime' => 'required',
         ]);
 

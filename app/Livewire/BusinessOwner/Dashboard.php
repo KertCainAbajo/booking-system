@@ -18,9 +18,9 @@ class Dashboard extends Component
             'today_bookings' => Booking::whereDate('booking_date', today())->count(),
             'pending_bookings' => Booking::where('status', 'pending')->count(),
             'completed_today' => Booking::whereDate('booking_date', today())->where('status', 'completed')->count(),
-            'today_revenue' => Payment::whereDate('created_at', today())->where('status', 'completed')->sum('amount'),
-            'month_revenue' => Payment::whereMonth('created_at', now()->month)->where('status', 'completed')->sum('amount'),
-            'pending_payments' => Payment::where('status', 'pending')->sum('amount'),
+            'today_revenue' => Payment::whereDate('created_at', today())->where('payment_status', 'paid')->sum('amount'),
+            'month_revenue' => Payment::whereMonth('created_at', now()->month)->where('payment_status', 'paid')->sum('amount'),
+            'pending_payments' => Payment::where('payment_status', 'pending')->sum('amount'),
         ];
 
         $recentBookings = Booking::with(['customer.user', 'vehicle'])
@@ -28,8 +28,8 @@ class Dashboard extends Component
             ->limit(10)
             ->get();
 
-        $topServices = Service::withCount('bookingServices')
-            ->orderBy('booking_services_count', 'desc')
+        $topServices = Service::withCount('bookings')
+            ->orderBy('bookings_count', 'desc')
             ->limit(5)
             ->get();
 

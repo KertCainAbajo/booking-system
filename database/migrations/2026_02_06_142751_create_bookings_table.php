@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('vehicle_id')->constrained()->cascadeOnDelete();
             $table->date('booking_date');
             $table->time('booking_time');
-            $table->enum('status', ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'completed', 'cancelled'])->default('pending');
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->text('notes')->nullable();
             $table->foreignId('assigned_staff_id')->nullable()->constrained('users')->nullOnDelete();

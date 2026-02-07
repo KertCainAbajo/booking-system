@@ -51,8 +51,9 @@
                             <div class="font-medium text-gray-900">{{ $booking->customer->user->name }}</div>
                             <span class="px-2 py-1 text-xs rounded-full 
                                 {{ $booking->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                {{ $booking->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : '' }}
+                                {{ $booking->status === 'approved' ? 'bg-blue-100 text-blue-800' : '' }}
                                 {{ $booking->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                                {{ $booking->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}
                             ">
                                 {{ ucfirst($booking->status) }}
                             </span>

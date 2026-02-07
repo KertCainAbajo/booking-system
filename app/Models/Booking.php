@@ -4,6 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $customer_id
+ * @property int $vehicle_id
+ * @property \Illuminate\Support\Carbon $booking_date
+ * @property \Illuminate\Support\Carbon $booking_time
+ * @property string $status
+ * @property float $total_amount
+ * @property string|null $notes
+ * @property int|null $assigned_staff_id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ */
 class Booking extends Model
 {
     protected $fillable = [

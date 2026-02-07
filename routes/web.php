@@ -2,19 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Livewire\Customer\Dashboard as CustomerDashboard;
 use App\Livewire\Customer\BookingForm;
 use App\Livewire\Customer\BookingTracker;
 use App\Livewire\Customer\ServiceHistory;
 use App\Livewire\Customer\Profile as CustomerProfile;
+use App\Livewire\Staff\Dashboard as StaffDashboard;
 use App\Livewire\Staff\BookingCalendar;
 use App\Livewire\Staff\BookingDetail;
 use App\Livewire\Staff\InvoiceGenerator;
 use App\Livewire\Staff\Profile as StaffProfile;
+use App\Livewire\Staff\BookingManagement as StaffBookingManagement;
 use App\Livewire\BusinessOwner\Dashboard as OwnerDashboard;
 use App\Livewire\BusinessOwner\RevenueReport;
 use App\Livewire\Admin\UserManagement;
 use App\Livewire\Admin\ServiceManagement;
 use App\Livewire\Admin\SystemMonitoring;
+use App\Livewire\Admin\BookingManagement;
+use App\Livewire\Admin\BookingDetail as AdminBookingDetail;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -37,9 +42,7 @@ Route::get('/', function () {
 
 // Customer Routes
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('customer.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', CustomerDashboard::class)->name('dashboard');
     Route::get('/booking', BookingForm::class)->name('booking');
     Route::get('/tracker', BookingTracker::class)->name('tracker');
     Route::get('/history', ServiceHistory::class)->name('history');
@@ -48,7 +51,9 @@ Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer
 
 // Staff Routes
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
-    Route::get('/dashboard', BookingCalendar::class)->name('dashboard');
+    Route::get('/dashboard', StaffDashboard::class)->name('dashboard');
+    Route::get('/calendar', BookingCalendar::class)->name('calendar');
+    Route::get('/bookings', StaffBookingManagement::class)->name('bookings');
     Route::get('/booking/{id}', BookingDetail::class)->name('booking.detail');
     Route::get('/invoice/{id}', InvoiceGenerator::class)->name('invoice');
     Route::get('/profile', StaffProfile::class)->name('profile');
@@ -68,6 +73,8 @@ Route::middleware(['auth', 'role:it_admin'])->prefix('admin')->name('admin.')->g
     Route::get('/users', UserManagement::class)->name('users');
     Route::get('/services', ServiceManagement::class)->name('services');
     Route::get('/monitoring', SystemMonitoring::class)->name('monitoring');
+    Route::get('/bookings', BookingManagement::class)->name('bookings');
+    Route::get('/booking/{id}', AdminBookingDetail::class)->name('booking.detail');
 });
 
 Route::view('profile', 'profile')

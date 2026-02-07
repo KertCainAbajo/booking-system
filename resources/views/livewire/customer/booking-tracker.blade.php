@@ -9,6 +9,29 @@
         </a>
     </div>
 
+    <!-- Flash Messages -->
+    @if (session()->has('success'))
+        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="font-medium">{{ session('success') }}</p>
+            </div>
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="font-medium">{{ session('error') }}</p>
+            </div>
+        </div>
+    @endif
+
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-gray-900">Track Your Bookings</h2>
         <p class="text-gray-600">Monitor the status of your active service bookings</p>
@@ -26,8 +49,8 @@
                     <div class="text-right">
                         <span class="px-3 py-1 text-sm rounded-full font-semibold
                             {{ $booking->status === 'pending' ? 'bg-yellow-400 text-yellow-900' : '' }}
-                            {{ $booking->status === 'confirmed' ? 'bg-green-400 text-green-900' : '' }}
-                            {{ $booking->status === 'in_progress' ? 'bg-purple-400 text-purple-900' : '' }}
+                            {{ $booking->status === 'approved' ? 'bg-green-400 text-green-900' : '' }}
+                            {{ $booking->status === 'completed' ? 'bg-blue-400 text-blue-900' : '' }}
                         ">
                             {{ ucfirst(str_replace('_', ' ', $booking->status)) }}
                         </span>
@@ -71,30 +94,20 @@
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col items-center flex-1">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center 
-                                {{ in_array($booking->status, ['pending', 'confirmed', 'in_progress', 'completed']) ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
+                                {{ in_array($booking->status, ['pending', 'approved', 'completed']) ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
                                 ✓
                             </div>
                             <div class="text-xs mt-2 text-center font-medium">Pending</div>
                         </div>
                         <div class="h-1 flex-1 
-                            {{ in_array($booking->status, ['confirmed', 'in_progress', 'completed']) ? 'bg-blue-600' : 'bg-gray-300' }}">
+                            {{ in_array($booking->status, ['approved', 'completed']) ? 'bg-blue-600' : 'bg-gray-300' }}">
                         </div>
                         <div class="flex flex-col items-center flex-1">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center 
-                                {{ in_array($booking->status, ['confirmed', 'in_progress', 'completed']) ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
+                                {{ in_array($booking->status, ['approved', 'completed']) ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
                                 ✓
                             </div>
-                            <div class="text-xs mt-2 text-center font-medium">Confirmed</div>
-                        </div>
-                        <div class="h-1 flex-1 
-                            {{ in_array($booking->status, ['in_progress', 'completed']) ? 'bg-blue-600' : 'bg-gray-300' }}">
-                        </div>
-                        <div class="flex flex-col items-center flex-1">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center 
-                                {{ in_array($booking->status, ['in_progress', 'completed']) ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600' }}">
-                                ⚙
-                            </div>
-                            <div class="text-xs mt-2 text-center font-medium">In Progress</div>
+                            <div class="text-xs mt-2 text-center font-medium">Approved</div>
                         </div>
                         <div class="h-1 flex-1 
                             {{ $booking->status === 'completed' ? 'bg-blue-600' : 'bg-gray-300' }}">
@@ -138,6 +151,21 @@
                         <span class="font-bold text-blue-600">₱{{ number_format($booking->total_amount, 2) }}</span>
                     </div>
                 </div>
+
+                <!-- Cancel Button -->
+                @if(in_array($booking->status, ['pending', 'approved']))
+                    <div class="mt-4 pt-4 border-t flex justify-center">
+                        <button 
+                            wire:click="cancelBooking({{ $booking->id }})" 
+                            wire:confirm="Are you sure you want to cancel this booking?"
+                            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Cancel Booking
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
     @empty
