@@ -49,7 +49,7 @@ class Profile extends Component
     public function logout(Logout $logout)
     {
         $logout();
-        return redirect('/login');
+        return redirect()->route('guest.home');
     }
 
     public function render()

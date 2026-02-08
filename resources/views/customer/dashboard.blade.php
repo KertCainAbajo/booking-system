@@ -1,7 +1,7 @@
 <x-customer-layout>
     <div class="space-y-6">
         <!-- Welcome Header -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-6 border-2 border-green-800 border-r-2 border-r-black">
             <h1 class="text-3xl font-bold text-gray-800">Welcome, {{ auth()->user()->name }}!</h1>
             <p class="text-gray-600 mt-2">Manage your vehicle services and appointments</p>
         </div>
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Recent Bookings -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-6 border-2 border-green-800 border-r-2 border-r-black">
             <h2 class="text-xl font-bold text-gray-800 mb-4">Recent Bookings</h2>
             <p class="text-gray-600">Your recent service appointments will appear here</p>
         </div>

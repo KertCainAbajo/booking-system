@@ -49,6 +49,7 @@ class BookingCalendar extends Component
 
         // Get all bookings for this month
         $bookingsQuery = Booking::with(['customer.user', 'services'])
+            ->where('is_archived', false)
             ->whereYear('booking_date', $this->currentYear)
             ->whereMonth('booking_date', $this->currentMonth);
 
@@ -97,7 +98,8 @@ class BookingCalendar extends Component
         $monthStart = Carbon::create($this->currentYear, $this->currentMonth, 1)->startOfDay();
         $monthEnd = Carbon::create($this->currentYear, $this->currentMonth, 1)->endOfMonth()->endOfDay();
 
-        $statsQuery = Booking::whereBetween('booking_date', [$monthStart, $monthEnd]);
+        $statsQuery = Booking::where('is_archived', false)
+            ->whereBetween('booking_date', [$monthStart, $monthEnd]);
         
         $stats = [
             'total' => (clone $statsQuery)->count(),

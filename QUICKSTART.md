@@ -20,32 +20,32 @@ php artisan serve
 
 Visit: **http://localhost:8000**
 
-## 🔐 Login Accounts
+## 🔐 Login Accounts (Staff/Admin Only)
+
+**Note:** Customers book as guests without accounts.
 
 | Role | Email | Password |
 |------|-------|----------|
-| Customer | customer@autoservice.com | customer123 |
 | Staff | staff@autoservice.com | staff123 |
 | Owner | owner@autoservice.com | owner123 |
 | Admin | admin@autoservice.com | admin123 |
 
-## 🎯 Test the Booking Flow
+## 🎯 Test the Booking Flow (Guest)
 
-1. Login as **customer@autoservice.com** (customer123)
-2. Click **"Book Service"**
-3. Click **"+ Add Vehicle"**
-4. Fill in vehicle details:
+1. Visit **http://localhost:8000**
+2. Click **"Book Now"**
+3. Fill in your contact details
+4. Add vehicle details:
    - Make: Toyota
    - Model: Vios
    - Year: 2020
    - Plate: ABC1234
-5. Click **"Save Vehicle"**
-6. Select **"Preventive Maintenance"**
-7. Check **"Engine oil change"** and **"Oil filter replacement"**
-8. Choose date (tomorrow) and time
-9. Click **"Submit Booking"**
+5. Select **"Preventive Maintenance"**
+6. Check **"Engine oil change"** and **"Oil filter replacement"**
+7. Choose date (tomorrow) and time
+8. Click **"Submit Booking"**
 
-Your booking is created! 🎉
+Your booking is created! 🎉 Save your reference number to track it.
 
 ## 📁 Key Files
 

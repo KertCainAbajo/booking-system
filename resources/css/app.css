@@ -1,3 +1,291 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Lenis Smooth Scroll Styles */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+@layer components {
+    /* Automotive Login Styles */
+    .auth-input-wrapper {
+        @apply relative;
+    }
+    
+    .auth-input {
+        @apply block w-full px-12 py-4 text-gray-900 border border-black rounded-xl bg-white text-base font-medium transition-all duration-200;
+        @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white;
+        @apply placeholder:text-gray-400;
+        @apply hover:border-black;
+    }
+    
+    .auth-input-icon {
+        @apply absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none transition-colors;
+    }
+    
+    .auth-input:focus ~ .auth-input-icon {
+        @apply text-gray-900;
+    }
+    
+    .auth-btn-primary {
+        @apply w-full px-6 py-4 bg-gray-900 text-white font-bold text-base rounded-xl transition-all duration-200;
+        @apply hover:bg-gray-800 hover:shadow-xl active:scale-[0.98];
+        @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2;
+        @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+    
+    .auth-btn-secondary {
+        @apply w-full px-6 py-4 bg-white text-gray-700 font-semibold text-base rounded-xl transition-all duration-200;
+        @apply border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-md active:scale-[0.98];
+        @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2;
+        @apply flex items-center justify-center;
+    }
+    
+    .auth-link {
+        @apply text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors duration-150;
+        @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded;
+    }
+    
+    .auth-link-primary {
+        @apply text-sm font-bold text-gray-900 hover:text-red-600 transition-colors duration-150;
+        @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 rounded;
+        @apply underline decoration-2 underline-offset-2;
+    }
+
+    /* ========================================
+       SERVICE BAY FLOW - GUEST BOOKING THEME
+       ======================================== */
+    
+    /* Garage indicator light stepper */
+    .bay-indicator {
+        @apply relative flex items-center justify-center w-12 h-12 rounded-full font-bold text-base transition-all duration-300;
+        @apply border-2;
+    }
+    
+    .bay-indicator.active {
+        @apply bg-garage-neon text-garage-black border-garage-neon;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.6), 0 0 40px rgba(16, 185, 129, 0.3);
+        animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .bay-indicator.completed {
+        @apply bg-garage-forest text-garage-neon border-garage-neon;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    }
+    
+    .bay-indicator.inactive {
+        @apply bg-garage-charcoal text-garage-steel border-garage-steel/30;
+    }
+    
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.6), 0 0 40px rgba(16, 185, 129, 0.3); }
+        50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8), 0 0 60px rgba(16, 185, 129, 0.4); }
+    }
+    
+    /* Cable connector line between steps */
+    .bay-cable {
+        @apply h-0.5 relative;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            currentColor 10%, 
+            currentColor 90%, 
+            transparent 100%
+        );
+    }
+    
+    .bay-cable.active {
+        @apply text-garage-neon;
+    }
+    
+    .bay-cable.inactive {
+        @apply text-garage-steel/30;
+    }
+    
+    /* Main form card with near-black styling */
+    .service-bay-card {
+        @apply rounded-lg shadow-garage border border-garage-neon/20;
+        background: linear-gradient(135deg, #000000 0%, #000000 50%, #0d2818 100%);
+    }
+    
+    /* Summary card with forest green styling */
+    .service-receipt {
+        @apply rounded-lg shadow-garage border border-garage-neon/30 p-6;
+        background: linear-gradient(135deg, #000000 0%, #0d2818 100%);
+    }
+    
+    /* Service receipt item separator */
+    .receipt-divider {
+        @apply border-t border-dashed border-garage-steel/30 my-3;
+    }
+    
+    /* Garage concrete texture background */
+    .garage-floor {
+        background-image: 
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255,255,255,.015) 2px,
+                rgba(255,255,255,.015) 4px
+            ),
+            linear-gradient(135deg, #000000 0%, #0d2818 100%);
+    }
+    
+    /* Diagonal striping effect */
+    .bay-stripes {
+        background-image: repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 40px,
+            rgba(16, 185, 129, 0.03) 40px,
+            rgba(16, 185, 129, 0.03) 80px
+        );
+    }
+    
+    /* Garage input fields */
+    .bay-input {
+        @apply px-4 py-3 rounded-lg font-medium transition-all duration-200;
+        @apply bg-garage-charcoal/70 border border-garage-neon/30 text-garage-offwhite;
+        @apply placeholder:text-garage-steel focus:outline-none focus:border-garage-neon focus:ring-2 focus:ring-garage-neon/30;
+    }
+    
+    .bay-input:focus {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Dropdown container with extra space */
+    .dropdown-container {
+        @apply mb-8;
+        min-height: 120px;
+    }
+
+    /* Ensure dropdowns open downward */
+    select.bay-input {
+        @apply cursor-pointer;
+    }
+    
+    /* VIN field stylestyled like chassis number label */
+    .chassis-label {
+        @apply bay-input font-mono text-sm tracking-wider uppercase;
+    }
+    
+    /* Primary CTA button */
+    .bay-cta {
+        @apply px-6 py-3 rounded-lg font-bold transition-all duration-300;
+        @apply bg-garage-forest text-garage-offwhite border border-garage-neon/40;
+        @apply hover:bg-garage-darkgreen hover:shadow-neon-green;
+    }
+    
+    .bay-cta:hover {
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* Secondary back button */
+    .bay-back {
+        @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
+        @apply bg-garage-charcoal/50 text-garage-steel border border-garage-steel/30;
+        @apply hover:bg-garage-charcoal hover:text-garage-offwhite hover:border-garage-steel/50;
+    }
+    
+    /* Service category expandable section */
+    .bay-category-header {
+        @apply w-full px-4 py-3 rounded-lg flex justify-between items-center transition-all duration-200;
+        @apply bg-garage-charcoal/50 hover:bg-garage-charcoal border border-garage-neon/20;
+        @apply text-garage-offwhite font-semibold;
+    }
+    
+    /* Service checkbox item */
+    .bay-service-item {
+        @apply flex items-center p-3 rounded cursor-pointer transition-all duration-200;
+        @apply hover:bg-garage-charcoal/50 border border-transparent;
+    }
+    
+    .bay-service-item:hover {
+        @apply border-garage-neon/30;
+    }
+    
+    /* Tool icon styles */
+    .tool-icon {
+        @apply text-garage-neon;
+    }
+    
+    /* Service tag label */
+    .service-tag {
+        @apply text-xs uppercase tracking-widest font-bold;
+        letter-spacing: 0.15em;
+    }
+    
+    /* Price badge */
+    .bay-price {
+        @apply text-lg font-bold text-white;
+    }
+    
+    /* Total amount highlight */
+    .bay-total {
+        @apply text-2xl font-black text-white;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Carbon fiber texture (subtle) */
+    .carbon-texture {
+        background-image: repeating-linear-gradient(
+            45deg, 
+            transparent, 
+            transparent 2px, 
+            rgba(255,255,255,.03) 2px, 
+            rgba(255,255,255,.03) 4px
+        );
+    }
+    
+    /* Confirmation checkmark icon animation */
+    @keyframes check-bounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .bay-check {
+        animation: check-bounce 0.5s ease-in-out;
+    }
+    
+    /* License plate styling */
+    .plate-number {
+        @apply inline-block px-3 py-1 rounded font-mono font-bold text-sm;
+        @apply bg-gradient-to-r from-yellow-400 to-yellow-300 text-garage-black;
+        @apply border-2 border-garage-black shadow-md;
+        letter-spacing: 0.1em;
+    }
+    
+    /* Pulsing neon effect animation */
+    @keyframes pulse-neon {
+        0%, 100% { 
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        50% { 
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+    }
+    
+    .pulse-neon {
+        animation: pulse-neon 2s ease-in-out infinite;
+    }
+}

@@ -23,6 +23,14 @@ class BookingForm extends Component
     public $estimatedTotal = 0;
     public $expandedCategories = []; // Track which categories are expanded
     public $servicesConfirmed = false; // Track if user clicked Save & Continue
+    public $savedCategories = []; // Track which categories have saved services
+    
+    // Error modal
+    public $showErrorModal = false;
+    public $errorMessage = '';
+    
+    // Success modal
+    public $showSuccessModal = false;
 
     // New vehicle form
     public $showNewVehicleForm = false;
@@ -80,6 +88,13 @@ class BookingForm extends Component
         }
         // Reset confirmation when services are modified
         $this->servicesConfirmed = false;
+        
+        // Reset saved status for the category of this service
+        $service = Service::find($serviceId);
+        if ($service) {
+            $this->savedCategories = array_values(array_diff($this->savedCategories, [$service->service_category_id]));
+        }
+        
         $this->calculateTotal();
     }
 
@@ -88,7 +103,40 @@ class BookingForm extends Component
         $this->selectedServices = array_values(array_diff($this->selectedServices, [$serviceId]));
         // Reset confirmation when services are modified
         $this->servicesConfirmed = false;
+        
+        // Reset saved status for the category of this service
+        $service = Service::find($serviceId);
+        if ($service) {
+            $this->savedCategories = array_values(array_diff($this->savedCategories, [$service->service_category_id]));
+        }
+        
         $this->calculateTotal();
+    }
+
+    public function saveCategoryServices($categoryId)
+    {
+        // Get services for this category
+        $categoryServiceIds = Service::where('service_category_id', $categoryId)
+            ->pluck('id')
+            ->toArray();
+        
+        // Check if any services from this category are selected
+        $selectedInCategory = array_intersect($this->selectedServices, $categoryServiceIds);
+        
+        if (count($selectedInCategory) > 0) {
+            // Mark this category as saved
+            if (!in_array($categoryId, $this->savedCategories)) {
+                $this->savedCategories[] = $categoryId;
+            }
+            
+            $category = ServiceCategory::find($categoryId);
+            $serviceCount = count($selectedInCategory);
+            $message = $serviceCount . ' service' . ($serviceCount > 1 ? 's' : '') . ' from ' . $category->name . ' saved successfully!';
+            session()->flash('success', $message);
+            
+            // Collapse this category
+            $this->expandedCategories = array_values(array_diff($this->expandedCategories, [$categoryId]));
+        }
     }
 
     public function confirmServices()
@@ -130,54 +178,110 @@ class BookingForm extends Component
 
         $customer = Customer::where('user_id', Auth::id())->first();
         
-        $vehicle = Vehicle::create([
-            'customer_id' => $customer->id,
-            'make' => $this->newVehicle['make'],
-            'model' => $this->newVehicle['model'],
-            'year' => $this->newVehicle['year'],
-            'plate_number' => $this->newVehicle['plate_number'],
-            'vin_number' => $this->newVehicle['vin_number'],
-        ]);
+        try {
+            $vehicle = Vehicle::create([
+                'customer_id' => $customer->id,
+                'make' => $this->newVehicle['make'],
+                'model' => $this->newVehicle['model'],
+                'year' => $this->newVehicle['year'],
+                'plate_number' => $this->newVehicle['plate_number'],
+                'vin_number' => $this->newVehicle['vin_number'],
+            ]);
 
-        $this->selectedVehicle = $vehicle->id;
-        $this->showNewVehicleForm = false;
-        $this->reset('newVehicle');
-        session()->flash('success', 'Vehicle added successfully!');
+            $this->selectedVehicle = $vehicle->id;
+            $this->showNewVehicleForm = false;
+            $this->reset('newVehicle');
+            session()->flash('success', 'Vehicle added successfully!');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                $this->showErrorModal = true;
+                $this->errorMessage = 'This plate number is already registered. Please use a different plate number or select the existing vehicle from the dropdown.';
+                return;
+            }
+            
+            throw $e;
+        }
+    }
+
+    public function closeErrorModal()
+    {
+        $this->showErrorModal = false;
+        $this->errorMessage = '';
+    }
+    
+    public function closeSuccessModal()
+    {
+        $this->showSuccessModal = false;
+        return redirect()->route('customer.tracker');
     }
 
     public function submitBooking()
     {
-        $this->validate([
-            'selectedVehicle' => 'required|exists:vehicles,id',
-            'selectedServices' => 'required|array|min:1',
-            'bookingDate' => 'required|date|after_or_equal:today',
-            'bookingTime' => 'required',
-        ]);
-
-        $customer = Customer::where('user_id', Auth::id())->first();
-
-        $booking = Booking::create([
-            'customer_id' => $customer->id,
-            'vehicle_id' => $this->selectedVehicle,
-            'booking_date' => $this->bookingDate,
-            'booking_time' => $this->bookingTime,
-            'status' => 'pending',
-            'total_amount' => $this->estimatedTotal,
-            'notes' => $this->notes,
-        ]);
-
-        // Attach services
-        foreach ($this->selectedServices as $serviceId) {
-            $service = Service::find($serviceId);
-            $booking->services()->attach($serviceId, [
-                'quantity' => 1,
-                'price' => $service->base_price,
+        // Check for services first
+        if (empty($this->selectedServices) || count($this->selectedServices) == 0) {
+            $this->showErrorModal = true;
+            $this->errorMessage = 'Please select at least one service.';
+            return;
+        }
+        
+        // Validate with error handling
+        try {
+            $this->validate([
+                'selectedVehicle' => 'required|exists:vehicles,id',
+                'selectedServices' => 'required|array|min:1',
+                'bookingDate' => 'required|date|after_or_equal:today',
+                'bookingTime' => 'required',
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            $this->showErrorModal = true;
+            $this->errorMessage = implode(' ', $errors);
+            return;
         }
 
-        session()->flash('success', 'Booking submitted successfully! We will confirm shortly.');
-        
-        return redirect()->route('customer.tracker');
+        // Check if there's already an approved booking for this day (First Come First Serve)
+        // Only completed, cancelled, or no_show bookings free up the day for new bookings
+        $existingBooking = Booking::where('booking_date', $this->bookingDate)
+            ->whereIn('status', ['pending', 'approved'])
+            ->first();
+
+        if ($existingBooking) {
+            $this->showErrorModal = true;
+            $this->errorMessage = 'Sorry, this date has already been booked by another customer. The booking must be completed before accepting new bookings. Please choose a different date.';
+            return;
+        }
+
+        try {
+            $customer = Customer::where('user_id', Auth::id())->first();
+
+            $booking = Booking::create([
+                'customer_id' => $customer->id,
+                'vehicle_id' => $this->selectedVehicle,
+                'booking_date' => $this->bookingDate,
+                'booking_time' => $this->bookingTime,
+                'status' => 'pending',
+                'total_amount' => $this->estimatedTotal,
+                'notes' => $this->notes,
+            ]);
+
+            // Attach services
+            foreach ($this->selectedServices as $serviceId) {
+                $service = Service::find($serviceId);
+                if ($service) {
+                    $booking->services()->attach($serviceId, [
+                        'quantity' => 1,
+                        'price' => $service->base_price,
+                    ]);
+                }
+            }
+
+            // Show success modal instead of redirecting immediately
+            $this->showSuccessModal = true;
+        } catch (\Exception $e) {
+            $this->showErrorModal = true;
+            $this->errorMessage = 'An error occurred while creating your booking. Please try again.';
+            return;
+        }
     }
 
     public function render()

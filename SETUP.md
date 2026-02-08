@@ -35,7 +35,7 @@ php artisan serve
 
 Visit: http://localhost:8000
 
-### Step 4: Login
+### Step 4: Login (Staff/Admin Only)
 
 Use these credentials to test:
 
@@ -51,20 +51,19 @@ Use these credentials to test:
 - Email: staff@autoservice.com
 - Password: staff123
 
-**Customer**
-- Email: customer@autoservice.com
-- Password: customer123
+**Note:** Customers book as guests without creating accounts.
 
 ## Routes Available
 
-### Customer (after logging in as customer)
-- `/customer/dashboard` - Main dashboard
-- `/customer/booking` - Create new booking
-- `/customer/tracker` - Track bookings
-- `/customer/history` - Service history
+### Guest (No authentication required)
+- `/` - Landing page
+- `/book` - Guest booking form
+- `/booking/track` - Track booking by reference
 
 ### Staff (after logging in as staff)
 - `/staff/dashboard` - Booking calendar
+- `/staff/bookings` - Booking management
+- `/staff/booking/{id}` - Booking details
 
 ### Business Owner (after logging in as owner)
 - `/owner/dashboard` - Analytics
@@ -77,15 +76,18 @@ Use these credentials to test:
 
 ## Quick Test Flow
 
-1. Login as **customer@autoservice.com**
-2. Go to "New Booking"
-3. Add a vehicle
-4. Select service category
-5. Choose services
-6. Submit booking
+1. Visit **http://localhost:8000**
+2. Click "Book Now" button
+3. Fill in your details (name, email, phone)
+4. Add vehicle information
+5. Select service category
+6. Choose services
+7. Select date and time
+8. Submit booking
+9. Save your reference number
 
-7. Logout and login as **staff@autoservice.com**
-8. View the booking in the calendar
+10. Login as **staff@autoservice.com** at `/staff/login`
+11. View the booking in the calendar
 
 ## Troubleshooting
 

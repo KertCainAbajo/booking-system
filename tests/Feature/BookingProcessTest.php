@@ -410,4 +410,170 @@ class BookingProcessTest extends TestCase
             ->set('selectedServices', [$this->service->id, $service2->id])
             ->assertSet('estimatedTotal', 2300.00);
     }
+
+    /** @test */
+    public function customer_can_cancel_pending_booking()
+    {
+        $this->actingAs($this->customer);
+
+        // Create a pending booking
+        $booking = Booking::create([
+            'customer_id' => $this->customer->customer->id,
+            'vehicle_id' => $this->vehicle->id,
+            'booking_date' => now()->addDay(),
+            'booking_time' => '10:00',
+            'status' => 'pending',
+            'total_amount' => 1500.00,
+        ]);
+
+        // Customer cancels the booking
+        $booking->cancel($this->customer->id, 'Changed my mind');
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'status' => 'cancelled',
+        ]);
+
+        $this->assertDatabaseHas('booking_status_logs', [
+            'booking_id' => $booking->id,
+            'old_status' => 'pending',
+            'new_status' => 'cancelled',
+            'changed_by' => $this->customer->id,
+        ]);
+    }
+
+    /** @test */
+    public function customer_can_cancel_approved_booking()
+    {
+        $this->actingAs($this->customer);
+
+        // Create an approved booking
+        $booking = Booking::create([
+            'customer_id' => $this->customer->customer->id,
+            'vehicle_id' => $this->vehicle->id,
+            'booking_date' => now()->addDay(),
+            'booking_time' => '10:00',
+            'status' => 'approved',
+            'total_amount' => 1500.00,
+        ]);
+
+        // Should be cancellable
+        $this->assertTrue($booking->canBeCancelled());
+
+        $booking->cancel($this->customer->id);
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'status' => 'cancelled',
+        ]);
+    }
+
+    /** @test */
+    public function completed_booking_cannot_be_cancelled()
+    {
+        // Create a completed booking
+        $booking = Booking::create([
+            'customer_id' => $this->customer->customer->id,
+            'vehicle_id' => $this->vehicle->id,
+            'booking_date' => now()->subDay(),
+            'booking_time' => '10:00',
+            'status' => 'completed',
+            'total_amount' => 1500.00,
+        ]);
+
+        $this->assertFalse($booking->canBeCancelled());
+
+        $this->expectException(\Exception::class);
+        $booking->cancel($this->customer->id);
+    }
+
+    /** @test */
+    public function staff_can_cancel_booking()
+    {
+        $this->actingAs($this->staff);
+
+        // Create a pending booking
+        $booking = Booking::create([
+            'customer_id' => $this->customer->customer->id,
+            'vehicle_id' => $this->vehicle->id,
+            'booking_date' => now()->addDay(),
+            'booking_time' => '10:00',
+            'status' => 'pending',
+            'total_amount' => 1500.00,
+        ]);
+
+        Livewire::test(BookingDetail::class, ['id' => $booking->id])
+            ->call('updateStatus', 'cancelled')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'status' => 'cancelled',
+        ]);
+
+        $this->assertDatabaseHas('booking_status_logs', [
+            'booking_id' => $booking->id,
+            'new_status' => 'cancelled',
+            'changed_by' => $this->staff->id,
+        ]);
+    }
+
+    /** @test */
+    public function admin_can_cancel_booking()
+    {
+        $this->actingAs($this->admin);
+
+        // Create a pending booking
+        $booking = Booking::create([
+            'customer_id' => $this->customer->customer->id,
+            'vehicle_id' => $this->vehicle->id,
+            'booking_date' => now()->addDay(),
+            'booking_time' => '10:00',
+            'status' => 'pending',
+            'total_amount' => 1500.00,
+        ]);
+
+        $adminBookingDetail = new \App\Livewire\Admin\BookingDetail();
+        $adminBookingDetail->mount($booking->id);
+        $adminBookingDetail->updateStatus('cancelled');
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'status' => 'cancelled',
+        ]);
+
+        $this->assertDatabaseHas('booking_status_logs', [
+            'booking_id' => $booking->id,
+            'new_status' => 'cancelled',
+            'changed_by' => $this->admin->id,
+        ]);
+    }
+
+    /** @test */
+    public function guest_can_cancel_booking_with_reference()
+    {
+        // Create a booking (simulating a guest booking)
+        $booking = Booking::create([
+            'customer_id' => $this->customer->customer->id,
+            'vehicle_id' => $this->vehicle->id,
+            'booking_date' => now()->addDay(),
+            'booking_time' => '10:00',
+            'status' => 'pending',
+            'total_amount' => 1500.00,
+        ]);
+
+        // Guest cancels without being logged in
+        $booking->cancel(null, 'Cancelled by guest customer');
+
+        $this->assertDatabaseHas('bookings', [
+            'id' => $booking->id,
+            'status' => 'cancelled',
+        ]);
+
+        $this->assertDatabaseHas('booking_status_logs', [
+            'booking_id' => $booking->id,
+            'new_status' => 'cancelled',
+            'changed_by' => null,
+        ]);
+    }
 }

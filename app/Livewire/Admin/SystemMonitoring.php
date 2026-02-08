@@ -15,6 +15,16 @@ class SystemMonitoring extends Component
 {
     public function render()
     {
+        // Calculate total revenue from completed bookings (which includes all selected services)
+        $completedBookingsRevenue = Booking::where('status', 'completed')->sum('total_amount');
+        
+        // Also include paid payments that might not be from completed bookings yet
+        $paidPaymentsRevenue = Payment::where('payment_status', 'paid')
+            ->whereHas('booking', function($query) {
+                $query->where('status', '!=', 'completed'); // Avoid double counting
+            })
+            ->sum('amount');
+
         $stats = [
             'total_users' => User::count(),
             'total_bookings' => Booking::count(),
@@ -22,7 +32,7 @@ class SystemMonitoring extends Component
             'completed_bookings' => Booking::where('status', 'completed')->count(),
             'total_services' => Service::count(),
             'active_services' => Service::where('is_active', true)->count(),
-            'total_revenue' => Payment::where('payment_status', 'paid')->sum('amount'),
+            'total_revenue' => $completedBookingsRevenue + $paidPaymentsRevenue,
             'pending_payments' => Payment::where('payment_status', 'pending')->sum('amount'),
         ];
 

@@ -34,8 +34,7 @@ class RoleMiddleware
                 'it_admin' => 'admin.dashboard',
                 'business_owner' => 'owner.dashboard',
                 'staff' => 'staff.dashboard',
-                'customer' => 'customer.dashboard',
-                default => 'customer.dashboard',
+                default => 'staff.dashboard',
             };
             
             return redirect()->route($dashboardRoute)->with('error', 'You do not have permission to access that page.');

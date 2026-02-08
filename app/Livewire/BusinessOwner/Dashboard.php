@@ -14,12 +14,37 @@ class Dashboard extends Component
 {
     public function render()
     {
+        // Calculate revenue from completed bookings (which includes all selected services)
+        $todayCompletedRevenue = Booking::whereDate('booking_date', today())
+            ->where('status', 'completed')
+            ->sum('total_amount');
+        
+        $todayPaidPayments = Payment::whereDate('created_at', today())
+            ->where('payment_status', 'paid')
+            ->whereHas('booking', function($query) {
+                $query->where('status', '!=', 'completed')
+                      ->orWhereDate('booking_date', '!=', today());
+            })
+            ->sum('amount');
+        
+        $monthCompletedRevenue = Booking::whereMonth('booking_date', now()->month)
+            ->where('status', 'completed')
+            ->sum('total_amount');
+        
+        $monthPaidPayments = Payment::whereMonth('created_at', now()->month)
+            ->where('payment_status', 'paid')
+            ->whereHas('booking', function($query) {
+                $query->where('status', '!=', 'completed')
+                      ->orWhereMonth('booking_date', '!=', now()->month);
+            })
+            ->sum('amount');
+
         $stats = [
             'today_bookings' => Booking::whereDate('booking_date', today())->count(),
             'pending_bookings' => Booking::where('status', 'pending')->count(),
             'completed_today' => Booking::whereDate('booking_date', today())->where('status', 'completed')->count(),
-            'today_revenue' => Payment::whereDate('created_at', today())->where('payment_status', 'paid')->sum('amount'),
-            'month_revenue' => Payment::whereMonth('created_at', now()->month)->where('payment_status', 'paid')->sum('amount'),
+            'today_revenue' => $todayCompletedRevenue + $todayPaidPayments,
+            'month_revenue' => $monthCompletedRevenue + $monthPaidPayments,
             'pending_payments' => Payment::where('payment_status', 'pending')->sum('amount'),
         ];
 

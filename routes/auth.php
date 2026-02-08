@@ -5,12 +5,26 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Volt;
 
+// Staff, Business Owner, and Admin Login Routes
+// Note: Customer accounts are NOT supported - only guest bookings
 Route::middleware('guest')->group(function () {
-    Volt::route('register', 'pages.auth.register')
-        ->name('register');
+    // Staff/Admin login (single authentication system for all internal users)
+    Volt::route('staff/login', 'pages.auth.login')
+        ->name('staff.login');
 
-    Volt::route('login', 'pages.auth.login')
-        ->name('login');
+    // Keep old login route for backwards compatibility, redirect to staff login
+    Route::get('login', function () {
+        return redirect()->route('staff.login');
+    })->name('login');
+
+    // Registration disabled - users must be created by admin
+    Route::get('register', function () {
+        abort(404);
+    })->name('register');
+
+    Route::get('staff/register', function () {
+        abort(404);
+    })->name('staff.register');
 
     Volt::route('forgot-password', 'pages.auth.forgot-password')
         ->name('password.request');
@@ -34,6 +48,6 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
-        return redirect('/');
+        return redirect()->route('staff.login');
     })->name('logout');
 });

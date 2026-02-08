@@ -15,10 +15,15 @@ class BookingManagement extends Component
 
     public $search = '';
     public $statusFilter = '';
-    public $dateFrom = '';
-    public $dateTo = '';
+    public $bookingDate = '';
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
+
+    public function mount()
+    {
+        // Set default date to today
+        $this->bookingDate = now()->format('Y-m-d');
+    }
 
     public function updatingSearch()
     {
@@ -42,7 +47,8 @@ class BookingManagement extends Component
 
     public function render()
     {
-        $query = Booking::with(['customer.user', 'vehicle', 'assignedStaff', 'services']);
+        $query = Booking::with(['customer.user', 'vehicle', 'assignedStaff', 'services'])
+            ->where('is_archived', false);
 
         // Search filter
         if ($this->search) {
@@ -65,12 +71,9 @@ class BookingManagement extends Component
             $query->where('status', $this->statusFilter);
         }
 
-        // Date range filter
-        if ($this->dateFrom) {
-            $query->where('booking_date', '>=', $this->dateFrom);
-        }
-        if ($this->dateTo) {
-            $query->where('booking_date', '<=', $this->dateTo);
+        // Date filter
+        if ($this->bookingDate) {
+            $query->whereDate('booking_date', $this->bookingDate);
         }
 
         // Sorting
@@ -80,11 +83,11 @@ class BookingManagement extends Component
 
         // Get statistics
         $stats = [
-            'total' => Booking::count(),
-            'pending' => Booking::where('status', 'pending')->count(),
-            'approved' => Booking::where('status', 'approved')->count(),
-            'completed' => Booking::where('status', 'completed')->count(),
-            'cancelled' => Booking::where('status', 'cancelled')->count(),
+            'total' => Booking::where('is_archived', false)->count(),
+            'pending' => Booking::where('is_archived', false)->where('status', 'pending')->count(),
+            'approved' => Booking::where('is_archived', false)->where('status', 'approved')->count(),
+            'completed' => Booking::where('is_archived', false)->where('status', 'completed')->count(),
+            'cancelled' => Booking::where('is_archived', false)->where('status', 'cancelled')->count(),
         ];
 
         return view('livewire.staff.booking-management', [

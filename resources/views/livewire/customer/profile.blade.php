@@ -10,13 +10,13 @@
     </div>
 
     <!-- Profile Header -->
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white shadow rounded-lg p-6 border-2 border-green-800 border-r-2 border-r-black">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">My Profile</h2>
         <p class="text-gray-600">Manage your personal information</p>
     </div>
 
     <!-- Profile Information Form -->
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white shadow rounded-lg p-6 border-2 border-green-800 border-r-2 border-r-black">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
         
         @if($successMessage)
@@ -86,7 +86,7 @@
     </div>
 
     <!-- Logout Section -->
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white shadow rounded-lg p-6 border-2 border-green-800 border-r-2 border-r-black">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Account Actions</h3>
         <div class="flex items-center justify-between">
             <div>
