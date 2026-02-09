@@ -149,9 +149,9 @@
                         @endforeach
 
                         <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
-                            <a href="{{ route('guest.home') }}" class="bay-back text-center sm:text-left">
+                            <button type="button" wire:click="backToHome" class="bay-back text-center sm:text-left">
                                 ← BACK TO AUTO SERVICE BOOKING
-                            </a>
+                            </button>
                             <button type="button" wire:click="nextStep" class="bay-cta text-center sm:text-right">
                                 CONTINUE TO VEHICLE INFO →
                             </button>
@@ -165,7 +165,7 @@
 
                         <div class="space-y-6 pb-12">
                             <!-- Dropdowns first with extra bottom spacing -->
-                            <div class="grid grid-cols-2 gap-4 mb-8">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                                 <div class="dropdown-container">
                                     <label class="block text-sm font-bold text-garage-steel mb-2 service-tag">MAKE (BRAND) *</label>
                                     <select wire:model="vehicleMake" class="bay-input w-full" size="1">
@@ -189,7 +189,7 @@
                             </div>
 
                             <!-- Other fields below -->
-                            <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-bold text-garage-steel mb-2 service-tag">MODEL *</label>
                                     <input type="text" wire:model="vehicleModel" placeholder="e.g., Civic, Camry" 

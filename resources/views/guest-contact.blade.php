@@ -44,7 +44,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 font-semibold">Contact Person</p>
-                            <p class="text-lg font-bold text-gray-900">Admin Manager</p>
+                            <p class="text-lg font-bold text-gray-900">Dexter Abajo</p>
                         </div>
                     </div>
 
@@ -56,21 +56,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 font-semibold">Phone</p>
-                            <p class="text-lg font-bold text-gray-900">+63 123 456 7890</p>
-                            <p class="text-gray-600">+63 987 654 3210</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 font-semibold">Email</p>
-                            <p class="text-lg font-bold text-gray-900">info@dexterauto.com</p>
-                            <p class="text-gray-600">support@dexterauto.com</p>
+                            <p class="text-lg font-bold text-gray-900">0927-007153-8</p>
                         </div>
                     </div>
 
@@ -83,9 +69,9 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 font-semibold">Location</p>
-                            <p class="text-lg font-bold text-gray-900">123 Service Street</p>
-                            <p class="text-gray-600">Barangay Auto, Quezon City</p>
-                            <p class="text-gray-600">Metro Manila, Philippines 1100</p>
+                            <p class="text-lg font-bold text-gray-900">Don lis Village, Adelfa St</p>
+                            <p class="text-gray-600">City of Mati</p>
+                            <p class="text-gray-600">Davao Oriental, Philippines</p>
                         </div>
                     </div>
 
@@ -112,7 +98,7 @@
                 <!-- Google Maps Embed -->
                 <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg mb-4">
                     <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15444.365919431537!2d121.04492737197666!3d14.676208394999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b6287a3959e3%3A0x1748c3cebfa7b03!2sQuezon%20City%2C%20Metro%20Manila!5e0!3m2!1sen!2sph!4v1644444444444!5m2!1sen!2sph"
+                        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Adelfa+Street,Mati+City,Davao+Oriental,Philippines&zoom=18&maptype=satellite"
                         width="100%" 
                         height="100%" 
                         style="border:0;" 
@@ -125,7 +111,7 @@
                 
                 <div class="bg-green-50 p-4 rounded-lg">
                     <p class="text-gray-700 text-sm">
-                        <span class="font-bold">Directions:</span> Located in the heart of Quezon City, easily accessible from EDSA and Commonwealth Avenue. Ample parking available for customers.
+                        <span class="font-bold">Exact Location:</span> Adelfa Street, Don lis Village, City of Mati, Davao Oriental. Easy to find and ample parking available for customers.
                     </p>
                 </div>
             </div>

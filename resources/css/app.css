@@ -177,9 +177,18 @@ html.lenis body {
         min-height: 120px;
     }
 
+    /* Responsive dropdown spacing for mobile */
+    @media (max-width: 640px) {
+        .dropdown-container {
+            @apply mb-4;
+            min-height: auto;
+        }
+    }
+
     /* Ensure dropdowns open downward */
     select.bay-input {
         @apply cursor-pointer;
+        max-height: 200px;
     }
     
     /* VIN field stylestyled like chassis number label */

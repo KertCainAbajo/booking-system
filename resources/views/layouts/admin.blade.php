@@ -41,7 +41,7 @@
                         </button>
                     </div>
                     
-                    <div class="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6 flex-shrink-0 overflow-x-auto">
+                    <div class="hidden md:flex items-center space-x-2 lg:space-x-4 xl:space-x-6 flex-shrink-0">
                         <a href="{{ route('admin.dashboard') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('admin.dashboard') ? 'text-garage-neon' : '' }}">DASHBOARD</a>
                         <a href="{{ route('admin.users') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('admin.users') ? 'text-garage-neon' : '' }}">USERS</a>
                         <a href="{{ route('admin.services') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('admin.services') ? 'text-garage-neon' : '' }}">SERVICES</a>

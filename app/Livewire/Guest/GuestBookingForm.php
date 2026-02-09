@@ -232,11 +232,48 @@ class GuestBookingForm extends Component
             $this->saveToSession();
         }
     }
+    
+    public function resetBookingData()
+    {
+        // Reset all vehicle information
+        $this->vehicleMake = '';
+        $this->vehicleModel = '';
+        $this->vehicleYear = '';
+        $this->vehiclePlateNumber = '';
+        $this->vehicleVinNumber = '';
+        
+        // Reset all personal information
+        $this->customerName = '';
+        $this->customerEmail = '';
+        $this->customerPhone = '';
+        $this->customerAddress = '';
+        
+        // Reset booking details
+        $this->bookingDate = now()->addDay()->format('Y-m-d');
+        $this->bookingTime = '09:00';
+        $this->notes = '';
+        
+        // Reset service selection
+        $this->selectedServices = [];
+        $this->estimatedTotal = 0;
+        $this->servicesConfirmed = false;
+        $this->savedCategories = [];
+        $this->expandedCategories = [];
+        
+        // Clear session data
+        session()->forget('guest_booking_data');
+    }
 
     public function closeErrorModal()
     {
         $this->showErrorModal = false;
         $this->errorMessage = '';
+    }
+    
+    public function backToHome()
+    {
+        $this->resetBookingData();
+        return redirect()->route('guest.home');
     }
 
     public function getServiceCountByCategory($categoryId)
