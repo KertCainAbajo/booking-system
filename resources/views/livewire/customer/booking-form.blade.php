@@ -122,9 +122,9 @@
                     </div>
                 @endif
                 
-                <div class="grid grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Left: Categories and Services (2/3 width) -->
-                    <div class="col-span-2 space-y-4">
+                    <div class="lg:col-span-2 space-y-4 pb-6">
                         @foreach ($categories as $category)
                             <div class="border-2 border-garage-neon/30 rounded-lg overflow-hidden bg-garage-charcoal/50">
                                 <!-- Category Header -->
@@ -213,8 +213,8 @@
                     </div>
 
                     <!-- Right: Selected Services Summary (1/3 width) -->
-                    <div class="col-span-1">
-                        <div class="sticky top-4 flex flex-col border-2 {{ $servicesConfirmed ? 'border-garage-emerald/50 bg-garage-forest/20' : 'border-garage-neon/50 bg-garage-darkgreen/30' }} rounded-lg overflow-hidden transition-all duration-500 h-[420px] shadow-garage">
+                    <div class="lg:col-span-1">
+                        <div class="lg:sticky lg:top-4 flex flex-col border-2 {{ $servicesConfirmed ? 'border-garage-emerald/50 bg-garage-forest/20' : 'border-garage-neon/50 bg-garage-darkgreen/30' }} rounded-lg overflow-hidden transition-all duration-500 lg:max-h-[calc(100vh-8rem)] h-auto lg:h-[420px] shadow-garage z-10">
                             <!-- Fixed Header -->
                             <div class="flex-shrink-0 {{ $servicesConfirmed ? 'bg-garage-emerald/20' : 'bg-garage-neon/20' }} border-b-2 border-garage-neon/30 p-5">
                                 <h3 class="font-bold text-xl text-white service-tag flex items-center">
@@ -311,7 +311,7 @@
             </div>
 
             <!-- Date and Time -->
-            <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 mt-8">
                 <div>
                     <label class="block text-sm font-bold text-white mb-3 service-tag flex items-center">
                         <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

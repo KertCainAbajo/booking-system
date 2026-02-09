@@ -14,59 +14,59 @@
 
         <!-- Bay Indicator Lights (Progress Stepper) -->
         <div class="mb-8 sm:mb-12 overflow-x-auto">
-            <div class="flex items-center justify-center min-w-max px-4">
-                <div class="flex items-center space-x-3 sm:space-x-6">
+            <div class="flex items-center justify-center min-w-max px-2 sm:px-4">
+                <div class="flex items-center space-x-1 sm:space-x-3 md:space-x-6">
                     <!-- Step 1: Services -->
                     <div class="flex flex-col items-center">
                         <div class="bay-indicator {{ $currentStep >= 1 ? ($currentStep > 1 ? 'completed' : 'active') : 'inactive' }}">
                             @if($currentStep > 1)
-                                <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                             @else
-                                <span class="text-sm sm:text-base">1</span>
+                                <span class="text-xs sm:text-sm md:text-base">1</span>
                             @endif
                         </div>
-                        <span class="mt-1 sm:mt-2 text-xs font-semibold {{ $currentStep >= 1 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag">SERVICES</span>
+                        <span class="mt-1 sm:mt-2 text-[10px] sm:text-xs font-semibold {{ $currentStep >= 1 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag whitespace-nowrap">SERVICES</span>
                     </div>
                     
                     <!-- Cable connector 1 -->
-                    <div class="w-8 sm:w-16 h-1 bay-cable {{ $currentStep > 1 ? 'active' : 'inactive' }}"></div>
+                    <div class="w-4 sm:w-8 md:w-16 h-1 bay-cable {{ $currentStep > 1 ? 'active' : 'inactive' }}"></div>
                     
                     <!-- Step 2: Vehicle -->
                     <div class="flex flex-col items-center">
                         <div class="bay-indicator {{ $currentStep >= 2 ? ($currentStep > 2 ? 'completed' : 'active') : 'inactive' }}">
                             @if($currentStep > 2)
-                                <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                             @else
-                                <span class="text-sm sm:text-base">2</span>
+                                <span class="text-xs sm:text-sm md:text-base">2</span>
                             @endif
                         </div>
-                        <span class="mt-1 sm:mt-2 text-xs font-semibold {{ $currentStep >= 2 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag">VEHICLE</span>
+                        <span class="mt-1 sm:mt-2 text-[10px] sm:text-xs font-semibold {{ $currentStep >= 2 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag whitespace-nowrap">VEHICLE</span>
                     </div>
                     
                     <!-- Cable connector 2 -->
-                    <div class="w-8 sm:w-16 h-1 bay-cable {{ $currentStep > 2 ? 'active' : 'inactive' }}"></div>
+                    <div class="w-4 sm:w-8 md:w-16 h-1 bay-cable {{ $currentStep > 2 ? 'active' : 'inactive' }}"></div>
                     
                     <!-- Step 3: Your Info -->
                     <div class="flex flex-col items-center">
                         <div class="bay-indicator {{ $currentStep >= 3 ? ($currentStep > 3 ? 'completed' : 'active') : 'inactive' }}">
                             @if($currentStep > 3)
-                                <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                             @else
-                                <span class="text-sm sm:text-base">3</span>
+                                <span class="text-xs sm:text-sm md:text-base">3</span>
                             @endif
                         </div>
-                        <span class="mt-1 sm:mt-2 text-xs font-semibold {{ $currentStep >= 3 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag">INFO</span>
+                        <span class="mt-1 sm:mt-2 text-[10px] sm:text-xs font-semibold {{ $currentStep >= 3 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag whitespace-nowrap">INFO</span>
                     </div>
                     
                     <!-- Cable connector 3 -->
-                    <div class="w-8 sm:w-16 h-1 bay-cable {{ $currentStep > 3 ? 'active' : 'inactive' }}"></div>
+                    <div class="w-4 sm:w-8 md:w-16 h-1 bay-cable {{ $currentStep > 3 ? 'active' : 'inactive' }}"></div>
                     
                     <!-- Step 4: Confirm -->
                     <div class="flex flex-col items-center">
                         <div class="bay-indicator {{ $currentStep >= 4 ? 'active' : 'inactive' }}">
-                            <span class="text-sm sm:text-base">4</span>
+                            <span class="text-xs sm:text-sm md:text-base">4</span>
                         </div>
-                        <span class="mt-1 sm:mt-2 text-xs font-semibold {{ $currentStep >= 4 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag">CONFIRM</span>
+                        <span class="mt-1 sm:mt-2 text-[10px] sm:text-xs font-semibold {{ $currentStep >= 4 ? 'text-garage-neon' : 'text-garage-steel' }} service-tag whitespace-nowrap">CONFIRM</span>
                     </div>
                 </div>
             </div>
@@ -148,11 +148,11 @@
                             </div>
                         @endforeach
 
-                        <div class="mt-8 flex justify-between">
-                            <a href="{{ route('guest.home') }}" class="bay-back">
+                        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+                            <a href="{{ route('guest.home') }}" class="bay-back text-center sm:text-left">
                                 ← BACK TO AUTO SERVICE BOOKING
                             </a>
-                            <button type="button" wire:click="nextStep" class="bay-cta">
+                            <button type="button" wire:click="nextStep" class="bay-cta text-center sm:text-right">
                                 CONTINUE TO VEHICLE INFO →
                             </button>
                         </div>
@@ -216,11 +216,11 @@
                             </div>
                         </div>
 
-                        <div class="mt-8 flex justify-between">
-                            <button type="button" wire:click="previousStep" class="bay-back">
+                        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+                            <button type="button" wire:click="previousStep" class="bay-back text-center sm:text-left">
                                 ← BACK
                             </button>
-                            <button type="button" wire:click="nextStep" class="bay-cta">
+                            <button type="button" wire:click="nextStep" class="bay-cta text-center sm:text-right">
                                 CONTINUE TO YOUR INFO →
                             </button>
                         </div>
@@ -282,11 +282,11 @@
                             </div>
                         </div>
 
-                        <div class="mt-8 flex justify-between">
-                            <button type="button" wire:click="previousStep" class="bay-back">
+                        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+                            <button type="button" wire:click="previousStep" class="bay-back text-center sm:text-left">
                                 ← BACK
                             </button>
-                            <button type="button" wire:click="nextStep" class="bay-cta">
+                            <button type="button" wire:click="nextStep" class="bay-cta text-center sm:text-right">
                                 REVIEW BOOKING →
                             </button>
                         </div>
@@ -360,13 +360,13 @@
                             </div>
                         </div>
 
-                        <div class="mt-8 flex justify-between">
-                            <button type="button" wire:click="previousStep" class="bay-back">
+                        <div class="mt-8 flex flex-col sm:flex-row justify-between gap-3 sm:gap-4">
+                            <button type="button" wire:click="previousStep" class="bay-back text-center sm:text-left">
                                 ← BACK
                             </button>
                             <button type="button" wire:click="submitBooking" 
                                     wire:loading.attr="disabled"
-                                    class="px-8 py-4 rounded-lg font-black transition-all duration-300 bg-garage-neon text-garage-black hover:shadow-neon-green-lg service-tag disabled:opacity-50 disabled:cursor-not-allowed">
+                                    class="px-4 py-3 sm:px-8 sm:py-4 rounded-lg font-black transition-all duration-300 bg-garage-neon text-garage-black hover:shadow-neon-green-lg service-tag disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm md:text-base text-center sm:text-right">
                                 <span wire:loading.remove wire:target="submitBooking">CONFIRM BOOKING</span>
                                 <span wire:loading wire:target="submitBooking">PROCESSING...</span>
                             </button>
@@ -393,8 +393,8 @@
                             @endforeach
                         </div>
                         <div class="border-t-2 border-garage-neon/50 pt-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-garage-steel font-bold service-tag">TOTAL</span>
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 sm:gap-2">
+                                <span class="text-sm sm:text-base text-garage-steel font-bold service-tag">TOTAL:</span>
                                 <span class="bay-total">₱{{ number_format($estimatedTotal, 2) }}</span>
                             </div>
                         </div>

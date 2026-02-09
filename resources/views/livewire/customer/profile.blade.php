@@ -85,6 +85,79 @@
         </form>
     </div>
 
+    <!-- Change Password Section -->
+    <div class="bg-white shadow rounded-lg p-6 border-2 border-green-800 border-r-2 border-r-black">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
+        
+        @if($passwordSuccessMessage)
+            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                {{ $passwordSuccessMessage }}
+            </div>
+        @endif
+
+        <form wire:submit.prevent="updatePassword" class="space-y-4">
+            <div>
+                <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">
+                    Current Password <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="current_password" 
+                    wire:model="current_password" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                    autocomplete="current-password"
+                >
+                @error('current_password') 
+                    <span class="text-red-500 text-sm">{{ $message }}</span> 
+                @enderror
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                    New Password <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    wire:model="password" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                    autocomplete="new-password"
+                >
+                @error('password') 
+                    <span class="text-red-500 text-sm">{{ $message }}</span> 
+                @enderror
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password <span class="text-red-500">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password_confirmation" 
+                    wire:model="password_confirmation" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                    autocomplete="new-password"
+                >
+                @error('password_confirmation') 
+                    <span class="text-red-500 text-sm">{{ $message }}</span> 
+                @enderror
+            </div>
+
+            <div class="pt-4">
+                <button 
+                    type="submit" 
+                    class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                >
+                    Update Password
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Logout Section -->
     <div class="bg-white shadow rounded-lg p-6 border-2 border-green-800 border-r-2 border-r-black">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Account Actions</h3>

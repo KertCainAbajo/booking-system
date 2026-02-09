@@ -309,29 +309,21 @@ class GuestBookingForm extends Component
     public function submitBooking()
     {
         // Final validation
-        try {
-            $this->validate([
-                'customerName' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
-                'customerEmail' => 'required|email|max:255',
-                'customerPhone' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/'],
-                'vehicleMake' => 'required|string|max:255',
-                'vehicleModel' => 'required|string|max:255',
-                'vehicleYear' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-                'vehiclePlateNumber' => 'required|string|max:255|unique:vehicles,plate_number',
-                'selectedServices' => 'required|array|min:1',
-                'bookingDate' => 'required|date|after_or_equal:today',
-                'bookingTime' => 'required',
-            ], [
-                'customerName.regex' => 'Full name must contain only letters and spaces.',
-                'customerPhone.regex' => 'Phone number must contain only numbers.',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Get the first validation error message
-            $errors = $e->validator->errors()->all();
-            $this->showErrorModal = true;
-            $this->errorMessage = implode(' ', $errors);
-            return;
-        }
+        $this->validate([
+            'customerName' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'customerEmail' => 'required|email|max:255',
+            'customerPhone' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/'],
+            'vehicleMake' => 'required|string|max:255',
+            'vehicleModel' => 'required|string|max:255',
+            'vehicleYear' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'vehiclePlateNumber' => 'required|string|max:255|unique:vehicles,plate_number',
+            'selectedServices' => 'required|array|min:1',
+            'bookingDate' => 'required|date|after_or_equal:today',
+            'bookingTime' => 'required',
+        ], [
+            'customerName.regex' => 'Full name must contain only letters and spaces.',
+            'customerPhone.regex' => 'Phone number must contain only numbers.',
+        ]);
 
         // Check if there's already a booking for this date
         $existingBooking = Booking::where('booking_date', $this->bookingDate)

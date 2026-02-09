@@ -15,32 +15,33 @@
 </head>
 <body class="font-sans antialiased bg-gradient-to-br from-garage-black via-garage-charcoal to-garage-darkgreen">
     <div class="min-h-screen">
-        <nav class="bg-gradient-to-r from-garage-charcoal to-garage-darkgreen shadow-garage border-b border-garage-neon/20" x-data="{ mobileMenuOpen: false }">
+        <nav class="bg-gradient-to-r from-garage-charcoal to-garage-darkgreen shadow-garage border-b border-garage-neon/20 sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="{{ route('staff.dashboard') }}" class="flex items-center space-x-2 sm:space-x-3 text-base sm:text-xl font-bold text-white hover:text-garage-neon transition-colors service-tag">
+                    <div class="flex items-center flex-shrink-0">
+                        <a href="{{ route('staff.dashboard') }}" class="flex items-center space-x-2 sm:space-x-3 text-sm sm:text-base md:text-xl font-bold text-white hover:text-garage-neon transition-colors service-tag">
                             <!-- Shop Logo -->
-                            <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-8 w-8 sm:h-10 sm:w-10 object-contain brightness-0 invert">
-                            <span class="hidden sm:inline">DEXTER AUTO SERVICES</span>
-                            <span class="sm:hidden">DEXTER</span>
+                            <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-8 w-8 sm:h-10 sm:w-10 object-contain brightness-0 invert flex-shrink-0">
+                            <span class="hidden md:inline whitespace-nowrap">DEXTER AUTO SERVICES</span>
+                            <span class="hidden sm:inline md:hidden whitespace-nowrap">DEXTER AUTO</span>
+                            <span class="sm:hidden whitespace-nowrap">DEXTER</span>
                         </a>
                     </div>
                     <!-- Desktop Navigation -->
-                    <div class="hidden lg:flex items-center space-x-6">
-                        <a href="{{ route('staff.dashboard') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag {{ request()->routeIs('staff.dashboard') ? 'text-garage-neon' : '' }}">DASHBOARD</a>
-                        <a href="{{ route('staff.calendar') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag {{ request()->routeIs('staff.calendar') ? 'text-garage-neon' : '' }}">CALENDAR</a>
-                        <a href="{{ route('staff.bookings') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag {{ request()->routeIs('staff.bookings') ? 'text-garage-neon' : '' }}">BOOKINGS</a>
-                        <a href="{{ route('staff.history') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag {{ request()->routeIs('staff.history') ? 'text-garage-neon' : '' }}">HISTORY</a>
+                    <div class="hidden lg:flex items-center space-x-3 xl:space-x-6 flex-shrink-0">
+                        <a href="{{ route('staff.dashboard') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('staff.dashboard') ? 'text-garage-neon' : '' }}">DASHBOARD</a>
+                        <a href="{{ route('staff.calendar') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('staff.calendar') ? 'text-garage-neon' : '' }}">CALENDAR</a>
+                        <a href="{{ route('staff.bookings') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('staff.bookings') ? 'text-garage-neon' : '' }}">BOOKINGS</a>
+                        <a href="{{ route('staff.history') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('staff.history') ? 'text-garage-neon' : '' }}">HISTORY</a>
                         
                         <!-- User Dropdown -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false" 
-                                    class="flex items-center space-x-2 text-garage-offwhite hover:text-garage-neon focus:outline-none transition-colors">
-                                <div class="w-8 h-8 bg-gradient-to-br from-garage-neon to-garage-emerald rounded-full flex items-center justify-center text-garage-black font-bold shadow-neon-green">
+                                    class="flex items-center space-x-1 lg:space-x-2 text-garage-offwhite hover:text-garage-neon focus:outline-none transition-colors flex-shrink-0">
+                                <div class="w-8 h-8 bg-gradient-to-br from-garage-neon to-garage-emerald rounded-full flex items-center justify-center text-garage-black font-bold shadow-neon-green flex-shrink-0">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
-                                <span class="font-semibold service-tag hidden md:inline">{{ strtoupper(auth()->user()->name) }}</span>
+                                <span class="font-semibold service-tag hidden xl:inline truncate max-w-[120px]">{{ strtoupper(auth()->user()->name) }}</span>
                                 <svg class="w-4 h-4" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>

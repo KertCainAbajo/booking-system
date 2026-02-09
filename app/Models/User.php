@@ -18,6 +18,8 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read Role $role
+ * @property-read Customer|null $customer
  */
 class User extends Authenticatable
 {

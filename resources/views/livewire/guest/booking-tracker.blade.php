@@ -1,32 +1,32 @@
 <div class="min-h-screen bg-gradient-to-br from-black to-green-900 py-12">
     <div class="max-w-4xl mx-auto px-4">
         <!-- Garage Header -->
-        <div class="text-center mb-10">
-            <div class="flex items-center justify-center mb-4">
-                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-16 w-16 mr-4 brightness-0 invert">
-                <h1 class="text-5xl font-black text-white">
+        <div class="text-center mb-6 sm:mb-10">
+            <div class="flex flex-col sm:flex-row items-center justify-center mb-3 sm:mb-4 gap-2 sm:gap-4">
+                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-12 w-12 sm:h-16 sm:w-16 brightness-0 invert">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white">
                     DEXTER AUTO SERVICES
                 </h1>
             </div>
-            <p class="text-white text-xl font-semibold">Professional Auto Service Platform</p>
+            <p class="text-white text-base sm:text-lg md:text-xl font-semibold">Professional Auto Service Platform</p>
         </div>
 
-        <div class="text-center mb-8">
-            <h2 class="text-4xl font-black text-white mb-3 service-tag">TRACK YOUR BOOKING</h2>
-            <p class="text-white text-lg">Enter your booking reference number to view the status</p>
+        <div class="text-center mb-6 sm:mb-8">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 sm:mb-3 service-tag">TRACK YOUR BOOKING</h2>
+            <p class="text-white text-sm sm:text-base md:text-lg">Enter your booking reference number to view the status</p>
         </div>
 
         <!-- Search Form -->
-        <div class="service-bay-card carbon-texture p-8 mb-6">
+        <div class="service-bay-card carbon-texture p-4 sm:p-6 md:p-8 mb-6">
             <form wire:submit.prevent="trackBooking">
-                <div class="flex gap-4">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <input type="text" 
                            wire:model="bookingReference" 
                            placeholder="Enter booking reference (e.g., BK12345678)" 
-                           class="flex-1 px-6 py-4 bg-garage-charcoal border-2 border-garage-steel/30 rounded-lg text-white placeholder-garage-steel focus:ring-2 focus:ring-garage-neon focus:border-garage-neon text-lg font-semibold"
+                           class="flex-1 px-4 py-3 sm:px-6 sm:py-4 bg-garage-charcoal border-2 border-garage-steel/30 rounded-lg text-white placeholder-garage-steel focus:ring-2 focus:ring-garage-neon focus:border-garage-neon text-sm sm:text-base md:text-lg font-semibold"
                            required>
                     <button type="submit" 
-                            class="px-10 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition service-tag text-lg">
+                            class="w-full sm:w-auto px-6 py-3 sm:px-10 sm:py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition service-tag text-sm sm:text-base md:text-lg">
                         TRACK
                     </button>
                 </div>
@@ -61,11 +61,11 @@
                 </h3>
                 @if(session()->has('error'))
                     <p class="text-white mb-4">{{ session('error') }}</p>
-                    <p class="text-red-400 font-bold text-xl mb-4">{{ $bookingReference }}</p>
+                    <p class="text-red-400 font-bold text-base sm:text-lg md:text-xl mb-4 break-all">{{ $bookingReference }}</p>
                     <p class="text-white">The booking reference is no longer accessible once the service is completed.</p>
                 @else
                     <p class="text-white mb-2">We couldn't find a booking with reference number:</p>
-                    <p class="text-red-400 font-bold text-xl mb-4">{{ $bookingReference }}</p>
+                    <p class="text-red-400 font-bold text-base sm:text-lg md:text-xl mb-4 break-all">{{ $bookingReference }}</p>
                     <p class="text-white">Please check the reference number and try again.</p>
                 @endif
                 
@@ -85,14 +85,14 @@
         <!-- Booking Found -->
         @if ($booking)
             <!-- Booking Summary Card -->
-            <div class="service-bay-card carbon-texture p-8 mb-6 border-2 border-garage-neon/50">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-white mb-2 font-semibold service-tag">BOOKING REFERENCE</p>
-                        <p class="text-4xl font-black text-white tracking-wider" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);">{{ $booking->booking_reference }}</p>
+            <div class="service-bay-card carbon-texture p-4 sm:p-6 md:p-8 mb-6 border-2 border-garage-neon/50">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs sm:text-sm text-white mb-2 font-semibold service-tag">BOOKING REFERENCE</p>
+                        <p class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-wider break-all" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);">{{ $booking->booking_reference }}</p>
                     </div>
-                    <div>
-                        <span class="inline-flex items-center px-6 py-3 rounded-lg text-base font-bold service-tag
+                    <div class="w-full sm:w-auto flex-shrink-0">
+                        <span class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-sm sm:text-base font-bold service-tag
                             {{ $booking->status === 'completed' ? 'bg-green-600 text-white border-2 border-green-400' : 
                                ($booking->status === 'approved' ? 'bg-blue-600 text-white border-2 border-blue-400' : 
                                ($booking->status === 'cancelled' ? 'bg-red-600 text-white border-2 border-red-400' : 'bg-yellow-600 text-white border-2 border-yellow-400')) }}">
@@ -104,7 +104,7 @@
 
             <!-- Main Details Card -->
             <div class="service-bay-card carbon-texture overflow-hidden">
-                <div class="p-8">
+                <div class="p-4 sm:p-6 md:p-8">
                     <!-- Status Progress -->
                     <div class="mb-8">
                         <h3 class="font-bold text-xl mb-6 text-white service-tag">BOOKING PROGRESS</h3>
@@ -218,9 +218,9 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="mt-6 pt-6 border-t-2 border-garage-neon/50 flex justify-between items-center">
-                            <span class="text-2xl font-black text-white service-tag">TOTAL AMOUNT</span>
-                            <span class="text-3xl font-black text-white" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);">₱{{ number_format($booking->total_amount, 2) }}</span>
+                        <div class="mt-6 pt-6 border-t-2 border-garage-neon/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                            <span class="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-white service-tag">TOTAL AMOUNT:</span>
+                            <span class="text-xl sm:text-2xl md:text-3xl font-black text-white" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);">₱{{ number_format($booking->total_amount, 2) }}</span>
                         </div>
                     </div>
 

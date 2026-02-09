@@ -7,15 +7,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gradient-to-br from-black to-green-900 min-h-screen">
-    <div class="container mx-auto px-4 py-12">
+    <div class="container mx-auto px-4 py-6 sm:py-8 md:py-12">
         <!-- Header with Logo -->
-        <div class="text-center mb-8">
-            <div class="flex items-center justify-center mb-4">
-                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-20 w-20 mr-4 brightness-0 invert">
-                <h1 class="text-6xl font-black text-white tracking-wide">DEXTER AUTO SERVICES</h1>
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row items-center justify-center mb-4 gap-3 sm:gap-4">
+                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 brightness-0 invert">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-wide">DEXTER AUTO SERVICES</h1>
             </div>
-            <a href="{{ route('guest.home') }}" class="inline-flex items-center px-6 py-3 bg-white text-green-900 font-bold rounded-lg hover:bg-green-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 mt-4">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('guest.home') }}" class="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 bg-white text-green-900 font-bold text-sm sm:text-base rounded-lg hover:bg-green-50 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 mt-4">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
                 Back to Home
@@ -23,16 +23,16 @@
         </div>
 
         <!-- Page Title -->
-        <div class="max-w-6xl mx-auto text-center mb-12">
-            <h2 class="text-4xl font-bold text-white mb-4">Contact Us</h2>
-            <p class="text-xl text-green-100">Get in touch with us for any inquiries or assistance</p>
+        <div class="max-w-6xl mx-auto text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">Contact Us</h2>
+            <p class="text-base sm:text-lg md:text-xl text-green-100">Get in touch with us for any inquiries or assistance</p>
         </div>
 
         <!-- Contact Content -->
         <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 mb-12">
             <!-- Contact Information Card -->
-            <div class="bg-white rounded-2xl shadow-2xl p-8">
-                <h3 class="text-3xl font-bold text-gray-900 mb-6">Contact Information</h3>
+            <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Contact Information</h3>
                 
                 <!-- Admin Details -->
                 <div class="space-y-4 mb-8">
@@ -106,8 +106,8 @@
             </div>
 
             <!-- Map Card -->
-            <div class="bg-white rounded-2xl shadow-2xl p-8">
-                <h3 class="text-3xl font-bold text-gray-900 mb-6">Our Location</h3>
+            <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
+                <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Our Location</h3>
                 
                 <!-- Google Maps Embed -->
                 <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg mb-4">
@@ -133,12 +133,12 @@
 
         <!-- Quick Actions -->
         <div class="max-w-4xl mx-auto text-center mb-8">
-            <div class="bg-white rounded-2xl shadow-2xl p-8">
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">Ready to Book Your Service?</h3>
-                <p class="text-gray-600 mb-6">Schedule your auto service appointment in just a few clicks</p>
+            <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Ready to Book Your Service?</h3>
+                <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Schedule your auto service appointment in just a few clicks</p>
                 <a href="{{ route('guest.booking') }}" 
-                   class="inline-flex items-center px-8 py-4 bg-green-700 text-white text-lg font-bold rounded-lg hover:bg-green-800 transition-all shadow-lg hover:shadow-xl">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="inline-flex items-center px-6 py-3 sm:px-8 sm:py-4 bg-green-700 text-white text-base sm:text-lg font-bold rounded-lg hover:bg-green-800 transition-all shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                     Book Now

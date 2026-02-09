@@ -59,39 +59,39 @@
 <body class="font-sans antialiased garage-texture">
     <div class="min-h-screen">
         <!-- Navigation -->
-        <nav class="bg-gradient-to-r from-garage-charcoal to-garage-darkgreen border-b-2 border-garage-neon/20 shadow-garage" x-data="{ mobileMenuOpen: false }">
+        <nav class="bg-gradient-to-r from-garage-charcoal to-garage-darkgreen border-b-2 border-garage-neon/20 shadow-garage sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="{{ route('customer.dashboard') }}" class="flex items-center space-x-2 text-base sm:text-xl font-bold text-garage-neon hover:text-garage-emerald transition-colors">
+                    <div class="flex items-center flex-shrink-0">
+                        <a href="{{ route('customer.dashboard') }}" class="flex items-center space-x-2 text-sm sm:text-base md:text-xl font-bold text-garage-neon hover:text-garage-emerald transition-colors">
                             <!-- Automotive Icon -->
-                            <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                             </svg>
-                            <span class="service-tag hidden sm:inline">MIDNIGHT GARAGE</span>
-                            <span class="service-tag sm:hidden">GARAGE</span>
+                            <span class="service-tag hidden sm:inline whitespace-nowrap">MIDNIGHT GARAGE</span>
+                            <span class="service-tag sm:hidden whitespace-nowrap">GARAGE</span>
                         </a>
                     </div>
                     <!-- Desktop Navigation -->
-                    <div class="hidden md:flex items-center space-x-1">
-                        <a href="{{ route('customer.booking') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200">
+                    <div class="hidden md:flex items-center space-x-1 flex-shrink-0">
+                        <a href="{{ route('customer.booking') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200 whitespace-nowrap">
                             New Service
                         </a>
-                        <a href="{{ route('customer.tracker') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200">
+                        <a href="{{ route('customer.tracker') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200 whitespace-nowrap">
                             Track
                         </a>
-                        <a href="{{ route('customer.history') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200">
+                        <a href="{{ route('customer.history') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200 whitespace-nowrap">
                             History
                         </a>
                         
                         <!-- User Dropdown -->
                         <div class="relative ml-3" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false" 
-                                    class="flex items-center space-x-2 text-garage-steel hover:text-garage-neon focus:outline-none px-3 py-2 rounded-lg hover:bg-garage-darkgreen/50 transition-all duration-200">
-                                <div class="w-8 h-8 bg-gradient-to-br from-garage-forest to-garage-neon rounded-full flex items-center justify-center text-white font-bold ring-2 ring-garage-neon/30">
+                                    class="flex items-center space-x-1 lg:space-x-2 text-garage-steel hover:text-garage-neon focus:outline-none px-3 py-2 rounded-lg hover:bg-garage-darkgreen/50 transition-all duration-200 flex-shrink-0">
+                                <div class="w-8 h-8 bg-gradient-to-br from-garage-forest to-garage-neon rounded-full flex items-center justify-center text-white font-bold ring-2 ring-garage-neon/30 flex-shrink-0">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
-                                <span class="font-medium hidden sm:inline">{{ auth()->user()->name }}</span>
+                                <span class="font-medium hidden lg:inline truncate max-w-[120px]">{{ auth()->user()->name }}</span>
                                 <svg class="w-4 h-4" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>

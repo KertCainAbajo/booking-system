@@ -107,6 +107,87 @@
         </form>
     </div>
 
+    <!-- Change Password Section -->
+    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
+        <div class="flex items-center space-x-3 mb-6">
+            <svg class="w-6 h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            <h3 class="text-xl font-bold text-garage-offwhite service-tag tracking-wider">CHANGE PASSWORD</h3>
+        </div>
+        
+        <!-- Garage Floor Divider -->
+        <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
+        
+        @if($passwordSuccessMessage)
+            <div class="mb-6 p-4 bg-garage-neon/20 border-l-4 border-garage-neon text-white rounded font-semibold">
+                {{ $passwordSuccessMessage }}
+            </div>
+        @endif
+
+        <form wire:submit.prevent="updatePassword" class="space-y-5">
+            <div>
+                <label for="current_password" class="block text-sm font-bold text-garage-neon mb-2 service-tag tracking-wider">
+                    CURRENT PASSWORD <span class="text-red-400">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="current_password" 
+                    wire:model="current_password" 
+                    class="w-full px-4 py-3 bg-garage-forest border border-garage-neon/30 rounded-lg text-garage-offwhite placeholder-garage-steel focus:ring-2 focus:ring-garage-neon focus:border-garage-neon transition-all"
+                    required
+                    autocomplete="current-password"
+                >
+                @error('current_password') 
+                    <span class="text-red-400 text-sm font-semibold mt-1 block">{{ $message }}</span> 
+                @enderror
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-bold text-garage-neon mb-2 service-tag tracking-wider">
+                    NEW PASSWORD <span class="text-red-400">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    wire:model="password" 
+                    class="w-full px-4 py-3 bg-garage-forest border border-garage-neon/30 rounded-lg text-garage-offwhite placeholder-garage-steel focus:ring-2 focus:ring-garage-neon focus:border-garage-neon transition-all"
+                    required
+                    autocomplete="new-password"
+                >
+                @error('password') 
+                    <span class="text-red-400 text-sm font-semibold mt-1 block">{{ $message }}</span> 
+                @enderror
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-sm font-bold text-garage-neon mb-2 service-tag tracking-wider">
+                    CONFIRM PASSWORD <span class="text-red-400">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password_confirmation" 
+                    wire:model="password_confirmation" 
+                    class="w-full px-4 py-3 bg-garage-forest border border-garage-neon/30 rounded-lg text-garage-offwhite placeholder-garage-steel focus:ring-2 focus:ring-garage-neon focus:border-garage-neon transition-all"
+                    required
+                    autocomplete="new-password"
+                >
+                @error('password_confirmation') 
+                    <span class="text-red-400 text-sm font-semibold mt-1 block">{{ $message }}</span> 
+                @enderror
+            </div>
+
+            <div class="pt-4">
+                <button 
+                    type="submit" 
+                    class="px-8 py-3 bg-garage-neon hover:bg-garage-neon/80 text-garage-charcoal font-bold rounded-lg transition-all service-tag tracking-wider"
+                >
+                    UPDATE PASSWORD
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Logout Section -->
     <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-red-500/20">
         <div class="flex items-center space-x-3 mb-6">

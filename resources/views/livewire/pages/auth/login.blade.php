@@ -32,7 +32,7 @@ new #[Layout('layouts.guest')] class extends Component
             default => 'staff.dashboard',
         };
 
-        $this->redirectIntended(default: route($dashboardRoute, absolute: false), navigate: true);
+        $this->redirect(route($dashboardRoute, absolute: false), navigate: true);
     }
 }; ?>
 

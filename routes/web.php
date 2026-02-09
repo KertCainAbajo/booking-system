@@ -90,8 +90,4 @@ Route::middleware(['auth', 'role:it_admin'])->prefix('admin')->name('admin.')->g
     Route::get('/profile', AdminProfile::class)->name('profile');
 });
 
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
-
 require __DIR__.'/auth.php';

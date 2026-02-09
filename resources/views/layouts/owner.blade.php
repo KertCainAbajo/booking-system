@@ -15,30 +15,31 @@
 </head>
 <body class="font-sans antialiased bg-gradient-to-br from-black to-green-900">
     <div class="min-h-screen">
-        <nav class="bg-gradient-to-r from-black to-garage-darkgreen shadow-garage border-b border-garage-neon/20" x-data="{ mobileMenuOpen: false }">
+        <nav class="bg-gradient-to-r from-black to-garage-darkgreen shadow-garage border-b border-garage-neon/20 sticky top-0 z-50" x-data="{ mobileMenuOpen: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <a href="{{ route('owner.dashboard') }}" class="flex items-center space-x-2 sm:space-x-3 text-base sm:text-xl font-bold text-white hover:text-garage-neon transition-colors service-tag">
+                    <div class="flex items-center flex-shrink-0">
+                        <a href="{{ route('owner.dashboard') }}" class="flex items-center space-x-2 sm:space-x-3 text-sm sm:text-base md:text-xl font-bold text-white hover:text-garage-neon transition-colors service-tag">
                             <!-- Shop Logo -->
-                            <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-8 w-8 sm:h-10 sm:w-10 object-contain brightness-0 invert">
-                            <span class="hidden sm:inline">DEXTER AUTO SERVICES</span>
-                            <span class="sm:hidden">DEXTER</span>
+                            <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-8 w-8 sm:h-10 sm:w-10 object-contain brightness-0 invert flex-shrink-0">
+                            <span class="hidden md:inline whitespace-nowrap">DEXTER AUTO SERVICES</span>
+                            <span class="hidden sm:inline md:hidden whitespace-nowrap">DEXTER AUTO</span>
+                            <span class="sm:hidden whitespace-nowrap">DEXTER</span>
                         </a>
                     </div>
                     <!-- Desktop Navigation -->
-                    <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('owner.dashboard') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag {{ request()->routeIs('owner.dashboard') ? 'text-garage-neon' : '' }}">Dashboard</a>
-                        <a href="{{ route('owner.reports') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag {{ request()->routeIs('owner.reports') ? 'text-garage-neon' : '' }}">Reports</a>
+                    <div class="hidden md:flex items-center space-x-2 lg:space-x-4 flex-shrink-0">
+                        <a href="{{ route('owner.dashboard') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('owner.dashboard') ? 'text-garage-neon' : '' }}">Dashboard</a>
+                        <a href="{{ route('owner.reports') }}" class="text-garage-steel hover:text-garage-neon font-semibold transition-colors service-tag whitespace-nowrap {{ request()->routeIs('owner.reports') ? 'text-garage-neon' : '' }}">Reports</a>
                         
                         <!-- User Dropdown -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" @click.away="open = false" 
-                                    class="flex items-center space-x-2 text-garage-offwhite hover:text-garage-neon focus:outline-none transition-colors">
-                                <div class="w-8 h-8 bg-gradient-to-br from-garage-neon to-garage-emerald rounded-full flex items-center justify-center text-garage-black font-bold shadow-neon-green">
+                                    class="flex items-center space-x-1 lg:space-x-2 text-garage-offwhite hover:text-garage-neon focus:outline-none transition-colors flex-shrink-0">
+                                <div class="w-8 h-8 bg-gradient-to-br from-garage-neon to-garage-emerald rounded-full flex items-center justify-center text-garage-black font-bold shadow-neon-green flex-shrink-0">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
-                                <span class="font-semibold service-tag">{{ strtoupper(auth()->user()->name) }}</span>
+                                <span class="font-semibold service-tag hidden lg:inline truncate max-w-[120px]">{{ strtoupper(auth()->user()->name) }}</span>
                                 <svg class="w-4 h-4" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
@@ -92,7 +93,14 @@
                 </div>
                 
                 <!-- Mobile Navigation Menu -->
-                <div x-show="mobileMenuOpen" x-transition class="md:hidden pb-4 space-y-2">
+                <div x-show="mobileMenuOpen" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-1"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-1"
+                     class="md:hidden pb-4 space-y-2 bg-gradient-to-r from-black to-garage-darkgreen">
                     <a href="{{ route('owner.dashboard') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-forest rounded-lg font-semibold transition-colors service-tag {{ request()->routeIs('owner.dashboard') ? 'text-garage-neon bg-garage-forest' : '' }}">Dashboard</a>
                     <a href="{{ route('owner.reports') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-forest rounded-lg font-semibold transition-colors service-tag {{ request()->routeIs('owner.reports') ? 'text-garage-neon bg-garage-forest' : '' }}">Reports</a>
                     <a href="{{ route('owner.profile') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-forest rounded-lg font-semibold transition-colors service-tag">Profile Settings</a>

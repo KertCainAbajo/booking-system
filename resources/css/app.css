@@ -76,7 +76,7 @@ html.lenis body {
     
     /* Garage indicator light stepper */
     .bay-indicator {
-        @apply relative flex items-center justify-center w-12 h-12 rounded-full font-bold text-base transition-all duration-300;
+        @apply relative flex items-center justify-center w-8 h-8 sm:w-12 sm:h-12 rounded-full font-bold text-xs sm:text-base transition-all duration-300;
         @apply border-2;
     }
     
@@ -189,9 +189,10 @@ html.lenis body {
     
     /* Primary CTA button */
     .bay-cta {
-        @apply px-6 py-3 rounded-lg font-bold transition-all duration-300;
+        @apply px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-bold transition-all duration-300;
         @apply bg-garage-forest text-garage-offwhite border border-garage-neon/40;
         @apply hover:bg-garage-darkgreen hover:shadow-neon-green;
+        @apply text-xs sm:text-sm md:text-base;
     }
     
     .bay-cta:hover {
@@ -200,9 +201,10 @@ html.lenis body {
     
     /* Secondary back button */
     .bay-back {
-        @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200;
+        @apply px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all duration-200;
         @apply bg-garage-charcoal/50 text-garage-steel border border-garage-steel/30;
         @apply hover:bg-garage-charcoal hover:text-garage-offwhite hover:border-garage-steel/50;
+        @apply text-xs sm:text-sm md:text-base;
     }
     
     /* Service category expandable section */
@@ -235,12 +237,12 @@ html.lenis body {
     
     /* Price badge */
     .bay-price {
-        @apply text-lg font-bold text-white;
+        @apply text-sm sm:text-base md:text-lg font-bold text-white;
     }
     
     /* Total amount highlight */
     .bay-total {
-        @apply text-2xl font-black text-white;
+        @apply text-base sm:text-lg md:text-xl lg:text-2xl font-black text-white;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
     

@@ -1,34 +1,34 @@
 <div class="min-h-screen bg-gradient-to-br from-black to-green-900 py-12">
     <div class="max-w-4xl mx-auto px-4">
         <!-- Garage Header -->
-        <div class="text-center mb-10">
+        <div class="text-center mb-6 sm:mb-10">
             <!-- Logo and Brand -->
-            <div class="flex items-center justify-center mb-4">
-                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-16 w-16 mr-4 brightness-0 invert">
-                <h1 class="text-5xl font-black text-white">
+            <div class="flex flex-col sm:flex-row items-center justify-center mb-3 sm:mb-4 gap-2 sm:gap-4">
+                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-12 w-12 sm:h-16 sm:w-16 brightness-0 invert">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white">
                     DEXTER AUTO SERVICES
                 </h1>
             </div>
-            <p class="text-white text-xl font-semibold">Professional Auto Service Platform</p>
+            <p class="text-white text-base sm:text-lg md:text-xl font-semibold">Professional Auto Service Platform</p>
         </div>
 
         <!-- Success Header -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-24 h-24 bg-garage-neon/20 border-4 border-garage-neon rounded-full mb-4 animate-pulse">
-                <svg class="w-14 h-14 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-garage-neon/20 border-4 border-garage-neon rounded-full mb-3 sm:mb-4 animate-pulse">
+                <svg class="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h2 class="text-4xl font-black text-white mb-2 service-tag">BOOKING CONFIRMED!</h2>
-            <p class="text-lg text-white">Your appointment has been successfully scheduled</p>
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 service-tag">BOOKING CONFIRMED!</h2>
+            <p class="text-base sm:text-lg text-white">Your appointment has been successfully scheduled</p>
         </div>
 
         <!-- Booking Reference Card -->
-        <div class="service-bay-card carbon-texture p-8 mb-6 border-2 border-garage-neon/50">
+        <div class="service-bay-card carbon-texture p-4 sm:p-6 md:p-8 mb-6 border-2 border-garage-neon/50">
             <div class="text-center">
-                <p class="text-sm text-white mb-3 service-tag">YOUR BOOKING REFERENCE NUMBER</p>
-                <div class="bg-garage-charcoal/50 border-2 border-garage-neon/30 rounded-lg p-6">
-                    <p class="text-5xl font-black text-white mb-4 tracking-wider" style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);">{{ $bookingReference }}</p>
+                <p class="text-xs sm:text-sm text-white mb-2 sm:mb-3 service-tag">YOUR BOOKING REFERENCE NUMBER</p>
+                <div class="bg-garage-charcoal/50 border-2 border-garage-neon/30 rounded-lg p-3 sm:p-4 md:p-6">
+                    <p class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2 sm:mb-4 tracking-wider break-all" style="text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);">{{ $bookingReference }}</p>
                 </div>
                 <p class="text-sm text-white mt-4">
                     <svg class="w-5 h-5 inline mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,8 +40,8 @@
         </div>
 
         <!-- Booking Details Card -->
-        <div class="service-bay-card carbon-texture p-8 mb-6">
-            <h2 class="text-3xl font-black text-white service-tag mb-6 flex items-center">
+        <div class="service-bay-card carbon-texture p-4 sm:p-6 md:p-8 mb-6">
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-white service-tag mb-4 sm:mb-6 flex items-center">
                 <svg class="w-8 h-8 mr-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
@@ -142,9 +142,9 @@
                         </div>
                     @endforeach
                 </div>
-                <div class="mt-6 pt-6 border-t-2 border-garage-neon/50 flex justify-between items-center">
-                    <span class="text-2xl font-black text-white service-tag">TOTAL AMOUNT</span>
-                    <span class="text-4xl font-black text-white" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);">₱{{ number_format($booking->total_amount, 2) }}</span>
+                <div class="mt-6 pt-6 border-t-2 border-garage-neon/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                    <span class="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-white service-tag">TOTAL AMOUNT:</span>
+                    <span class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white" style="text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);">₱{{ number_format($booking->total_amount, 2) }}</span>
                 </div>
             </div>
         </div>

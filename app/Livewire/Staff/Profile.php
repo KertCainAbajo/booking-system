@@ -5,7 +5,9 @@ namespace App\Livewire\Staff;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 
@@ -16,6 +18,11 @@ class Profile extends Component
     public $email;
     public $phone;
     public $successMessage = '';
+    
+    public $current_password = '';
+    public $password = '';
+    public $password_confirmation = '';
+    public $passwordSuccessMessage = '';
 
     public function mount()
     {
@@ -44,6 +51,24 @@ class Profile extends Component
         
         // Clear success message after 3 seconds
         $this->dispatch('profile-updated');
+    }
+
+    public function updatePassword()
+    {
+        $validated = $this->validate([
+            'current_password' => ['required', 'string', 'current_password'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        $this->reset('current_password', 'password', 'password_confirmation');
+        $this->passwordSuccessMessage = 'Password updated successfully!';
+        $this->dispatch('password-updated');
     }
 
     public function logout(Logout $logout)
