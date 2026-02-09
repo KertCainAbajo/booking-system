@@ -6,11 +6,15 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Volt;
 
 // Staff, Business Owner, and Admin Login Routes
-// Note: Customer accounts are NOT supported - only guest bookings
+// Customer login is separate with 2FA support
 Route::middleware('guest')->group(function () {
     // Staff/Admin login (single authentication system for all internal users)
     Volt::route('staff/login', 'pages.auth.login')
         ->name('staff.login');
+
+    // Customer login with Google Authenticator 2FA
+    Volt::route('customer/login', 'pages.auth.customer-login')
+        ->name('customer.login');
 
     // Keep old login route for backwards compatibility, redirect to staff login
     Route::get('login', function () {
@@ -45,9 +49,16 @@ Route::middleware('auth')->group(function () {
         ->name('password.confirm');
     
     Route::match(['get', 'post'], 'logout', function () {
+        $user = Auth::user();
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+        
+        // Redirect based on user type
+        if ($user && $user->customer) {
+            return redirect()->route('customer.login');
+        }
+        
         return redirect()->route('staff.login');
     })->name('logout');
 });

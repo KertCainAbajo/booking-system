@@ -152,7 +152,7 @@
             </svg>
             <h3 class="text-2xl font-bold text-garage-offwhite mb-3 service-tag">NO SERVICE HISTORY</h3>
             <p class="text-garage-steel text-lg mb-8">Your maintenance log is empty. Start building your service history today.</p>
-            <a href="{{ route('customer.booking') }}" wire:navigate
+            <a href="{{ route('customer.book') }}" wire:navigate
                 class="inline-flex items-center bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold px-8 py-4 rounded-lg transition-all shadow-neon-green service-tag">
                 <span>BOOK FIRST SERVICE</span>
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

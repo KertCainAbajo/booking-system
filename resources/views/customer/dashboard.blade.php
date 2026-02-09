@@ -8,7 +8,7 @@
 
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="{{ route('customer.booking') }}" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-6 transition-colors">
+            <a href="{{ route('customer.book') }}" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-6 transition-colors">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-bold">Book Service</h3>

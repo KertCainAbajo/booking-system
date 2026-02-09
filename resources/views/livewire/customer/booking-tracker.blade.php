@@ -214,7 +214,7 @@
             </svg>
             <h3 class="text-2xl font-bold text-garage-offwhite mb-3 service-tag">NO ACTIVE SERVICES</h3>
             <p class="text-garage-steel text-lg mb-8">All service bays are clear. No active bookings at the moment.</p>
-            <a href="{{ route('customer.booking') }}" wire:navigate
+            <a href="{{ route('customer.book') }}" wire:navigate
                 class="inline-flex items-center bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold px-8 py-4 rounded-lg transition-all shadow-neon-green service-tag">
                 <span>SCHEDULE NEW SERVICE</span>
                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

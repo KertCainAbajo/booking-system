@@ -1,0 +1,217 @@
+<?php
+
+use App\Livewire\Forms\CustomerLoginForm;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Layout;
+use Livewire\Volt\Component;
+
+new #[Layout('layouts.guest')] class extends Component
+{
+    public CustomerLoginForm $form;
+
+    /**
+     * Handle an incoming authentication request.
+     */
+    public function login(): void
+    {
+        $this->validate();
+
+        $this->form->authenticate();
+
+        // If 2FA is required, stay on page
+        if ($this->form->requires_2fa && !Auth::check()) {
+            return;
+        }
+
+        Session::regenerate();
+
+        // Redirect to customer dashboard
+        $this->redirect(route('customer.dashboard', absolute: false), navigate: true);
+    }
+}; ?>
+
+<div>
+    <!-- Logo -->
+    <div class="mb-3 sm:mb-4 flex justify-center">
+        <img src="{{ asset('images/shop.png') }}" alt="GasMonkey Logo" class="h-20 sm:h-24 md:h-28 w-auto">
+    </div>
+
+    <!-- Header -->
+    <div class="mb-4 sm:mb-6 text-center">
+        <h2 class="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
+            Welcome to<br/>
+            <span class="text-green-800">Dexter Auto Services</span>
+        </h2>
+        <p class="text-sm text-gray-600 mt-2">Customer Login</p>
+    </div>
+
+    <!-- Session Status -->
+    <x-auth-session-status class="mb-4 sm:mb-6" :status="session('status')" />
+
+    <form wire:submit="login" class="space-y-4 sm:space-y-5">
+        @if (!$form->requires_2fa)
+            <!-- Email Address -->
+            <div>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                    </svg>
+                    <input 
+                        wire:model="form.email" 
+                        id="email" 
+                        type="email" 
+                        name="email" 
+                        placeholder="Email address"
+                        class="auth-input"
+                        required 
+                        autofocus 
+                        autocomplete="username"
+                    />
+                </div>
+                <x-input-error :messages="$errors->get('form.email')" class="mt-2 text-sm" />
+            </div>
+
+            <!-- Password -->
+            <div>
+                <div class="auth-input-wrapper">
+                    <svg class="auth-input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <input 
+                        wire:model="form.password" 
+                        id="password" 
+                        type="password"
+                        name="password" 
+                        placeholder="Password"
+                        class="auth-input pr-12"
+                        required 
+                        autocomplete="current-password"
+                    />
+                    <button 
+                        type="button"
+                        id="togglePassword"
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                        onclick="
+                            const passwordInput = document.getElementById('password');
+                            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                            passwordInput.setAttribute('type', type);
+                            this.innerHTML = type === 'password' 
+                                ? '<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M15 12a3 3 0 11-6 0 3 3 0 016 0z\'></path><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z\'></path></svg>'
+                                : '<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21\'></path></svg>';
+                        "
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <x-input-error :messages="$errors->get('form.password')" class="mt-2 text-sm" />
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between">
+                <label for="remember" class="inline-flex items-center cursor-pointer">
+                    <input 
+                        wire:model="form.remember" 
+                        id="remember" 
+                        type="checkbox" 
+                        class="w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-2 focus:ring-gray-800 transition-colors" 
+                        name="remember"
+                    >
+                    <span class="ml-2 text-sm font-medium text-gray-700">Remember me</span>
+                </label>
+
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="auth-link" wire:navigate>
+                        Forgot password?
+                    </a>
+                @endif
+            </div>
+        @else
+            <!-- 2FA Code Input -->
+            <div class="space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <div>
+                            <h3 class="text-sm font-semibold text-blue-900">Two-Factor Authentication</h3>
+                            <p class="text-xs text-blue-700 mt-1">Please enter the 6-digit code from your Google Authenticator app.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="auth-input-wrapper">
+                        <svg class="auth-input-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <input 
+                            wire:model="form.otp_code" 
+                            id="otp_code" 
+                            type="text" 
+                            name="otp_code" 
+                            placeholder="000000"
+                            class="auth-input text-center text-lg tracking-widest font-mono"
+                            maxlength="6"
+                            pattern="[0-9]{6}"
+                            required 
+                            autofocus
+                            autocomplete="off"
+                        />
+                    </div>
+                    <x-input-error :messages="$errors->get('form.otp_code')" class="mt-2 text-sm" />
+                    <p class="text-xs text-gray-500 mt-2 text-center">Or enter a recovery code if you've lost access to your device</p>
+                </div>
+
+                <button 
+                    type="button" 
+                    wire:click="$set('form.requires_2fa', false)"
+                    class="text-sm text-gray-600 hover:text-gray-900 underline w-full text-center"
+                >
+                    ← Back to login
+                </button>
+            </div>
+        @endif
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+            <button type="submit" class="auth-btn-primary group" wire:loading.attr="disabled">
+                <span wire:loading.remove class="flex items-center justify-center">
+                    @if ($form->requires_2fa)
+                        Verify & Log In
+                    @else
+                        Log In
+                    @endif
+                    <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </span>
+                <span wire:loading class="flex items-center justify-center">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    @if ($form->requires_2fa)
+                        Verifying...
+                    @else
+                        Logging in...
+                    @endif
+                </span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Don't have an account? -->
+    <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+            Don't have an account? 
+            <a href="{{ route('guest.booking') }}" class="auth-link" wire:navigate>
+                Book as Guest
+            </a>
+        </p>
+    </div>
+</div>

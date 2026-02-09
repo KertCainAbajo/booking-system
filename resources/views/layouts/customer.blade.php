@@ -75,7 +75,7 @@
                     </div>
                     <!-- Desktop Navigation -->
                     <div class="hidden md:flex items-center space-x-1">
-                        <a href="{{ route('customer.booking') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200">
+                        <a href="{{ route('customer.book') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200">
                             New Service
                         </a>
                         <a href="{{ route('customer.tracker') }}" class="px-3 lg:px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium transition-all duration-200">
@@ -147,7 +147,7 @@
                 
                 <!-- Mobile Navigation Menu -->
                 <div x-show="mobileMenuOpen" x-transition class="md:hidden pb-4 space-y-2">
-                    <a href="{{ route('customer.booking') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium">New Service</a>
+                    <a href="{{ route('customer.book') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium">New Service</a>
                     <a href="{{ route('customer.tracker') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium">Track</a>
                     <a href="{{ route('customer.history') }}" class="block px-4 py-2 text-garage-steel hover:text-garage-neon hover:bg-garage-darkgreen/50 rounded-lg font-medium">History</a>
                     <div class="border-t border-garage-neon/20 mt-2 pt-2">

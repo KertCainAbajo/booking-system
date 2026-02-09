@@ -339,7 +339,7 @@ class BookingProcessTest extends TestCase
         $this->actingAs($this->customer);
 
         $this->get(route('customer.dashboard'))->assertOk();
-        $this->get(route('customer.booking'))->assertOk();
+        $this->get(route('customer.book'))->assertOk();
         $this->get(route('customer.tracker'))->assertOk();
     }
 

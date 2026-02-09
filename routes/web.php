@@ -7,6 +7,7 @@ use App\Livewire\Customer\BookingForm;
 use App\Livewire\Customer\BookingTracker;
 use App\Livewire\Customer\ServiceHistory;
 use App\Livewire\Customer\Profile as CustomerProfile;
+use App\Livewire\Customer\TwoFactorSetup;
 use App\Livewire\Staff\Dashboard as StaffDashboard;
 use App\Livewire\Staff\BookingCalendar;
 use App\Livewire\Staff\BookingDetail;
@@ -28,11 +29,15 @@ use App\Livewire\Guest\GuestBookingForm;
 use App\Livewire\Guest\BookingConfirmation;
 use App\Livewire\Guest\BookingTracker as GuestBookingTracker;
 
-// Public Guest Routes
+// Redirect root to login page
 Route::get('/', function () {
-    return view('guest-landing');
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('staff.login');
 })->name('guest.home');
 
+// Public Guest Routes
 Route::get('/contact', function () {
     return view('guest-contact');
 })->name('guest.contact');
@@ -42,11 +47,16 @@ Route::get('/booking/confirmation/{reference}', BookingConfirmation::class)->nam
 Route::get('/booking/track', GuestBookingTracker::class)->name('guest.booking.track');
 
 // Redirect authenticated users to their dashboard
-// Note: Only staff, business_owner, and it_admin have access
+// Note: Supports staff, business_owner, it_admin, and customer accounts
 Route::get('/dashboard', function () {
     if (Auth::check()) {
         $user = Auth::user();
         $roleName = $user->role->name;
+        
+        // Check if user is a customer
+        if ($user->customer) {
+            return redirect()->route('customer.dashboard');
+        }
         
         $dashboardRoute = match($roleName) {
             'it_admin' => 'admin.dashboard',
@@ -60,6 +70,16 @@ Route::get('/dashboard', function () {
     
     return redirect()->route('staff.login');
 })->name('dashboard');
+
+// Customer Routes (for registered customers with accounts)
+Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(function () {
+    Route::get('/dashboard', CustomerDashboard::class)->name('dashboard');
+    Route::get('/book', BookingForm::class)->name('book');
+    Route::get('/tracker', BookingTracker::class)->name('tracker');
+    Route::get('/history', ServiceHistory::class)->name('history');
+    Route::get('/profile', CustomerProfile::class)->name('profile');
+    Route::get('/2fa/setup', TwoFactorSetup::class)->name('2fa.setup');
+});
 
 // Staff Routes
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {

@@ -38,6 +38,9 @@ class User extends Authenticatable
         'phone',
         'password',
         'role_id',
+        'google2fa_secret',
+        'google2fa_enabled',
+        'recovery_codes',
     ];
 
     /**
@@ -48,6 +51,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'google2fa_secret',
+        'recovery_codes',
     ];
 
     /**
@@ -60,6 +65,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'google2fa_enabled' => 'boolean',
         ];
     }
 

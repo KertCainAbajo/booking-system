@@ -23,7 +23,7 @@
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             <!-- Book Service Card -->
-            <a href="{{ route('customer.booking') }}" wire:navigate 
+            <a href="{{ route('customer.book') }}" wire:navigate 
                class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 
@@ -194,7 +194,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <p class="text-garage-steel text-lg mb-6">No service records found</p>
-                    <a href="{{ route('customer.booking') }}" wire:navigate 
+                    <a href="{{ route('customer.book') }}" wire:navigate 
                        class="inline-flex items-center px-6 py-3 bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold rounded-lg transition-all shadow-neon-green service-tag">
                         <span>BOOK FIRST SERVICE</span>
                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
