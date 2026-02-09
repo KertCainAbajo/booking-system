@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('images/shop.png') }}">
     <title>Dexter Auto Services - Book Your Service</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -80,6 +81,13 @@
                     </svg>
                     Book Now
                 </a>
+                <a href="#track-booking-form" 
+                   class="w-full sm:w-auto inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 bg-green-700 text-white text-base sm:text-lg font-bold rounded-xl hover:bg-green-600 transform hover:scale-105 transition-all shadow-2xl">
+                    <svg class="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Track Your Booking
+                </a>
                 <a href="{{ route('guest.contact') }}" 
                    class="w-full sm:w-auto inline-flex items-center justify-center px-8 sm:px-10 py-4 sm:py-5 bg-green-900 text-white text-base sm:text-lg font-bold rounded-xl hover:bg-green-800 transform hover:scale-105 transition-all shadow-2xl">
                     <svg class="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +141,7 @@
         </div>
 
         <!-- Professional Arrow Section -->
-        <div class="max-w-5xl mx-auto mb-8">
+        <div class="hidden max-w-5xl mx-auto mb-8">
             <div class="relative">
                 <!-- Animated Decorative Lines -->
                 <div class="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 overflow-hidden">
@@ -246,7 +254,7 @@
 
         <!-- Footer Space -->
         <div class="mt-16 text-center text-green-200 text-sm">
-            <p>&copy; 2026 Dexter Auto Services. Professional auto service at your convenience.</p>
+            <p>&copy; {{ date('Y') }} Dexter Auto Services. Professional auto service at your convenience.</p>
         </div>
     </div>
 

@@ -20,7 +20,16 @@
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Information</h3>
         
         @if($successMessage)
-            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            <div x-data="{ show: true }" 
+                 x-show="show"
+                 x-init="setTimeout(() => show = false, 5000)"
+                 x-transition:enter="transition ease-out duration-400"
+                 x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
+                 x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 transform translate-x-0"
+                 x-transition:leave-end="opacity-0 transform translate-x-8"
+                 class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
                 {{ $successMessage }}
             </div>
         @endif
@@ -90,7 +99,16 @@
         <h3 class="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
         
         @if($passwordSuccessMessage)
-            <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            <div x-data="{ show: true }" 
+                 x-show="show"
+                 x-init="setTimeout(() => show = false, 5000)"
+                 x-transition:enter="transition ease-out duration-400"
+                 x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
+                 x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 transform translate-x-0"
+                 x-transition:leave-end="opacity-0 transform translate-x-8"
+                 class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
                 {{ $passwordSuccessMessage }}
             </div>
         @endif

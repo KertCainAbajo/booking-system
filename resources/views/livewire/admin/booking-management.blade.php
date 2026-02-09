@@ -116,8 +116,8 @@
                             <td class="px-2 md:px-4 py-3 md:py-4">
                                 <div class="text-xs md:text-sm">
                                     <div class="font-medium text-garage-offwhite">{{ $booking->customer->getDisplayName() }}</div>
-                                    <div class="text-garage-steel text-xs">{{ $booking->customer->user->email ?? $booking->customer->email }}</div>
-                                    <div class="text-garage-steel text-xs hidden sm:block">{{ $booking->customer->user->phone ?? $booking->customer->phone }}</div>
+                                    <div class="text-garage-steel text-xs">{{ $booking->customer->getContactEmail() }}</div>
+                                    <div class="text-garage-steel text-xs hidden sm:block">{{ $booking->customer->getContactPhone() }}</div>
                                 </div>
                             </td>
                             <td class="hidden lg:table-cell px-2 md:px-4 py-3 md:py-4">

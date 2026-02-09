@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('images/shop.png') }}">
     <title>Contact Us - Dexter Auto Services</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -134,7 +135,7 @@
 
         <!-- Footer -->
         <div class="mt-12 text-center text-green-200 text-sm">
-            <p>&copy; 2026 Dexter Auto Services. Professional auto service at your convenience.</p>
+            <p>&copy; {{ date('Y') }} Dexter Auto Services. Professional auto service at your convenience.</p>
         </div>
     </div>
 </body>

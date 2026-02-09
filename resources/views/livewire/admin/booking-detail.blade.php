@@ -225,11 +225,11 @@
                     </div>
                     <div>
                         <p class="text-sm text-garage-steel uppercase tracking-wider">Email</p>
-                        <p class="text-garage-offwhite">{{ $booking->customer->user->email ?? $booking->customer->email }}</p>
+                        <p class="text-garage-offwhite">{{ $booking->customer->getContactEmail() }}</p>
                     </div>
                     <div>
                         <p class="text-sm text-garage-steel uppercase tracking-wider">Phone</p>
-                        <p class="text-garage-offwhite">{{ $booking->customer->user->phone ?? $booking->customer->phone }}</p>
+                        <p class="text-garage-offwhite">{{ $booking->customer->getContactPhone() }}</p>
                     </div>
                     @if($booking->customer->address)
                         <div>

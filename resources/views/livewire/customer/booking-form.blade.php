@@ -114,9 +114,12 @@
                     <div x-data="{ show: true }" 
                          x-show="show" 
                          x-init="setTimeout(() => show = false, 5000)"
-                         x-transition:leave="transition ease-in duration-1000"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0"
+                         x-transition:enter="transition ease-out duration-400"
+                         x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
+                         x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
+                         x-transition:leave="transition ease-in duration-500"
+                         x-transition:leave-start="opacity-100 transform translate-x-0"
+                         x-transition:leave-end="opacity-0 transform translate-x-8"
                          class="bg-garage-neon/20 border-l-4 border-garage-neon px-6 py-4 rounded-lg mb-4">
                         <span class="text-white font-semibold">{{ session('services-saved') }}</span>
                     </div>
@@ -382,22 +385,48 @@
 
     <!-- Error Modal -->
     @if($showErrorModal)
-        <div class="fixed inset-0 bg-black bg-opacity-75 overflow-y-auto h-full w-full z-[9999] flex items-center justify-center">
-            <div class="relative mx-auto p-8 border-2 border-red-500 w-96 shadow-2xl rounded-lg bg-gradient-to-br from-garage-charcoal to-black">
+        <div x-data="{ show: true }" 
+             x-show="show"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black bg-opacity-75 overflow-y-auto h-full w-full z-[9999] flex items-center justify-center">
+            <div x-transition:enter="transition ease-out duration-400 delay-100"
+                 x-transition:enter-start="opacity-0 transform scale-75 -translate-y-10"
+                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform scale-100"
+                 x-transition:leave-end="opacity-0 transform scale-75"
+                 class="relative mx-auto p-8 border-2 border-red-500 w-96 shadow-2xl rounded-lg bg-gradient-to-br from-garage-charcoal to-black">
                 <div class="text-center">
                     <!-- Error Icon -->
-                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/20 border-2 border-red-500 mb-4">
+                    <div x-transition:enter="transition ease-out duration-500 delay-200"
+                         x-transition:enter-start="opacity-0 transform scale-50 rotate-180"
+                         x-transition:enter-end="opacity-100 transform scale-100 rotate-0"
+                         class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/20 border-2 border-red-500 mb-4">
                         <svg class="h-8 w-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
                     </div>
                     
                     <!-- Error Message -->
-                    <h3 class="text-xl font-bold text-red-500 mb-3 service-tag">ATTENTION</h3>
-                    <p class="text-garage-offwhite mb-6">{{ $errorMessage }}</p>
+                    <h3 x-transition:enter="transition ease-out duration-400 delay-300"
+                        x-transition:enter-start="opacity-0 transform translate-y-4"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        class="text-xl font-bold text-red-500 mb-3 service-tag">ATTENTION</h3>
+                    <p x-transition:enter="transition ease-out duration-400 delay-400"
+                       x-transition:enter-start="opacity-0 transform translate-y-4"
+                       x-transition:enter-end="opacity-100 transform translate-y-0"
+                       class="text-garage-offwhite mb-6">{{ $errorMessage }}</p>
                     
                     <!-- OK Button -->
-                    <button wire:click="closeErrorModal" 
+                    <button x-transition:enter="transition ease-out duration-400 delay-500"
+                            x-transition:enter-start="opacity-0 transform scale-90"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            wire:click="closeErrorModal" 
                             class="w-full px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors duration-200 service-tag shadow-lg">
                         OK
                     </button>
@@ -408,22 +437,48 @@
 
     <!-- Success Modal -->
     @if($showSuccessModal)
-        <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-            <div class="relative mx-auto p-8 border-2 border-garage-neon w-96 shadow-2xl rounded-lg bg-gradient-to-br from-garage-charcoal to-garage-darkgreen">
+        <div x-data="{ show: true }" 
+             x-show="show"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            <div x-transition:enter="transition ease-out duration-400 delay-100"
+                 x-transition:enter-start="opacity-0 transform scale-75 -translate-y-10"
+                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform scale-100"
+                 x-transition:leave-end="opacity-0 transform scale-75"
+                 class="relative mx-auto p-8 border-2 border-garage-neon w-96 shadow-2xl rounded-lg bg-gradient-to-br from-garage-charcoal to-garage-darkgreen">
                 <div class="text-center">
                     <!-- Success Icon -->
-                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-garage-neon/20 border-2 border-garage-neon mb-4 animate-pulse">
+                    <div x-transition:enter="transition ease-out duration-500 delay-200"
+                         x-transition:enter-start="opacity-0 transform scale-50 rotate-180"
+                         x-transition:enter-end="opacity-100 transform scale-100 rotate-0"
+                         class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-garage-neon/20 border-2 border-garage-neon mb-4 animate-pulse">
                         <svg class="h-10 w-10 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
                     
                     <!-- Success Message -->
-                    <h3 class="text-2xl font-bold text-garage-neon mb-3 service-tag">SUCCESSFULLY BOOKED!</h3>
-                    <p class="text-garage-offwhite mb-6 font-medium">Your booking has been submitted successfully. We will confirm your appointment shortly.</p>
+                    <h3 x-transition:enter="transition ease-out duration-400 delay-300"
+                        x-transition:enter-start="opacity-0 transform translate-y-4"
+                        x-transition:enter-end="opacity-100 transform translate-y-0"
+                        class="text-2xl font-bold text-garage-neon mb-3 service-tag">SUCCESSFULLY BOOKED!</h3>
+                    <p x-transition:enter="transition ease-out duration-400 delay-400"
+                       x-transition:enter-start="opacity-0 transform translate-y-4"
+                       x-transition:enter-end="opacity-100 transform translate-y-0"
+                       class="text-garage-offwhite mb-6 font-medium">Your booking has been submitted successfully. We will confirm your appointment shortly.</p>
                     
                     <!-- OK Button -->
-                    <button wire:click="closeSuccessModal" 
+                    <button x-transition:enter="transition ease-out duration-400 delay-500"
+                            x-transition:enter-start="opacity-0 transform scale-90"
+                            x-transition:enter-end="opacity-100 transform scale-100"
+                            wire:click="closeSuccessModal" 
                             class="w-full px-6 py-3 bg-garage-neon text-garage-black font-bold rounded-lg hover:bg-garage-emerald transition-all duration-200 service-tag shadow-neon-green">
                         OK
                     </button>

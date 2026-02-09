@@ -46,19 +46,33 @@
 
         <!-- Not Found Message -->
         @if ($notFound)
-            <div class="service-bay-card carbon-texture p-8 text-center border-2 border-red-500/50">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-red-500/20 border-4 border-red-500 rounded-full mb-4">
+            <div x-data="{ show: true }" 
+                 x-show="show"
+                 x-transition:enter="transition ease-out duration-500"
+                 x-transition:enter-start="opacity-0 transform scale-90 -translate-y-8"
+                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
+                 class="service-bay-card carbon-texture p-8 text-center border-2 border-red-500/50">
+                <div x-transition:enter="transition ease-out duration-500 delay-100"
+                     x-transition:enter-start="opacity-0 transform scale-50"
+                     x-transition:enter-end="opacity-100 transform scale-100"
+                     class="inline-flex items-center justify-center w-20 h-20 bg-red-500/20 border-4 border-red-500 rounded-full mb-4">
                     <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h3 class="text-2xl font-black text-white mb-3 service-tag">
+                <h3 x-transition:enter="transition ease-out duration-400 delay-200"
+                    x-transition:enter-start="opacity-0 transform translate-y-4"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    class="text-2xl font-black text-white mb-3 service-tag">
                     @if(session()->has('error'))
                         REFERENCE NOT AVAILABLE
                     @else
                         BOOKING NOT FOUND
                     @endif
                 </h3>
+                <div x-transition:enter="transition ease-out duration-400 delay-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0">
                 @if(session()->has('error'))
                     <p class="text-white mb-4">{{ session('error') }}</p>
                     <p class="text-red-400 font-bold text-base sm:text-lg md:text-xl mb-4 break-all">{{ $bookingReference }}</p>
@@ -68,9 +82,13 @@
                     <p class="text-red-400 font-bold text-base sm:text-lg md:text-xl mb-4 break-all">{{ $bookingReference }}</p>
                     <p class="text-white">Please check the reference number and try again.</p>
                 @endif
+                </div>
                 
                 <!-- Action Button -->
-                <div class="mt-6">
+                <div x-transition:enter="transition ease-out duration-400 delay-400"
+                     x-transition:enter-start="opacity-0 transform scale-90"
+                     x-transition:enter-end="opacity-100 transform scale-100"
+                     class="mt-6">
                     <a href="{{ route('guest.booking') }}" 
                        class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-all shadow-lg border-2 border-green-400 service-tag">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,7 +265,15 @@
             <x-success-modal />
 
             @if (session()->has('error'))
-                <div class="mt-6 bg-red-600 border-2 border-red-400 text-white px-6 py-4 rounded-lg flex items-center">
+                <div x-data="{ show: true }" 
+                     x-show="show"
+                     x-transition:enter="transition ease-out duration-400"
+                     x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
+                     x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
+                     x-transition:leave="transition ease-in duration-300"
+                     x-transition:leave-start="opacity-100 transform translate-x-0"
+                     x-transition:leave-end="opacity-0 transform translate-x-8"
+                     class="mt-6 bg-red-600 border-2 border-red-400 text-white px-6 py-4 rounded-lg flex items-center">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>

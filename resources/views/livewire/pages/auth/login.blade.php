@@ -22,8 +22,10 @@ new #[Layout('layouts.guest')] class extends Component
         Session::regenerate();
 
         // Redirect based on user role (staff/owner/admin only)
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $roleName = $user->role->name;
+        $user->load('role');
+        $roleName = $user->role?->name ?? 'staff';
         
         $dashboardRoute = match($roleName) {
             'it_admin' => 'admin.dashboard',

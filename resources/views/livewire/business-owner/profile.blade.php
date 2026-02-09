@@ -43,7 +43,16 @@
         <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
         
         @if($successMessage)
-            <div class="mb-6 p-4 bg-garage-neon/20 border-l-4 border-garage-neon text-white rounded font-semibold">
+            <div x-data="{ show: true }" 
+                 x-show="show"
+                 x-init="setTimeout(() => show = false, 5000)"
+                 x-transition:enter="transition ease-out duration-400"
+                 x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
+                 x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 transform translate-x-0"
+                 x-transition:leave-end="opacity-0 transform translate-x-8"
+                 class="mb-6 p-4 bg-garage-neon/20 border-l-4 border-garage-neon text-white rounded font-semibold">
                 {{ $successMessage }}
             </div>
         @endif
@@ -121,7 +130,16 @@
         <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
         
         @if($passwordSuccessMessage)
-            <div class="mb-6 p-4 bg-garage-neon/20 border-l-4 border-garage-neon text-white rounded font-semibold">
+            <div x-data="{ show: true }" 
+                 x-show="show"
+                 x-init="setTimeout(() => show = false, 5000)"
+                 x-transition:enter="transition ease-out duration-400"
+                 x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
+                 x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 transform translate-x-0"
+                 x-transition:leave-end="opacity-0 transform translate-x-8"
+                 class="mb-6 p-4 bg-garage-neon/20 border-l-4 border-garage-neon text-white rounded font-semibold">
                 {{ $passwordSuccessMessage }}
             </div>
         @endif

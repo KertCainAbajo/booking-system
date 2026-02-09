@@ -76,11 +76,11 @@
                         </div>
                         <div class="space-y-1">
                             <label class="text-xs text-garage-steel uppercase tracking-wider font-semibold">Email Address</label>
-                            <p class="font-medium text-garage-offwhite">{{ $booking->customer->user->email ?? $booking->customer->email }}</p>
+                            <p class="font-medium text-garage-offwhite">{{ $booking->customer->getContactEmail() }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-xs text-garage-steel uppercase tracking-wider font-semibold">Phone Number</label>
-                            <p class="font-medium text-garage-offwhite font-mono">{{ $booking->customer->user->phone ?? $booking->customer->phone }}</p>
+                            <p class="font-medium text-garage-offwhite font-mono">{{ $booking->customer->getContactPhone() }}</p>
                         </div>
                         <div class="space-y-1">
                             <label class="text-xs text-garage-steel uppercase tracking-wider font-semibold">Address</label>
