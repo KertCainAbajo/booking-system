@@ -58,10 +58,20 @@ class Dashboard extends Component
             ->limit(5)
             ->get();
 
+        // Upcoming bookings (next 7 days), exclude archived
+        $upcomingBookings = Booking::with(['customer.user', 'vehicle'])
+            ->where('is_archived', false)
+            ->whereBetween('booking_date', [now()->addDay(), now()->addDays(7)])
+            ->orderBy('booking_date')
+            ->orderBy('booking_time')
+            ->take(5)
+            ->get();
+
         return view('livewire.business-owner.dashboard', [
             'stats' => $stats,
             'recentBookings' => $recentBookings,
             'topServices' => $topServices,
+            'upcomingBookings' => $upcomingBookings,
         ]);
     }
 }
