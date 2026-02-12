@@ -13,7 +13,14 @@ class ServiceHistory extends Component
 {
     public function render()
     {
-        $customer = Auth::user()->customer;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        if (!$user->relationLoaded('customer')) {
+            $user->load('customer');
+        }
+        
+        $customer = $user->customer;
         
         if (!$customer instanceof Customer) {
             abort(403, 'Customer profile not found');

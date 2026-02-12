@@ -34,7 +34,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
     }
-    return redirect()->route('staff.login');
+    return redirect()->route('login');
 })->name('guest.home');
 
 // Public Guest Routes
@@ -50,13 +50,24 @@ Route::get('/booking/track', GuestBookingTracker::class)->name('guest.booking.tr
 // Note: Supports staff, business_owner, it_admin, and customer accounts
 Route::get('/dashboard', function () {
     if (Auth::check()) {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $roleName = $user->role->name;
         
-        // Check if user is a customer
+        // Load necessary relationships
+        $user->load(['customer', 'role']);
+        
+        // Check role name first for explicit routing
+        if ($user->role && $user->role->name === 'customer') {
+            return redirect()->route('customer.dashboard');
+        }
+        
+        // Also check customer relationship as fallback
         if ($user->customer) {
             return redirect()->route('customer.dashboard');
         }
+        
+        // Get role name with fallback
+        $roleName = $user->role?->name ?? 'staff';
         
         $dashboardRoute = match($roleName) {
             'it_admin' => 'admin.dashboard',
@@ -68,7 +79,7 @@ Route::get('/dashboard', function () {
         return redirect()->route($dashboardRoute);
     }
     
-    return redirect()->route('staff.login');
+    return redirect()->route('login');
 })->name('dashboard');
 
 // Customer Routes (for registered customers with accounts)

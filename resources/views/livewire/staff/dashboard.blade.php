@@ -181,6 +181,17 @@
                                     {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : '' }}">
                                     {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : strtoupper($booking->status) }}
                                 </span>
+                                @if($booking->marked_as_late)
+                                    <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0 bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        RUNNING LATE
+                                        @if($booking->estimated_arrival_time)
+                                            - ETA: {{ $booking->estimated_arrival_time->format('h:i A') }}
+                                        @endif
+                                    </span>
+                                @endif
                             </div>
                             <div class="space-y-1 sm:space-y-2 text-xs sm:text-sm text-garage-steel mb-2 sm:mb-3">
                                 <div class="flex items-center gap-2">
@@ -261,6 +272,17 @@
                                         {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : '' }}">
                                         {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : strtoupper($booking->status) }}
                                     </span>
+                                    @if($booking->marked_as_late)
+                                        <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0 bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            RUNNING LATE
+                                            @if($booking->estimated_arrival_time)
+                                                - ETA: {{ $booking->estimated_arrival_time->format('h:i A') }}
+                                            @endif
+                                        </span>
+                                    @endif
                                 </div>
                                 <div class="flex items-center gap-2 text-xs sm:text-sm">
                                     <svg class="w-3 h-3 sm:w-4 sm:h-4 text-garage-steel flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

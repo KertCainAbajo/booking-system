@@ -13,7 +13,15 @@ class Dashboard extends Component
 {
     public function render()
     {
-        $customer = Auth::user()->customer;
+        // Get the authenticated user and eager load customer relationship if not already loaded
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        if (!$user->relationLoaded('customer')) {
+            $user->load('customer');
+        }
+        
+        $customer = $user->customer;
         
         if (!$customer instanceof Customer) {
             abort(403, 'Customer profile not found');

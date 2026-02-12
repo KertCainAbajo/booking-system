@@ -183,6 +183,40 @@
                     </div>
                 @endif
 
+                <!-- Late Arrival Notification -->
+                @if($booking->marked_as_late)
+                    <div class="mb-6 bg-orange-500/10 rounded-lg p-4 border-2 border-orange-500/40">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-orange-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-orange-300 text-sm mb-2 service-tag flex items-center">
+                                    LATE ARRIVAL NOTIFICATION
+                                </h4>
+                                <div class="text-sm text-garage-offwhite space-y-1">
+                                    <p class="flex items-center">
+                                        <span class="text-garage-steel mr-2">Marked as late at:</span>
+                                        <span class="font-mono">{{ $booking->marked_late_at->format('M d, Y h:i A') }}</span>
+                                    </p>
+                                    @if($booking->estimated_arrival_time)
+                                        <p class="flex items-center">
+                                            <span class="text-garage-steel mr-2">Estimated arrival:</span>
+                                            <span class="font-mono font-bold text-orange-300">{{ $booking->estimated_arrival_time->format('h:i A') }}</span>
+                                        </p>
+                                    @endif
+                                    @if($booking->late_reason)
+                                        <p class="mt-2 pt-2 border-t border-orange-500/20">
+                                            <span class="text-garage-steel">Reason:</span>
+                                            <span class="ml-2 italic">{{ $booking->late_reason }}</span>
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Total - Receipt Style -->
                 <div class="border-t-2 border-garage-neon/30 pt-5">
                     <div class="flex items-center justify-between bg-garage-charcoal/50 rounded-lg p-5 border-2 border-garage-neon/40">
@@ -193,16 +227,31 @@
 
                 <!-- Cancel Button -->
                 @if(in_array($booking->status, ['pending', 'approved']))
-                    <div class="mt-6 pt-5 border-t border-garage-steel/20 flex justify-center">
-                        <button 
-                            wire:click="cancelBooking({{ $booking->id }})" 
-                            wire:confirm="Are you sure you want to cancel this service booking?"
-                            class="bg-red-600/80 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.4)] flex items-center service-tag border border-red-500/50">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            CANCEL SERVICE
-                        </button>
+                    <div class="mt-6 pt-5 border-t border-garage-steel/20">
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <!-- Mark as Late Button -->
+                            @if(!$booking->marked_as_late)
+                                <button 
+                                    wire:click="openLateModal({{ $booking->id }})"
+                                    class="bg-orange-600/80 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-[0_0_20px_rgba(234,88,12,0.4)] flex items-center justify-center service-tag border border-orange-500/50">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    I'LL BE LATE
+                                </button>
+                            @endif
+
+                            <!-- Cancel Button -->
+                            <button 
+                                wire:click="cancelBooking({{ $booking->id }})" 
+                                wire:confirm="Are you sure you want to cancel this service booking?"
+                                class="bg-red-600/80 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.4)] flex items-center justify-center service-tag border border-red-500/50">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                CANCEL SERVICE
+                            </button>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -223,4 +272,97 @@
             </a>
         </div>
     @endforelse
+
+    <!-- Mark as Late Modal -->
+    @if($showLateModal)
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click="closeLateModal">
+            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-2xl max-w-md w-full border-2 border-orange-500/40" wire:click.stop>
+                <!-- Modal Header -->
+                <div class="bg-gradient-to-r from-orange-600/20 to-orange-500/10 border-b-2 border-orange-500/40 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="text-xl font-bold text-garage-offwhite service-tag">RUNNING LATE?</h3>
+                        </div>
+                        <button wire:click="closeLateModal" class="text-garage-steel hover:text-garage-offwhite transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <form wire:submit.prevent="markAsLate" class="p-6 space-y-5">
+                    <div class="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                        <p class="text-garage-offwhite text-sm">
+                            <span class="font-semibold text-orange-300">Thank you for letting us know!</span><br>
+                            We'll adjust our schedule and keep your service slot ready for you.
+                        </p>
+                    </div>
+
+                    <!-- Estimated Arrival Time -->
+                    <div>
+                        <label class="block text-garage-steel text-sm font-semibold mb-2 service-tag">
+                            ESTIMATED ARRIVAL TIME <span class="text-red-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <input 
+                                type="time" 
+                                wire:model="estimatedArrivalTime"
+                                required
+                                class="w-full pl-10 pr-4 py-3 bg-garage-charcoal/50 border-2 border-garage-steel/30 rounded-lg text-garage-offwhite placeholder-garage-steel/50 focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-mono"
+                            >
+                        </div>
+                        @error('estimatedArrivalTime')
+                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Reason (Optional) -->
+                    <div>
+                        <label class="block text-garage-steel text-sm font-semibold mb-2 service-tag">
+                            REASON (OPTIONAL)
+                        </label>
+                        <textarea 
+                            wire:model="lateReason"
+                            rows="3"
+                            placeholder="e.g., Traffic, unexpected delay..."
+                            maxlength="500"
+                            class="w-full px-4 py-3 bg-garage-charcoal/50 border-2 border-garage-steel/30 rounded-lg text-garage-offwhite placeholder-garage-steel/50 focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all resize-none">
+                        </textarea>
+                        <div class="mt-1 flex items-center justify-between text-xs text-garage-steel">
+                            <span>Help us understand the situation</span>
+                            <span>{{ strlen($lateReason ?? '') }}/500</span>
+                        </div>
+                        @error('lateReason')
+                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 pt-4 border-t border-garage-steel/20">
+                        <button 
+                            type="button"
+                            wire:click="closeLateModal"
+                            class="flex-1 px-4 py-3 bg-garage-charcoal/50 hover:bg-garage-forest/50 text-garage-offwhite font-bold rounded-lg transition-all border border-garage-steel/30 service-tag">
+                            CANCEL
+                        </button>
+                        <button 
+                            type="submit"
+                            class="flex-1 px-4 py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-[0_0_20px_rgba(234,88,12,0.4)] service-tag border border-orange-500">
+                            NOTIFY SHOP
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>

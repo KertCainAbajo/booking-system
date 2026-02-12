@@ -31,7 +31,11 @@ class Booking extends Model
         'notes',
         'assigned_staff_id',
         'is_archived',
-        'archived_at'
+        'archived_at',
+        'marked_as_late',
+        'marked_late_at',
+        'late_reason',
+        'estimated_arrival_time'
     ];
 
     protected $casts = [
@@ -40,6 +44,9 @@ class Booking extends Model
         'total_amount' => 'decimal:2',
         'is_archived' => 'boolean',
         'archived_at' => 'datetime',
+        'marked_as_late' => 'boolean',
+        'marked_late_at' => 'datetime',
+        'estimated_arrival_time' => 'datetime:H:i',
     ];
 
     /**

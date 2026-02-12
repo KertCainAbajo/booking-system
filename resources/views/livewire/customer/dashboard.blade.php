@@ -101,6 +101,9 @@
             </a>
         </div>
 
+        <!-- Available Slots Section -->
+        <livewire:customer.available-slots />
+
         <!-- All Bookings -->
         <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
             <div class="flex items-center justify-between mb-6">
