@@ -20,16 +20,51 @@ class AvailableSlots extends Component
     public $closeHour = 18;
     public $lunchBreakStart = 12;
     public $lunchBreakEnd = 13;
-    public $maxBookingsPerSlot = 3; // Maximum concurrent bookings per time slot
+    public $maxBookingsPerSlot = 1; // Maximum concurrent bookings per time slot
 
     public function mount()
     {
-        $this->selectedDate = now()->addDay()->format('Y-m-d');
+        $this->selectedDate = now()->format('Y-m-d');
     }
 
     public function selectDate($date)
     {
-        $this->selectedDate = $date;
+        // Prevent selecting past dates
+        $selectedCarbon = Carbon::parse($date);
+        if ($selectedCarbon->isBefore(now()->startOfDay())) {
+            $this->selectedDate = now()->format('Y-m-d');
+        } else {
+            $this->selectedDate = $date;
+        }
+    }
+
+    public function isDateFullyBooked($date)
+    {
+        $dateCarbon = Carbon::parse($date);
+        $availableCount = 0;
+        
+        foreach ($this->timeSlots as $time) {
+            $slotDateTime = Carbon::parse($date . ' ' . $time);
+            
+            // Skip past time slots
+            if ($slotDateTime->isPast()) {
+                continue;
+            }
+            
+            // Count existing bookings for this slot
+            $bookingCount = Booking::whereDate('booking_date', $date)
+                ->whereTime('booking_time', $time)
+                ->whereIn('status', ['pending', 'approved', 'in_progress'])
+                ->count();
+            
+            $availableSpots = $this->maxBookingsPerSlot - $bookingCount;
+            
+            if ($availableSpots > 0) {
+                $availableCount++;
+            }
+        }
+        
+        return $availableCount === 0;
     }
 
     public function getAvailableDates()
@@ -37,21 +72,25 @@ class AvailableSlots extends Component
         $dates = [];
         $startDate = now()->startOfDay();
         
-        for ($i = 1; $i <= $this->daysToShow; $i++) {
+        for ($i = 0; $i < $this->daysToShow; $i++) {
             $date = $startDate->copy()->addDays($i);
             
             // Skip Sundays (you can modify this based on your business days)
-            if ($date->dayOfWeek === Carbon::SUNDAY) {
+            if ($date->dayOfWeek === 0) { // 0 = Sunday
                 continue;
             }
             
+            $dateFormatted = $date->format('Y-m-d');
+            $isFullyBooked = $this->isDateFullyBooked($dateFormatted);
+            
             $dates[] = [
-                'date' => $date->format('Y-m-d'),
+                'date' => $dateFormatted,
                 'day' => $date->format('l'),
                 'dayNum' => $date->format('d'),
                 'month' => $date->format('M'),
                 'isPast' => $date->isPast(),
                 'isToday' => $date->isToday(),
+                'isFullyBooked' => $isFullyBooked,
             ];
         }
         
@@ -103,6 +142,11 @@ class AvailableSlots extends Component
 
     public function render()
     {
+        // Auto-reset to today if selected date is in the past
+        if ($this->selectedDate && Carbon::parse($this->selectedDate)->isBefore(now()->startOfDay())) {
+            $this->selectedDate = now()->format('Y-m-d');
+        }
+        
         return view('livewire.customer.available-slots', [
             'availableDates' => $this->getAvailableDates(),
             'selectedDateSlots' => $this->getSelectedDateSlots(),

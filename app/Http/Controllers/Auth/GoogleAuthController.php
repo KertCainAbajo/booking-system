@@ -20,9 +20,9 @@ class GoogleAuthController extends Controller
      */
     public function redirectToGoogle(): RedirectResponse
     {
-        return Socialite::driver('google')
-            ->stateless()
-            ->redirect();
+        /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+        $driver = Socialite::driver('google');
+        return $driver->stateless()->redirect();
     }
 
     /**
@@ -32,7 +32,9 @@ class GoogleAuthController extends Controller
     {
         try {
             // Get user info from Google - using stateless mode
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
+            $driver = Socialite::driver('google');
+            $googleUser = $driver->stateless()->user();
 
             // Log the OAuth attempt for debugging
             Log::info('Google OAuth callback received', [

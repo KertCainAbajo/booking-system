@@ -106,6 +106,78 @@
                     </svg>
                     HISTORY
                 </a>
+
+                <!-- Contact Information Section -->
+                <div class="mt-6 pt-6 border-t border-garage-neon/20">
+                    <h3 class="px-4 text-garage-neon/70 text-xs font-bold uppercase tracking-wider mb-3">Contact Info</h3>
+                    
+                    <!-- Contact Person -->
+                    <div class="px-4 mb-4">
+                        <div class="flex items-start space-x-2">
+                            <svg class="w-4 h-4 text-garage-neon mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-white/60 text-xs">Contact Person</p>
+                                <p class="text-white text-sm font-semibold">Dexter Services</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="px-4 mb-4">
+                        <div class="flex items-start space-x-2">
+                            <svg class="w-4 h-4 text-garage-neon mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-white/60 text-xs">Phone Number</p>
+                                <a href="tel:+639123456789" class="text-white text-sm font-semibold hover:text-garage-neon">+63 912 345 6789</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="px-4 mb-4">
+                        <div class="flex items-start space-x-2">
+                            <svg class="w-4 h-4 text-garage-neon mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-white/60 text-xs">Location</p>
+                                <p class="text-white text-xs leading-relaxed">123 Main Street, Brgy. San Jose<br>San Jose del Monte, Bulacan</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Hours -->
+                    <div class="px-4 mb-4">
+                        <div class="flex items-start space-x-2">
+                            <svg class="w-4 h-4 text-garage-neon mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-white/60 text-xs mb-1">Business Hours</p>
+                                <p class="text-white text-xs">Mon-Fri: 8AM-6PM</p>
+                                <p class="text-white text-xs">Sat: 8AM-5PM</p>
+                                <p class="text-red-400 text-xs">Sun: CLOSED</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Link -->
+                    <div class="px-4">
+                        <a href="https://www.google.com/maps/search/Dexter+Auto+Services+San+Jose+del+Monte+Bulacan" 
+                           target="_blank"
+                           class="flex items-center justify-center space-x-2 bg-garage-neon/20 hover:bg-garage-neon/30 text-garage-neon text-xs font-semibold py-2 px-3 rounded-lg transition-colors service-tag">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                            </svg>
+                            <span>VIEW MAP</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
 
             <!-- User Section -->

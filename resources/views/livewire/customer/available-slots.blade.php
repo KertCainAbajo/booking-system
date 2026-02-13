@@ -28,20 +28,28 @@
                     class="group relative bg-garage-charcoal/50 rounded-lg p-3 border-2 transition-all duration-200
                         {{ $selectedDate === $dateInfo['date'] 
                             ? 'border-garage-neon bg-garage-neon/10' 
-                            : 'border-garage-steel/20 hover:border-garage-neon/50 hover:bg-garage-forest/30' }}
+                            : ($dateInfo['isFullyBooked'] 
+                                ? 'border-red-500/50 bg-red-900/20' 
+                                : 'border-garage-steel/20 hover:border-garage-neon/50 hover:bg-garage-forest/30') }}
                     ">
                     <div class="text-center">
                         <div class="text-xs font-semibold text-garage-steel mb-1 uppercase tracking-wide">
                             {{ $dateInfo['day'] }}
                         </div>
                         <div class="text-2xl font-bold 
-                            {{ $selectedDate === $dateInfo['date'] ? 'text-garage-neon' : 'text-garage-offwhite' }}
+                            {{ $selectedDate === $dateInfo['date'] ? 'text-garage-neon' : ($dateInfo['isFullyBooked'] ? 'text-red-400' : 'text-garage-offwhite') }}
                         ">
                             {{ $dateInfo['dayNum'] }}
                         </div>
                         <div class="text-xs font-semibold text-garage-steel uppercase">
                             {{ $dateInfo['month'] }}
                         </div>
+                        
+                        @if($dateInfo['isFullyBooked'])
+                            <div class="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">
+                                FULLY BOOKED
+                            </div>
+                        @endif
                     </div>
                     
                     @if($selectedDate === $dateInfo['date'])
@@ -95,6 +103,13 @@
                         </div>
 
                         <div class="text-center">
+                            <!-- Date Display (only for fully booked slots) -->
+                            @if($slot['isFull'])
+                                <div class="text-xs font-semibold text-white mb-1 uppercase">
+                                    {{ \Carbon\Carbon::parse($selectedDate)->format('M d, Y') }}
+                                </div>
+                            @endif
+                            
                             <!-- Time Display -->
                             <div class="text-lg font-bold mb-2
                                 {{ $slot['isAvailable'] 
@@ -157,7 +172,7 @@
                 <ul class="space-y-1 list-disc list-inside">
                     <li>Business hours: 8:00 AM - 6:00 PM (Closed on Sundays)</li>
                     <li>Lunch break: 12:00 PM - 1:00 PM</li>
-                    <li>We can accommodate up to {{ $maxBookingsPerSlot }} simultaneous bookings per time slot</li>
+                    <li>Only 1 booking available per time slot - book early!</li>
                     <li>Book your preferred slot before it fills up!</li>
                 </ul>
             </div>
