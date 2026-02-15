@@ -71,12 +71,17 @@ class AvailableSlots extends Component
     {
         $dates = [];
         $startDate = now()->startOfDay();
+        $daysAdded = 0;
+        $i = 0;
         
-        for ($i = 0; $i < $this->daysToShow; $i++) {
+        // Keep looping until we have enough available dates to show
+        while ($daysAdded < $this->daysToShow && $i < 14) { // Max 14 days to prevent infinite loop
             $date = $startDate->copy()->addDays($i);
+            $i++;
             
             // Skip Sundays (you can modify this based on your business days)
-            if ($date->dayOfWeek === 0) { // 0 = Sunday
+            // But always include today's date
+            if ($date->dayOfWeek === 0 && !$date->isToday()) { // 0 = Sunday
                 continue;
             }
             
@@ -92,6 +97,8 @@ class AvailableSlots extends Component
                 'isToday' => $date->isToday(),
                 'isFullyBooked' => $isFullyBooked,
             ];
+            
+            $daysAdded++;
         }
         
         return $dates;

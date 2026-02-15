@@ -54,24 +54,46 @@
                         ADD NEW VEHICLE
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        <div>
+                        <div class="sm:col-span-2">
                             <label class="block text-xs sm:text-sm font-semibold text-white mb-2">MAKE (BRAND) *</label>
-                            <select wire:model="newVehicle.make" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
+                            <select wire:model.live="brandSelection" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
                                 <option value="">Select a brand</option>
                                 @foreach ($carBrands as $brand)
                                     <option value="{{ $brand }}">{{ $brand }}</option>
                                 @endforeach
+                                <option value="other">Other (Type your own)</option>
                             </select>
+                            
+                            @if($brandSelection === 'other')
+                                <input type="text" wire:model="customBrand" placeholder="Enter your vehicle brand" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 mt-3">
+                            @endif
+                            
                             @error('newVehicle.make') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-white mb-2">MODEL *</label>
-                            <input type="text" wire:model="newVehicle.model" placeholder="e.g., Civic, Camry" class="w-full px-4 py-3 bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">MODEL *</label>
+                            
+                            @if($brandSelection && $brandSelection !== 'other' && count($availableModels) > 0)
+                                <select wire:model.live="modelSelection" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
+                                    <option value="">Select a model</option>
+                                    @foreach ($availableModels as $model)
+                                        <option value="{{ $model }}">{{ $model }}</option>
+                                    @endforeach
+                                    <option value="other">Other (Type your own)</option>
+                                </select>
+                                
+                                @if($modelSelection === 'other')
+                                    <input type="text" wire:model="customModel" placeholder="Enter your vehicle model" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 mt-3">
+                                @endif
+                            @else
+                                <input type="text" wire:model="newVehicle.model" placeholder="e.g., Civic, Camry, Mustang" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
+                            @endif
+                            
                             @error('newVehicle.model') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-white mb-2">YEAR *</label>
-                            <select wire:model="newVehicle.year" class="w-full px-4 py-3 bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
+                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">YEAR *</label>
+                            <select wire:model="newVehicle.year" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
                                 <option value="">Select year</option>
                                 @foreach ($years as $year)
                                     <option value="{{ $year }}">{{ $year }}</option>
@@ -80,21 +102,21 @@
                             @error('newVehicle.year') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-white mb-2">PLATE NUMBER *</label>
-                            <input type="text" wire:model="newVehicle.plate_number" placeholder="e.g., ABC-1234" class="w-full px-4 py-3 bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
+                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">PLATE NUMBER *</label>
+                            <input type="text" wire:model="newVehicle.plate_number" placeholder="e.g., ABC-1234" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
                             @error('newVehicle.plate_number') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
-                        <div class="col-span-2">
-                            <label class="block text-sm font-semibold text-white mb-2">VIN NUMBER (Optional)</label>
-                            <input type="text" wire:model="newVehicle.vin_number" placeholder="17-digit VIN" class="w-full px-4 py-3 bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">VIN NUMBER (Optional)</label>
+                            <input type="text" wire:model="newVehicle.vin_number" placeholder="17-digit VIN" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
                             @error('newVehicle.vin_number') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
                     </div>
-                    <div class="flex gap-3 mt-6">
-                        <button type="button" wire:click="addNewVehicle" class="px-6 py-3 bg-garage-neon hover:bg-garage-emerald text-garage-black rounded-lg transition-all font-bold service-tag shadow-neon-green">
+                    <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
+                        <button type="button" wire:click="addNewVehicle" class="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-neon hover:bg-garage-emerald text-garage-black rounded-lg transition-all font-bold service-tag shadow-neon-green">
                             SAVE VEHICLE
                         </button>
-                        <button type="button" wire:click="$set('showNewVehicleForm', false)" class="px-6 py-3 bg-garage-steel/20 text-white hover:bg-garage-steel/30 rounded-lg transition-all font-semibold">
+                        <button type="button" wire:click="cancelNewVehicle" class="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-steel/20 text-white hover:bg-garage-steel/30 rounded-lg transition-all font-semibold">
                             CANCEL
                         </button>
                     </div>
@@ -102,9 +124,9 @@
             @endif
 
             <!-- Services Section with Grid Layout -->
-            <div class="mb-8">
-                <label class="block text-sm font-bold text-white mb-4 service-tag flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mb-6 sm:mb-8">
+                <label class="block text-xs sm:text-sm font-bold text-white mb-3 sm:mb-4 service-tag flex items-center">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                     </svg>
                     SELECT SERVICES
@@ -125,62 +147,62 @@
                     </div>
                 @endif
                 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Left: Categories and Services (2/3 width) -->
-                    <div class="lg:col-span-2 space-y-4 pb-6">
+                    <div class="lg:col-span-2 space-y-3 sm:space-y-4 pb-4 sm:pb-6">
                         @foreach ($categories as $category)
                             <div class="border-2 border-garage-neon/30 rounded-lg overflow-hidden bg-garage-charcoal/50">
                                 <!-- Category Header -->
                                 <button type="button" 
                                         wire:click="toggleCategory({{ $category->id }})"
-                                        class="w-full p-5 bg-gradient-to-r from-garage-forest to-garage-darkgreen hover:from-garage-neon/10 hover:to-garage-forest transition-all flex items-center justify-between border-b-2 border-garage-neon/20">
+                                        class="w-full p-3 sm:p-5 bg-gradient-to-r from-garage-forest to-garage-darkgreen hover:from-garage-neon/10 hover:to-garage-forest transition-all flex items-center justify-between border-b-2 border-garage-neon/20">
                                     <div class="flex items-center">
-                                        <span class="text-2xl mr-3 text-white">
+                                        <span class="text-xl sm:text-2xl mr-2 sm:mr-3 text-white">
                                             {{ in_array($category->id, $expandedCategories) ? '▼' : '▶' }}
                                         </span>
                                         <div class="text-left">
-                                            <div class="flex items-center gap-3">
-                                                <span class="font-bold text-white text-lg service-tag">{{ strtoupper($category->name) }}</span>
+                                            <div class="flex items-center gap-2 sm:gap-3">
+                                                <span class="font-bold text-white text-base sm:text-lg service-tag">{{ strtoupper($category->name) }}</span>
                                                 @if ($categoryCounts[$category->id] > 0)
-                                                    <span class="inline-flex items-center justify-center min-w-[28px] h-7 px-2 text-sm font-bold text-garage-black bg-garage-neon rounded-full service-tag">
+                                                    <span class="inline-flex items-center justify-center min-w-[24px] sm:min-w-[28px] h-6 sm:h-7 px-1.5 sm:px-2 text-xs sm:text-sm font-bold text-garage-black bg-garage-neon rounded-full service-tag">
                                                         {{ $categoryCounts[$category->id] }}
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="text-sm text-white mt-1">{{ $category->services->count() }} services available</div>
+                                            <div class="text-xs sm:text-sm text-white mt-1">{{ $category->services->count() }} services available</div>
                                         </div>
                                     </div>
                                 </button>
 
                                 <!-- Services List (Expandable) -->
                                 @if (in_array($category->id, $expandedCategories))
-                                    <div class="p-4 bg-garage-black/30">
-                                        <div class="space-y-3 mb-4">
+                                    <div class="p-3 sm:p-4 bg-garage-black/30">
+                                        <div class="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
                                             @foreach ($category->services as $service)
                                                 <div wire:click="toggleService({{ $service->id }})"
-                                                     class="flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all
+                                                     class="flex items-start p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all
                                                             {{ in_array($service->id, $selectedServices) ? 'border-garage-neon bg-garage-neon/10 shadow-neon-green' : 'border-garage-steel/30 hover:border-garage-neon/50 bg-garage-charcoal/50' }}">
-                                                    <div class="flex-shrink-0 mt-1 mr-4">
-                                                        <div class="w-6 h-6 rounded border-2 flex items-center justify-center
+                                                    <div class="flex-shrink-0 mt-0.5 sm:mt-1 mr-3 sm:mr-4">
+                                                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center
                                                                     {{ in_array($service->id, $selectedServices) ? 'bg-garage-neon border-garage-neon shadow-neon-green' : 'border-garage-steel/50' }}">
                                                             @if (in_array($service->id, $selectedServices))
-                                                                <svg class="w-5 h-5 text-garage-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-garage-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                                                                 </svg>
                                                             @endif
                                                         </div>
                                                     </div>
                                                     <div class="flex-1 min-w-0">
-                                                        <div class="font-bold text-white">{{ $service->name }}</div>
-                                                        <div class="text-sm text-white mt-1">{{ $service->description }}</div>
-                                                        <div class="text-sm text-white mt-2 flex items-center">
-                                                            <svg class="w-4 h-4 mr-1 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <div class="font-bold text-white text-sm sm:text-base">{{ $service->name }}</div>
+                                                        <div class="text-xs sm:text-sm text-white mt-1">{{ $service->description }}</div>
+                                                        <div class="text-xs sm:text-sm text-white mt-1.5 sm:mt-2 flex items-center">
+                                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                             </svg>
                                                             ~{{ $service->estimated_duration_minutes }} mins
                                                         </div>
                                                     </div>
-                                                    <div class="flex-shrink-0 ml-4 font-bold text-white font-mono text-lg">
+                                                    <div class="flex-shrink-0 ml-3 sm:ml-4 font-bold text-white font-mono text-base sm:text-lg">
                                                         ₱{{ number_format($service->base_price, 2) }}
                                                     </div>
                                                 </div>
@@ -189,19 +211,19 @@
                                         
                                         <!-- Save Button for Category -->
                                         @if ($categoryCounts[$category->id] > 0)
-                                            <div class="pt-3 border-t-2 border-garage-neon/20">
+                                            <div class="pt-2 sm:pt-3 border-t-2 border-garage-neon/20">
                                                 @if (in_array($category->id, $savedCategories))
-                                                    <div class="flex items-center justify-center p-3 bg-garage-emerald/20 border-2 border-garage-emerald rounded-lg">
-                                                        <svg class="w-5 h-5 text-garage-emerald mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                                    <div class="flex items-center justify-center p-2.5 sm:p-3 bg-garage-emerald/20 border-2 border-garage-emerald rounded-lg">
+                                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-garage-emerald mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                         </svg>
-                                                        <span class="text-garage-emerald font-bold service-tag">SAVED</span>
+                                                        <span class="text-garage-emerald font-bold service-tag text-sm sm:text-base">SAVED</span>
                                                     </div>
                                                 @else
                                                     <button type="button" 
                                                             wire:click="saveCategoryServices({{ $category->id }})"
-                                                            class="w-full py-3 bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold rounded-lg transition-all shadow-neon-green flex items-center justify-center service-tag">
-                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                                            class="w-full py-2.5 sm:py-3 bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold rounded-lg transition-all shadow-neon-green flex items-center justify-center service-tag text-sm sm:text-base">
+                                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                                                         </svg>
                                                         SAVE {{ strtoupper($category->name) }} SERVICES
@@ -219,9 +241,9 @@
                     <div class="lg:col-span-1">
                         <div class="lg:sticky lg:top-4 flex flex-col border-2 {{ $servicesConfirmed ? 'border-garage-emerald/50 bg-garage-forest/20' : 'border-garage-neon/50 bg-garage-darkgreen/30' }} rounded-lg overflow-hidden transition-all duration-500 lg:max-h-[calc(100vh-8rem)] h-auto lg:h-[420px] shadow-garage z-10">
                             <!-- Fixed Header -->
-                            <div class="flex-shrink-0 {{ $servicesConfirmed ? 'bg-garage-emerald/20' : 'bg-garage-neon/20' }} border-b-2 border-garage-neon/30 p-5">
-                                <h3 class="font-bold text-xl text-white service-tag flex items-center">
-                                    <svg class="w-6 h-6 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="flex-shrink-0 {{ $servicesConfirmed ? 'bg-garage-emerald/20' : 'bg-garage-neon/20' }} border-b-2 border-garage-neon/30 p-3 sm:p-5">
+                                <h3 class="font-bold text-lg sm:text-xl text-white service-tag flex items-center">
+                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                                     </svg>
                                     WORK ORDER
@@ -314,25 +336,25 @@
             </div>
 
             <!-- Date and Time -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 mt-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 mt-6 sm:mt-8">
                 <div>
-                    <label class="block text-sm font-bold text-white mb-3 service-tag flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                         BOOKING DATE
                     </label>
-                    <input type="date" wire:model="bookingDate" class="w-full px-4 py-3 bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono">
+                    <input type="date" wire:model="bookingDate" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono">
                     @error('bookingDate') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-white mb-3 service-tag flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         PREFERRED TIME
                     </label>
-                    <select wire:model="bookingTime" class="w-full px-4 py-3 bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-semibold">
+                    <select wire:model="bookingTime" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-semibold">
                         <option value="09:00">9:00 AM</option>
                         <option value="10:00">10:00 AM</option>
                         <option value="11:00">11:00 AM</option>
@@ -346,31 +368,31 @@
             </div>
 
             <!-- Notes -->
-            <div class="mb-8">
-                <label class="block text-sm font-bold text-white mb-3 service-tag flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mb-6 sm:mb-8">
+                <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
                     </svg>
                     ADDITIONAL NOTES (Optional)
                 </label>
-                <textarea wire:model="notes" rows="3" class="w-full px-4 py-3 bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50" placeholder="Any specific requirements or concerns..."></textarea>
+                <textarea wire:model="notes" rows="3" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50" placeholder="Any specific requirements or concerns..."></textarea>
             </div>
 
             <!-- Estimated Total -->
-            <div class="bg-gradient-to-r from-garage-charcoal to-garage-forest p-6 rounded-lg mb-8 border-2 border-garage-neon/40 shadow-neon-green">
-                <div class="flex justify-between items-center">
-                    <span class="text-xl font-bold text-white service-tag">ESTIMATED TOTAL:</span>
-                    <span class="text-4xl font-bold text-white font-mono">₱{{ number_format($estimatedTotal, 2) }}</span>
+            <div class="bg-gradient-to-r from-garage-charcoal to-garage-forest p-4 sm:p-6 rounded-lg mb-6 sm:mb-8 border-2 border-garage-neon/40 shadow-neon-green">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0">
+                    <span class="text-base sm:text-xl font-bold text-white service-tag">ESTIMATED TOTAL:</span>
+                    <span class="text-2xl sm:text-4xl font-bold text-white font-mono">₱{{ number_format($estimatedTotal, 2) }}</span>
                 </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/50 to-transparent my-3"></div>
-                <p class="text-sm text-white">* Final price may vary based on parts and additional services required</p>
+                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/50 to-transparent my-2 sm:my-3"></div>
+                <p class="text-xs sm:text-sm text-white">* Final price may vary based on parts and additional services required</p>
             </div>
 
             <!-- Submit Button -->
             <button type="submit" 
                     wire:loading.attr="disabled"
-                    class="w-full bg-garage-neon hover:bg-garage-emerald text-garage-black px-8 py-4 rounded-lg font-bold hover:shadow-neon-green transition-all text-lg service-tag flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" wire:loading.remove wire:target="submitBooking">
+                    class="w-full bg-garage-neon hover:bg-garage-emerald text-garage-black px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:shadow-neon-green transition-all text-base sm:text-lg service-tag flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" wire:loading.remove wire:target="submitBooking">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <svg class="animate-spin h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" wire:loading wire:target="submitBooking">

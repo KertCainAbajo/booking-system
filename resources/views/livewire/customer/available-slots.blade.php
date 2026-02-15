@@ -33,21 +33,25 @@
                                 : 'border-garage-steel/20 hover:border-garage-neon/50 hover:bg-garage-forest/30') }}
                     ">
                     <div class="text-center">
-                        <div class="text-xs font-semibold text-garage-steel mb-1 uppercase tracking-wide">
-                            {{ $dateInfo['day'] }}
+                        <div class="text-xs font-semibold {{ $dateInfo['isToday'] ? 'text-garage-neon' : 'text-garage-steel' }} mb-1 uppercase tracking-wide">
+                            {{ $dateInfo['isToday'] ? 'TODAY' : $dateInfo['day'] }}
                         </div>
                         <div class="text-2xl font-bold 
                             {{ $selectedDate === $dateInfo['date'] ? 'text-garage-neon' : ($dateInfo['isFullyBooked'] ? 'text-red-400' : 'text-garage-offwhite') }}
                         ">
                             {{ $dateInfo['dayNum'] }}
                         </div>
-                        <div class="text-xs font-semibold text-garage-steel uppercase">
+                        <div class="text-xs font-semibold {{ $dateInfo['isToday'] ? 'text-garage-neon' : 'text-garage-steel' }} uppercase">
                             {{ $dateInfo['month'] }}
                         </div>
                         
                         @if($dateInfo['isFullyBooked'])
                             <div class="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">
                                 FULLY BOOKED
+                            </div>
+                        @elseif($dateInfo['isToday'])
+                            <div class="mt-1 text-[10px] font-bold text-garage-neon uppercase tracking-wider animate-pulse">
+                                BOOK NOW
                             </div>
                         @endif
                     </div>

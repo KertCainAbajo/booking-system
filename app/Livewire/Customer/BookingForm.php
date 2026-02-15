@@ -41,6 +41,11 @@ class BookingForm extends Component
         'plate_number' => '',
         'vin_number' => ''
     ];
+    public $brandSelection = ''; // 'predefined' or 'other'
+    public $customBrand = ''; // for custom brand input
+    public $modelSelection = ''; // selected model or 'other'
+    public $customModel = ''; // for custom model input
+    public $availableModels = []; // models for selected brand
 
     // Car brands list
     public $carBrands = [
@@ -54,6 +59,43 @@ class BookingForm extends Component
         'Volkswagen', 'Volvo'
     ];
 
+    // Car models by brand
+    public $carModels = [
+        'Toyota' => ['Camry', 'Corolla', 'RAV4', 'Highlander', '4Runner', 'Tacoma', 'Tundra', 'Sienna', 'Prius', 'Avalon', 'Yaris', 'C-HR', 'Venza', 'Sequoia'],
+        'Honda' => ['Civic', 'Accord', 'CR-V', 'Pilot', 'HR-V', 'Odyssey', 'Ridgeline', 'Passport', 'Insight', 'Fit'],
+        'Ford' => ['F-150', 'Mustang', 'Explorer', 'Escape', 'Edge', 'Expedition', 'Ranger', 'Bronco', 'Maverick', 'Transit', 'Fusion', 'Focus', 'EcoSport'],
+        'Chevrolet' => ['Silverado', 'Equinox', 'Malibu', 'Traverse', 'Tahoe', 'Suburban', 'Colorado', 'Blazer', 'Trax', 'Camaro', 'Corvette', 'Impala', 'Cruze'],
+        'Nissan' => ['Altima', 'Sentra', 'Rogue', 'Pathfinder', 'Frontier', 'Titan', 'Murano', 'Kicks', 'Armada', 'Maxima', 'Versa', '370Z', 'Leaf'],
+        'BMW' => ['3 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'Z4', 'i4', 'iX', 'M3', 'M5', '4 Series', 'X6'],
+        'Mercedes-Benz' => ['C-Class', 'E-Class', 'S-Class', 'GLC', 'GLE', 'GLA', 'GLB', 'GLS', 'A-Class', 'CLA', 'EQS', 'EQE', 'G-Class'],
+        'Audi' => ['A3', 'A4', 'A6', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron', 'TT', 'R8', 'S4', 'S6', 'RS5'],
+        'Lexus' => ['ES', 'IS', 'LS', 'RX', 'NX', 'GX', 'LX', 'UX', 'RC', 'LC'],
+        'Hyundai' => ['Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Kona', 'Venue', 'Ioniq', 'Veloster', 'Accent'],
+        'Kia' => ['Forte', 'Optima', 'Sorento', 'Sportage', 'Telluride', 'Soul', 'Seltos', 'Niro', 'Stinger', 'Rio', 'Carnival'],
+        'Mazda' => ['Mazda3', 'Mazda6', 'CX-3', 'CX-5', 'CX-9', 'CX-30', 'CX-50', 'MX-5 Miata'],
+        'Subaru' => ['Outback', 'Forester', 'Crosstrek', 'Impreza', 'Legacy', 'Ascent', 'WRX', 'BRZ'],
+        'Volkswagen' => ['Jetta', 'Passat', 'Tiguan', 'Atlas', 'Golf', 'ID.4', 'Taos', 'Arteon'],
+        'Jeep' => ['Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Renegade', 'Gladiator', 'Wagoneer', 'Grand Wagoneer'],
+        'Ram' => ['1500', '2500', '3500', 'ProMaster'],
+        'GMC' => ['Sierra', 'Terrain', 'Acadia', 'Yukon', 'Canyon'],
+        'Dodge' => ['Charger', 'Challenger', 'Durango', 'Journey'],
+        'Tesla' => ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
+        'Porsche' => ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan', 'Boxster', 'Cayman'],
+        'Volvo' => ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90'],
+        'Land Rover' => ['Range Rover', 'Range Rover Sport', 'Range Rover Evoque', 'Discovery', 'Defender'],
+        'Acura' => ['ILX', 'TLX', 'RLX', 'RDX', 'MDX', 'NSX'],
+        'Infiniti' => ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
+        'Cadillac' => ['CT4', 'CT5', 'Escalade', 'XT4', 'XT5', 'XT6', 'Lyriq'],
+        'Buick' => ['Encore', 'Envision', 'Enclave'],
+        'Lincoln' => ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
+        'Genesis' => ['G70', 'G80', 'G90', 'GV70', 'GV80'],
+        'Mitsubishi' => ['Mirage', 'Outlander', 'Eclipse Cross', 'Outlander Sport'],
+        'Mini' => ['Cooper', 'Countryman', 'Clubman'],
+        'Alfa Romeo' => ['Giulia', 'Stelvio'],
+        'Jaguar' => ['XE', 'XF', 'F-Pace', 'E-Pace', 'I-Pace'],
+        'Maserati' => ['Ghibli', 'Levante', 'Quattroporte'],
+    ];
+
     public function mount()
     {
         $this->bookingDate = now()->addDay()->format('Y-m-d');
@@ -63,6 +105,40 @@ class BookingForm extends Component
     public function updatedSelectedServices()
     {
         $this->calculateTotal();
+    }
+
+    public function updatedBrandSelection($value)
+    {
+        // Reset model selection when brand changes
+        $this->modelSelection = '';
+        $this->customModel = '';
+        $this->newVehicle['model'] = '';
+        
+        // If a predefined brand is selected, set it to newVehicle.make
+        if ($value && $value !== 'other') {
+            $this->newVehicle['make'] = $value;
+            // Load models for this brand
+            $this->availableModels = $this->carModels[$value] ?? [];
+        } else {
+            $this->newVehicle['make'] = '';
+            $this->availableModels = [];
+        }
+    }
+
+    public function updatedModelSelection($value)
+    {
+        // If a predefined model is selected, set it to newVehicle.model
+        if ($value && $value !== 'other') {
+            $this->newVehicle['model'] = $value;
+        } else {
+            $this->newVehicle['model'] = '';
+        }
+    }
+
+    public function cancelNewVehicle()
+    {
+        $this->showNewVehicleForm = false;
+        $this->reset(['newVehicle', 'brandSelection', 'customBrand', 'modelSelection', 'customModel', 'availableModels']);
     }
 
     public function calculateTotal()
@@ -169,6 +245,16 @@ class BookingForm extends Component
 
     public function addNewVehicle()
     {
+        // If 'Other' is selected, use custom brand
+        if ($this->brandSelection === 'other') {
+            $this->newVehicle['make'] = $this->customBrand;
+        }
+
+        // If 'Other' is selected for model, use custom model
+        if ($this->modelSelection === 'other') {
+            $this->newVehicle['model'] = $this->customModel;
+        }
+
         $this->validate([
             'newVehicle.make' => 'required|string|max:255',
             'newVehicle.model' => 'required|string|max:255',
@@ -190,7 +276,7 @@ class BookingForm extends Component
 
             $this->selectedVehicle = $vehicle->id;
             $this->showNewVehicleForm = false;
-            $this->reset('newVehicle');
+            $this->reset(['newVehicle', 'brandSelection', 'customBrand', 'modelSelection', 'customModel', 'availableModels']);
             session()->flash('success', 'Vehicle added successfully!');
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() == 23000) {
