@@ -52,6 +52,9 @@ class BookingDetail extends Component
             'notes' => $this->notes,
         ]);
 
+        // Broadcast event to update staff dashboard in real-time
+        $this->dispatch('booking-status-changed')->to(\App\Livewire\Staff\Dashboard::class);
+
         $this->notes = '';
         $this->loadBooking();
         session()->flash('success', 'Booking status updated successfully!');

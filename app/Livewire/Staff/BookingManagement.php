@@ -16,13 +16,13 @@ class BookingManagement extends Component
     public $search = '';
     public $statusFilter = '';
     public $bookingDate = '';
-    public $sortBy = 'created_at';
-    public $sortDirection = 'desc';
+    public $sortBy = 'booking_date';
+    public $sortDirection = 'asc';
 
     public function mount()
     {
-        // Set default date to today
-        $this->bookingDate = now()->format('Y-m-d');
+        // Show all bookings by default (no date filter)
+        $this->bookingDate = '';
     }
 
     public function updatingSearch()
@@ -38,6 +38,14 @@ class BookingManagement extends Component
             $this->sortBy = $column;
             $this->sortDirection = 'asc';
         }
+    }
+
+    public function clearFilters()
+    {
+        $this->search = '';
+        $this->statusFilter = '';
+        $this->bookingDate = '';
+        $this->resetPage();
     }
 
     public function viewBooking($id)
@@ -68,7 +76,11 @@ class BookingManagement extends Component
 
         // Status filter
         if ($this->statusFilter) {
-            $query->where('status', $this->statusFilter);
+            if ($this->statusFilter === 'advance') {
+                $query->where('booking_date', '>', now()->toDateString());
+            } else {
+                $query->where('status', $this->statusFilter);
+            }
         }
 
         // Date filter
@@ -88,6 +100,7 @@ class BookingManagement extends Component
             'approved' => Booking::where('is_archived', false)->where('status', 'approved')->count(),
             'completed' => Booking::where('is_archived', false)->where('status', 'completed')->count(),
             'cancelled' => Booking::where('is_archived', false)->where('status', 'cancelled')->count(),
+            'advance' => Booking::where('is_archived', false)->where('booking_date', '>', now()->toDateString())->count(),
         ];
 
         return view('livewire.staff.booking-management', [

@@ -12,7 +12,7 @@
                 </svg>
                 <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">BOOKING MANAGEMENT</h1>
             </div>
-            <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">View and manage all bookings with received date and time</p>
+            <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">View and manage all bookings including advance bookings</p>
         </div>
         
         <!-- Garage Floor Marking -->
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-5 text-center hover:border-garage-neon/40 transition-all">
             <p class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Bookings</p>
             <p class="text-3xl font-bold text-garage-offwhite font-mono">{{ $stats['total'] }}</p>
@@ -41,6 +41,10 @@
             <p class="text-xs text-garage-steel uppercase tracking-wider mb-2">Cancelled</p>
             <p class="text-3xl font-bold text-red-400 font-mono">{{ $stats['cancelled'] }}</p>
         </div>
+        <div class="bg-garage-charcoal/50 rounded-lg border border-purple-500/20 p-5 text-center hover:border-purple-500/40 transition-all">
+            <p class="text-xs text-garage-steel uppercase tracking-wider mb-2">Advance</p>
+            <p class="text-3xl font-bold text-purple-400 font-mono">{{ $stats['advance'] }}</p>
+        </div>
     </div>
 
     <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
@@ -58,13 +62,28 @@
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                     <option value="no_show">Not Arriving</option>
+                    <option value="advance">Advance Booking</option>
                 </select>
             </div>
             <div>
                 <input wire:model.live="bookingDate" type="date" 
-                    class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon">
+                    class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon"
+                    placeholder="All dates">
             </div>
         </div>
+        
+        <!-- Clear Filters Button -->
+        @if($search || $statusFilter || $bookingDate)
+        <div class="mb-4">
+            <button wire:click="clearFilters" 
+                class="inline-flex items-center px-4 py-2 bg-garage-forest/50 hover:bg-garage-forest text-garage-steel hover:text-garage-offwhite border border-garage-neon/20 hover:border-garage-neon/40 rounded-lg transition-all text-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Clear All Filters
+            </button>
+        </div>
+        @endif
         
         <!-- Garage Floor Divider -->
         <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
@@ -128,8 +147,18 @@
                                     <div class="text-garage-steel text-xs">{{ $booking->vehicle->year }}</div>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap text-sm text-garage-offwhite font-semibold">
-                                {{ $booking->booking_date->format('M d, Y') }}
+                            <td class="px-4 py-4 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-garage-offwhite font-semibold">{{ $booking->booking_date->format('M d, Y') }}</span>
+                                    @if($booking->booking_date->isAfter(now()))
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-400/30">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                            </svg>
+                                            Advance
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm text-garage-offwhite font-semibold">
                                 {{ $booking->booking_time->format('h:i A') }}
@@ -149,10 +178,11 @@
                                         'completed' => 'bg-garage-neon/20 text-garage-neon border-garage-neon/30',
                                         'cancelled' => 'bg-red-500/20 text-red-400 border-red-500/30',
                                         'no_show' => 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+                                        'not_available' => 'bg-gray-500/20 text-gray-400 border-gray-500/30',
                                     ];
                                 @endphp
                                 <span class="px-3 py-1 text-xs rounded font-bold border service-tag {{ $statusColors[$booking->status] ?? 'bg-garage-steel/20 text-garage-steel border-garage-steel/30' }}">
-                                    {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : strtoupper(str_replace('_', ' ', $booking->status)) }}
+                                    {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : ($booking->status === 'not_available' ? 'NOT AVAILABLE' : strtoupper(str_replace('_', ' ', $booking->status))) }}
                                 </span>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap text-sm font-bold text-white font-mono">

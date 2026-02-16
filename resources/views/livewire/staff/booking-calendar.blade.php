@@ -131,7 +131,8 @@
                                         {{ $booking->status === 'approved' ? 'bg-blue-400/20 border-blue-400/30 hover:bg-blue-400/30' : '' }}
                                         {{ $booking->status === 'completed' ? 'bg-garage-neon/20 border-garage-neon/30 hover:bg-garage-neon/30' : '' }}
                                         {{ $booking->status === 'cancelled' ? 'bg-red-500/20 border-red-500/30 hover:bg-red-500/30' : '' }}
-                                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 border-orange-500/30 hover:bg-orange-500/30' : '' }}">
+                                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 border-orange-500/30 hover:bg-orange-500/30' : '' }}
+                                        {{ $booking->status === 'not_available' ? 'bg-gray-500/20 border-gray-500/30 hover:bg-gray-500/30' : '' }}">
                                         <div class="font-bold text-white leading-tight">{{ $booking->booking_time }}</div>
                                         <div class="truncate text-white leading-tight hidden sm:block">{{ $booking->customer->getDisplayName() }}</div>
                                     </a>

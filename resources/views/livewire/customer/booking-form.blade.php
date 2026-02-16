@@ -19,6 +19,28 @@
         <x-success-modal />
 
         <form wire:submit="submitBooking">
+            <!-- Customer Information -->
+            <div class="mb-6 sm:mb-8">
+                <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    CUSTOMER INFORMATION
+                </label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-garage-steel mb-2">Full Name *</label>
+                        <input type="text" wire:model="customerName" placeholder="Enter your full name" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
+                        @error('customerName') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-garage-steel mb-2">Phone Number *</label>
+                        <input type="text" wire:model="customerPhone" placeholder="Enter your phone number" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 font-mono">
+                        @error('customerPhone') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+            </div>
+
             <!-- Select Vehicle -->
             <div class="mb-6 sm:mb-8">
                 <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">

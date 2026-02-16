@@ -40,13 +40,13 @@ class Booking extends Model
 
     protected $casts = [
         'booking_date' => 'date',
-        'booking_time' => 'datetime:H:i',
+        'booking_time' => 'datetime:H:i:s',
         'total_amount' => 'decimal:2',
         'is_archived' => 'boolean',
         'archived_at' => 'datetime',
         'marked_as_late' => 'boolean',
         'marked_late_at' => 'datetime',
-        'estimated_arrival_time' => 'datetime:H:i',
+        'estimated_arrival_time' => 'datetime:H:i:s',
     ];
 
     /**

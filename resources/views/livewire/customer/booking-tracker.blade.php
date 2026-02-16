@@ -51,6 +51,7 @@
                             {{ $booking->status === 'completed' ? 'bg-garage-emerald/20 text-garage-emerald border-2 border-garage-emerald/50' : '' }}
                             {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border-2 border-orange-500/50' : '' }}
                             {{ $booking->status === 'cancelled' ? 'bg-red-500/20 text-red-400 border-2 border-red-500/50' : '' }}
+                            {{ $booking->status === 'not_available' ? 'bg-red-500/20 text-red-400 border-2 border-red-500/50' : '' }}
                         ">
                             {{ strtoupper(str_replace('_', ' ', $booking->status)) }}
                         </span>

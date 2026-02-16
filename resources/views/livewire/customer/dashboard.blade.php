@@ -137,6 +137,7 @@
                                     {{ $booking->status === 'approved' ? 'bg-white/20 text-white border border-white/30' : '' }}
                                     {{ $booking->status === 'completed' ? 'bg-white/20 text-white border border-white/30' : '' }}
                                     {{ $booking->status === 'cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : '' }}
+                                    {{ $booking->status === 'not_available' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : '' }}
                                 ">
                                     {{ strtoupper(str_replace('_', ' ', $booking->status)) }}
                                 </span>

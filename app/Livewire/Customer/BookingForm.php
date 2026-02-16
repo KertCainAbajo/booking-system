@@ -25,6 +25,10 @@ class BookingForm extends Component
     public $servicesConfirmed = false; // Track if user clicked Save & Continue
     public $savedCategories = []; // Track which categories have saved services
     
+    // Customer information
+    public $customerName = '';
+    public $customerPhone = '';
+    
     // Error modal
     public $showErrorModal = false;
     public $errorMessage = '';
@@ -100,6 +104,13 @@ class BookingForm extends Component
     {
         $this->bookingDate = now()->addDay()->format('Y-m-d');
         $this->bookingTime = '09:00';
+        
+        // Pre-fill customer information
+        $customer = Customer::where('user_id', Auth::id())->first();
+        if ($customer) {
+            $this->customerName = $customer->getDisplayName();
+            $this->customerPhone = $customer->getContactPhone();
+        }
     }
 
     public function updatedSelectedServices()
@@ -313,6 +324,8 @@ class BookingForm extends Component
         // Validate with error handling
         try {
             $this->validate([
+                'customerName' => 'required|string|max:255',
+                'customerPhone' => 'required|string|max:20',
                 'selectedVehicle' => 'required|exists:vehicles,id',
                 'selectedServices' => 'required|array|min:1',
                 'bookingDate' => 'required|date|after_or_equal:today',
@@ -360,6 +373,9 @@ class BookingForm extends Component
                     ]);
                 }
             }
+
+            // Broadcast event to update staff dashboard in real-time
+            $this->dispatch('booking-created')->to(\App\Livewire\Staff\Dashboard::class);
 
             // Show success modal instead of redirecting immediately
             $this->showSuccessModal = true;

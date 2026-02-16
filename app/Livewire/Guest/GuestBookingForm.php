@@ -429,6 +429,9 @@ class GuestBookingForm extends Component
                 }
             }
 
+            // Broadcast event to update staff dashboard in real-time
+            $this->dispatch('booking-created')->to(\App\Livewire\Staff\Dashboard::class);
+
             // Clear session data after successful booking
             session()->forget('guest_booking_data');
 

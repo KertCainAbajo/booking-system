@@ -36,8 +36,9 @@
                         {{ $booking->status === 'approved' ? 'bg-blue-400/20 text-blue-400 border-blue-400/50 shadow-blue-400/20' : '' }}
                         {{ $booking->status === 'completed' ? 'bg-garage-neon/20 text-garage-neon border-garage-neon/50 shadow-garage-neon/20' : '' }}
                         {{ $booking->status === 'cancelled' ? 'bg-red-500/20 text-red-400 border-red-500/50 shadow-red-500/20' : '' }}
-                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border-orange-500/50 shadow-orange-500/20' : '' }}">
-                        {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : strtoupper(str_replace('_', ' ', $booking->status)) }}
+                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border-orange-500/50 shadow-orange-500/20' : '' }}
+                        {{ $booking->status === 'not_available' ? 'bg-gray-500/20 text-gray-400 border-gray-500/50 shadow-gray-500/20' : '' }}">
+                        {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : ($booking->status === 'not_available' ? 'NOT AVAILABLE' : strtoupper(str_replace('_', ' ', $booking->status))) }}
                     </span>
                     <p class="text-garage-steel text-xs mt-2 font-mono">Received {{ $booking->created_at->diffForHumans() }}</p>
                 </div>
@@ -332,13 +333,13 @@
                             </button>
                             @endif
 
-                            @if(!in_array($booking->status, ['completed', 'cancelled', 'no_show']))
-                            <button wire:click="updateStatus('cancelled')" 
+                            @if(!in_array($booking->status, ['completed', 'cancelled', 'no_show', 'not_available']))
+                            <button wire:click="updateStatus('not_available')" 
                                 class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-lg hover:from-red-700 hover:to-red-800 font-bold transition-all shadow-lg hover:shadow-red-500/50 service-tag flex items-center justify-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
-                                CANCEL BOOKING
+                                NOT AVAILABLE
                             </button>
                             @endif
                         </div>

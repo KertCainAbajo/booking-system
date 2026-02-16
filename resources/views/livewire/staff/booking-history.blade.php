@@ -112,6 +112,10 @@
                                 <span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 service-tag">
                                     NOT ARRIVING
                                 </span>
+                            @elseif($booking->status === 'not_available')
+                                <span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30 service-tag">
+                                    NOT AVAILABLE
+                                </span>
                             @endif
                         </td>
                         <td class="px-3 sm:px-4 py-3 sm:py-4 hidden sm:table-cell">
