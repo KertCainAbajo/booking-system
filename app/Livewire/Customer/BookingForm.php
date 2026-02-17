@@ -28,6 +28,7 @@ class BookingForm extends Component
     // Customer information
     public $customerName = '';
     public $customerPhone = '';
+    public $customerAddress = '';
     
     // Error modal
     public $showErrorModal = false;
@@ -110,6 +111,7 @@ class BookingForm extends Component
         if ($customer) {
             $this->customerName = $customer->getDisplayName();
             $this->customerPhone = $customer->getContactPhone();
+            $this->customerAddress = $customer->address ?? '';
         }
     }
 
@@ -326,6 +328,7 @@ class BookingForm extends Component
             $this->validate([
                 'customerName' => 'required|string|max:255',
                 'customerPhone' => 'required|string|max:20',
+                'customerAddress' => 'required|string|max:500',
                 'selectedVehicle' => 'required|exists:vehicles,id',
                 'selectedServices' => 'required|array|min:1',
                 'bookingDate' => 'required|date|after_or_equal:today',

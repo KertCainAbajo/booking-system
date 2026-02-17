@@ -1,4 +1,20 @@
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <style>
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            background-size: 20px 20px;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+        }
+        
+        input[type="date"] {
+            color-scheme: dark;
+        }
+    </style>
+    
     <!-- Header with Back Button -->
     <div class="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
         <div>
@@ -17,6 +33,16 @@
     <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border border-garage-neon/30">
 
         <x-success-modal />
+
+        <!-- Required Fields Notice -->
+        <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-garage-neon/10 border-l-4 border-garage-neon rounded-r-lg">
+            <p class="text-white text-xs sm:text-sm flex items-center">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="font-semibold">Fields marked with <span class="text-garage-neon">*</span> are required</span>
+            </p>
+        </div>
 
         <form wire:submit="submitBooking">
             <!-- Customer Information -->
@@ -38,6 +64,11 @@
                         <input type="text" wire:model="customerPhone" placeholder="Enter your phone number" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 font-mono">
                         @error('customerPhone') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
                     </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs sm:text-sm font-semibold text-garage-steel mb-2">Address *</label>
+                        <textarea wire:model="customerAddress" rows="2" placeholder="Enter your complete address" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50"></textarea>
+                        @error('customerAddress') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                    </div>
                 </div>
             </div>
 
@@ -47,7 +78,7 @@
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
                     </svg>
-                    SELECT VEHICLE
+                    SELECT VEHICLE *
                 </label>
                 <div class="flex flex-col sm:flex-row gap-3">
                     <select wire:model="selectedVehicle" class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-semibold">
@@ -151,7 +182,7 @@
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                     </svg>
-                    SELECT SERVICES
+                    SELECT SERVICES *
                 </label>
 
                 @if (session()->has('services-saved'))
@@ -364,9 +395,9 @@
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        BOOKING DATE
+                        BOOKING DATE *
                     </label>
-                    <input type="date" wire:model="bookingDate" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono">
+                    <input type="date" wire:model="bookingDate" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono [color-scheme:dark]">
                     @error('bookingDate') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
@@ -374,17 +405,9 @@
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        PREFERRED TIME
+                        PREFERRED TIME *
                     </label>
-                    <select wire:model="bookingTime" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-semibold">
-                        <option value="09:00">9:00 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                        <option value="11:00">11:00 AM</option>
-                        <option value="13:00">1:00 PM</option>
-                        <option value="14:00">2:00 PM</option>
-                        <option value="15:00">3:00 PM</option>
-                        <option value="16:00">4:00 PM</option>
-                    </select>
+                    <input type="time" wire:model="bookingTime" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono [color-scheme:dark]">
                     @error('bookingTime') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
                 </div>
             </div>

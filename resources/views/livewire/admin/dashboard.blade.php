@@ -29,12 +29,29 @@
                     <div>
                         <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Users</div>
                         <div class="text-3xl font-bold text-blue-400 font-mono">{{ $stats['total_users'] }}</div>
+                        <div class="mt-2 flex items-center text-xs">
+                            @if($stats['users_growth'] >= 0)
+                                <svg class="w-3 h-3 text-garage-neon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                                <span class="text-garage-neon font-bold">+{{ number_format($stats['users_growth'], 1) }}%</span>
+                            @else
+                                <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
+                                </svg>
+                                <span class="text-red-400 font-bold">{{ number_format($stats['users_growth'], 1) }}%</span>
+                            @endif
+                            <span class="text-garage-steel ml-1">vs last month</span>
+                        </div>
                     </div>
                     <svg class="w-12 h-12 text-blue-400/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
                 </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
+                <div class="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent mb-2"></div>
+                <div class="text-xs text-garage-steel">
+                    <span class="font-bold text-blue-400">{{ $stats['new_users_this_month'] }}</span> new this month
+                </div>
             </div>
 
             <!-- Total Bookings -->
@@ -43,12 +60,29 @@
                     <div>
                         <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Bookings</div>
                         <div class="text-3xl font-bold text-garage-neon font-mono">{{ $stats['total_bookings'] }}</div>
+                        <div class="mt-2 flex items-center text-xs">
+                            @if($stats['bookings_growth'] >= 0)
+                                <svg class="w-3 h-3 text-garage-neon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                                <span class="text-garage-neon font-bold">+{{ number_format($stats['bookings_growth'], 1) }}%</span>
+                            @else
+                                <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
+                                </svg>
+                                <span class="text-red-400 font-bold">{{ number_format($stats['bookings_growth'], 1) }}%</span>
+                            @endif
+                            <span class="text-garage-steel ml-1">vs last month</span>
+                        </div>
                     </div>
                     <svg class="w-12 h-12 text-garage-neon/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                 </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent"></div>
+                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-2"></div>
+                <div class="text-xs text-garage-steel">
+                    <span class="font-bold text-garage-neon">{{ $stats['current_month_bookings'] }}</span> this month
+                </div>
             </div>
 
             <!-- Total Revenue -->
@@ -56,13 +90,30 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Revenue</div>
-                        <div class="text-3xl font-bold text-garage-neon font-mono">₱{{ number_format($stats['total_revenue'], 2) }}</div>
+                        <div class="text-2xl font-bold text-garage-neon font-mono">₱{{ number_format($stats['total_revenue'], 2) }}</div>
+                        <div class="mt-2 flex items-center text-xs">
+                            @if($stats['revenue_growth'] >= 0)
+                                <svg class="w-3 h-3 text-garage-neon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                                <span class="text-garage-neon font-bold">+{{ number_format($stats['revenue_growth'], 1) }}%</span>
+                            @else
+                                <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
+                                </svg>
+                                <span class="text-red-400 font-bold">{{ number_format($stats['revenue_growth'], 1) }}%</span>
+                            @endif
+                            <span class="text-garage-steel ml-1">vs last month</span>
+                        </div>
                     </div>
                     <svg class="w-12 h-12 text-garage-neon/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent"></div>
+                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-2"></div>
+                <div class="text-xs text-garage-steel">
+                    Avg: <span class="font-bold text-garage-neon">₱{{ number_format($stats['average_booking_value'], 2) }}</span> per booking
+                </div>
             </div>
 
             <!-- Services Available -->
@@ -90,7 +141,111 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                     </svg>
                 </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"></div>
+                <div class="h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent mb-2"></div>
+                @if($stats['low_inventory_count'] > 0)
+                    <div class="text-xs flex items-center">
+                        <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <span class="text-red-400 font-bold">{{ $stats['low_inventory_count'] }}</span>
+                        <span class="text-garage-steel ml-1">low stock</span>
+                    </div>
+                @else
+                    <div class="text-xs text-garage-steel">All items stocked</div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Bookings by Status & Weekly Comparison -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <!-- Bookings by Status -->
+            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">BOOKINGS BY STATUS</h3>
+                </div>
+                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                            <span class="text-garage-offwhite font-semibold">Pending</span>
+                        </div>
+                        <span class="text-yellow-400 font-bold font-mono text-xl">{{ $bookingsByStatus['pending'] }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                            <span class="text-garage-offwhite font-semibold">Approved</span>
+                        </div>
+                        <span class="text-blue-400 font-bold font-mono text-xl">{{ $bookingsByStatus['approved'] }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-garage-neon rounded-full"></div>
+                            <span class="text-garage-offwhite font-semibold">Completed</span>
+                        </div>
+                        <span class="text-garage-neon font-bold font-mono text-xl">{{ $bookingsByStatus['completed'] }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                            <span class="text-garage-offwhite font-semibold">Cancelled</span>
+                        </div>
+                        <span class="text-red-400 font-bold font-mono text-xl">{{ $bookingsByStatus['cancelled'] }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-orange-400 rounded-full"></div>
+                            <span class="text-garage-offwhite font-semibold">No Show</span>
+                        </div>
+                        <span class="text-orange-400 font-bold font-mono text-xl">{{ $bookingsByStatus['no_show'] }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Services -->
+            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                    <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">TOP SERVICES</h3>
+                </div>
+                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
+                
+                <div class="space-y-3">
+                    @forelse($topServices as $index => $service)
+                        <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg hover:bg-garage-forest/50 transition-all">
+                            <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-garage-neon to-blue-400 rounded-full flex items-center justify-center">
+                                    <span class="text-garage-charcoal font-bold text-sm">{{ $index + 1 }}</span>
+                                </div>
+                                <span class="text-garage-offwhite font-semibold truncate">{{ $service->name }}</span>
+                            </div>
+                            <div class="flex items-center space-x-2 flex-shrink-0 ml-3">
+                                <svg class="w-4 h-4 text-garage-steel" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-garage-neon font-bold font-mono text-lg">{{ $service->booking_count }}</span>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center text-garage-steel py-8">
+                            <svg class="w-12 h-12 mx-auto mb-3 text-garage-steel/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                            </svg>
+                            <p>No service bookings yet</p>
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
 

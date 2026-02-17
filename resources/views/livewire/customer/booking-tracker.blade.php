@@ -16,7 +16,7 @@
     <!-- Header with Back Button -->
     <div class="mb-6 flex justify-between items-start">
         <div>
-            <h2 class="text-3xl font-bold text-garage-offwhite service-tag mb-2">SERVICE BAY TRACKER</h2>
+            <h2 class="text-3xl font-bold text-garage-offwhite service-tag mb-2">Dexter Auto Services Tracker</h2>
             <p class="text-garage-steel">Real-time monitoring of your active service bookings</p>
         </div>
         <a href="{{ route('customer.dashboard') }}" wire:navigate 
@@ -137,7 +137,7 @@
                                 2
                             </div>
                             <div class="text-xs mt-2 text-center font-semibold service-tag {{ in_array($booking->status, ['approved', 'completed']) ? 'text-garage-neon' : 'text-garage-steel' }}">
-                                IN SERVICE
+                                APPROVED
                             </div>
                         </div>
                         <div class="h-1 flex-1 mx-2 
@@ -235,7 +235,7 @@
                                 <button 
                                     wire:click="openLateModal({{ $booking->id }})"
                                     class="bg-orange-600/80 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-lg hover:shadow-[0_0_20px_rgba(234,88,12,0.4)] flex items-center justify-center service-tag border border-orange-500/50">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     I'LL BE LATE
@@ -311,8 +311,8 @@
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
                             <input 
@@ -320,6 +320,7 @@
                                 wire:model="estimatedArrivalTime"
                                 required
                                 class="w-full pl-10 pr-4 py-3 bg-garage-charcoal/50 border-2 border-garage-steel/30 rounded-lg text-garage-offwhite placeholder-garage-steel/50 focus:border-orange-500 focus:ring focus:ring-orange-500/20 transition-all font-mono"
+                                style="color-scheme: dark;"
                             >
                         </div>
                         @error('estimatedArrivalTime')
