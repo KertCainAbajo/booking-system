@@ -119,7 +119,6 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Customer creation failed',
-                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -166,7 +165,7 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Customer update failed',
-                'error' => $e->getMessage()
+                'error' => 'An unexpected error occurred.'
             ], 500);
         }
     }

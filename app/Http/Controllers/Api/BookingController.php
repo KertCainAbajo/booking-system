@@ -18,6 +18,9 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        if (!in_array($user->role?->name, ['customer', 'staff', 'business_owner', 'it_admin'], true)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
         $perPage = $request->input('per_page', 15);
 
         // Customers see only their bookings
@@ -67,11 +70,18 @@ class BookingController extends Controller
             $user = $request->user();
             $customer = $user->customer;
 
-            if (!$customer) {
+            if (!$customer || $user->role?->name !== 'customer') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Customer profile not found',
-                ], 404);
+                    'message' => 'Only customer accounts can create bookings.',
+                ], 403);
+            }
+
+            if ($request->filled('vehicle_id') && !$customer->vehicles()->whereKey($request->vehicle_id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The selected vehicle does not belong to this customer.',
+                ], 403);
             }
 
             $booking = Booking::create([
@@ -96,7 +106,6 @@ class BookingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Booking creation failed',
-                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -112,6 +121,9 @@ class BookingController extends Controller
     {
         try {
             $user = $request->user();
+            if (!in_array($user->role?->name, ['customer', 'staff', 'business_owner', 'it_admin'], true)) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
             $booking = Booking::with(['customer', 'service', 'vehicle', 'assignedStaff'])->findOrFail($id);
 
             // Check authorization - customers can only see their own bookings
@@ -163,6 +175,9 @@ class BookingController extends Controller
 
         try {
             $user = $request->user();
+            if (!in_array($user->role?->name, ['customer', 'staff', 'business_owner', 'it_admin'], true)) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+            }
             $booking = Booking::findOrFail($id);
 
             // Check authorization - customers can only update their own pending bookings
@@ -175,7 +190,14 @@ class BookingController extends Controller
                 }
             }
 
-            $booking->update($request->only(['booking_date', 'booking_time', 'status', 'notes']));
+            $updateData = $request->only(['booking_date', 'booking_time', 'notes']);
+
+            // Only staff, owners, and IT admins may change booking status.
+            if (in_array($user->role?->name, ['staff', 'business_owner', 'it_admin'], true)) {
+                $updateData['status'] = $request->input('status', $booking->status);
+            }
+
+            $booking->update($updateData);
             $booking->load(['service', 'vehicle']);
 
             return response()->json([
@@ -188,7 +210,7 @@ class BookingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Booking update failed',
-                'error' => $e->getMessage()
+                'error' => 'An unexpected error occurred.'
             ], 500);
         }
     }
@@ -206,7 +228,7 @@ class BookingController extends Controller
             $user = $request->user();
             $booking = Booking::findOrFail($id);
 
-            // Check authorization
+            // Check authorization and enforce the same cancellation rules as the web application.
             if ($user->role && $user->role->name === 'customer') {
                 if ($booking->customer_id !== ($user->customer->id ?? null)) {
                     return response()->json([
@@ -214,10 +236,21 @@ class BookingController extends Controller
                         'message' => 'Unauthorized to cancel this booking',
                     ], 403);
                 }
+            } elseif (!in_array($user->role?->name, ['staff', 'business_owner', 'it_admin'], true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to cancel this booking',
+                ], 403);
             }
 
-            // Update status to cancelled instead of deleting
-            $booking->update(['status' => 'cancelled']);
+            if (!$booking->canBeCancelled()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This booking cannot be cancelled.',
+                ], 422);
+            }
+
+            $booking->cancel($user->id, 'Cancelled through API');
 
             return response()->json([
                 'success' => true,
@@ -300,6 +333,10 @@ class BookingController extends Controller
      */
     public function allBookings(Request $request)
     {
+        if (!in_array($request->user()->role?->name, ['staff', 'business_owner', 'it_admin'], true)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
         $perPage = $request->input('per_page', 15);
         $status = $request->input('status');
 

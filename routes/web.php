@@ -87,6 +87,9 @@ Route::get('/dashboard', function () {
     return redirect()->route('login');
 })->name('dashboard');
 
+// Two-factor setup is available to every authenticated role.
+Route::middleware('auth')->get('/two-factor/setup', TwoFactorSetup::class)->name('two-factor.setup');
+
 // Customer Routes (for registered customers with accounts)
 Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', CustomerDashboard::class)->name('dashboard');

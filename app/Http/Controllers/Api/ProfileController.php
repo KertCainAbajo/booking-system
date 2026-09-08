@@ -83,7 +83,6 @@ class ProfileController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Profile update failed',
-                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -132,7 +131,7 @@ class ProfileController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Password change failed',
-                'error' => $e->getMessage()
+                'error' => 'An unexpected error occurred.'
             ], 500);
         }
     }

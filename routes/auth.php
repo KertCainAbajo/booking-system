@@ -45,28 +45,6 @@ Route::middleware('guest')->group(function () {
 Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
     ->name('auth.google.callback');
 
-// Debug route to check auth status
-Route::get('auth/debug', function () {
-    return response()->json([
-        'authenticated' => Auth::check(),
-        'user_id' => Auth::id(),
-        'user' => Auth::user(),
-        'session_id' => request()->session()->getId(),
-    ]);
-})->name('auth.debug');
-
-// Test route to simulate OAuth login
-Route::get('auth/test-login', function () {
-    $user = \App\Models\User::where('email', 'kabajo_230000000949@uic.edu.ph')->first();
-    if ($user) {
-        Auth::login($user, true);
-        request()->session()->save();
-        
-        return redirect('/customer/dashboard');
-    }
-    return 'User not found';
-})->name('auth.test');
-
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');

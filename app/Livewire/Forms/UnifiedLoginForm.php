@@ -70,8 +70,8 @@ class UnifiedLoginForm extends Form
             $this->user_type = 'staff';
         }
 
-        // Check if customer has 2FA enabled
-        if ($this->user_type === 'customer' && $user->google2fa_enabled && $user->google2fa_secret) {
+        // Check whether this account has 2FA enabled, regardless of role.
+        if ($user->google2fa_enabled && $user->google2fa_secret) {
             $this->requires_2fa = true;
             $this->pending_user_id = $user->id;
 

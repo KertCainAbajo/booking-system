@@ -23,8 +23,8 @@ use App\Http\Controllers\Api\CustomerController;
 Route::prefix('v1')->group(function () {
     
     // Authentication routes
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1');
     
     // Public services list
     Route::get('/services', [ServiceController::class, 'index']);
