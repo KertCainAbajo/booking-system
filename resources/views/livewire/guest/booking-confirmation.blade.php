@@ -9,7 +9,7 @@
                     DEXTER AUTO SERVICES
                 </h1>
             </div>
-            <p class="text-white text-base sm:text-lg md:text-xl font-semibold">Professional Auto Service Platform</p>
+            <p class="text-white text-base sm:text-lg md:text-xl font-semibold">Auto Service Booking</p>
         </div>
 
         <!-- Success Header -->
@@ -19,8 +19,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 service-tag">BOOKING CONFIRMED!</h2>
-            <p class="text-base sm:text-lg text-white">Your appointment has been successfully scheduled</p>
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 service-tag">BOOKING REQUEST RECEIVED</h2>
+            <p class="text-base sm:text-lg text-white">Your request was submitted and can be tracked using the reference below.</p>
         </div>
 
         <!-- Booking Reference Card -->
@@ -197,7 +197,7 @@
                     <span class="flex-shrink-0 w-10 h-10 bg-garage-neon/20 border-2 border-white text-white rounded-full flex items-center justify-center text-lg font-black mr-4 group-hover:bg-garage-neon group-hover:text-garage-charcoal transition-all">1</span>
                     <div class="flex-1 pt-1">
                         <h4 class="font-bold text-white mb-1 service-tag">BOOKING REVIEW</h4>
-                        <p class="text-white">Our team will review your booking and confirm availability within 24 hours</p>
+                        <p class="text-white">Our team will review your booking and update its status in the system.</p>
                     </div>
                 </div>
                 <div class="flex items-start group">

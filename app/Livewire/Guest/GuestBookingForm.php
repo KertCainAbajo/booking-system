@@ -36,6 +36,7 @@ class GuestBookingForm extends Component
     public $estimatedTotal = 0;
     public $expandedCategories = [];
     public $servicesConfirmed = false;
+    public $policyConsent = false;
     public $savedCategories = []; // Track which categories have saved services
     public $currentStep = 1; // 1: Services, 2: Vehicle, 3: Customer Info, 4: Confirmation
     
@@ -76,6 +77,7 @@ class GuestBookingForm extends Component
             $this->notes = $sessionData['notes'] ?? '';
             $this->currentStep = $sessionData['currentStep'] ?? 1;
             $this->servicesConfirmed = $sessionData['servicesConfirmed'] ?? false;
+            $this->policyConsent = $sessionData['policyConsent'] ?? false;
             $this->expandedCategories = $sessionData['expandedCategories'] ?? [];
             $this->savedCategories = $sessionData['savedCategories'] ?? [];
             
@@ -111,6 +113,7 @@ class GuestBookingForm extends Component
                 'notes' => $this->notes,
                 'currentStep' => $this->currentStep,
                 'servicesConfirmed' => $this->servicesConfirmed,
+                'policyConsent' => $this->policyConsent,
                 'expandedCategories' => $this->expandedCategories,
                 'savedCategories' => $this->savedCategories,
             ]
@@ -332,6 +335,7 @@ class GuestBookingForm extends Component
             'estimatedTotal',
             'expandedCategories',
             'servicesConfirmed',
+            'policyConsent',
             'currentStep'
         ]);
         
@@ -357,9 +361,11 @@ class GuestBookingForm extends Component
             'selectedServices' => 'required|array|min:1',
             'bookingDate' => 'required|date|after_or_equal:today',
             'bookingTime' => 'required',
+            'policyConsent' => 'accepted',
         ], [
             'customerName.regex' => 'Full name must contain only letters and spaces.',
             'customerPhone.regex' => 'Phone number must contain only numbers.',
+            'policyConsent.accepted' => 'You must agree to the Privacy Policy and Terms and Conditions before submitting.',
         ]);
 
         // Check if there's already a booking for this date
@@ -438,7 +444,7 @@ class GuestBookingForm extends Component
             // Redirect to confirmation page with booking reference
             session()->flash('booking_reference', $booking->booking_reference);
             session()->flash('customer_email', $customer->email);
-            session()->flash('success', 'Booking confirmed successfully! Your reference number is: ' . $booking->booking_reference);
+            session()->flash('success', 'Booking request received. Your reference number is: ' . $booking->booking_reference);
             
             return redirect()->route('guest.booking.confirmation', ['reference' => $booking->booking_reference]);
             

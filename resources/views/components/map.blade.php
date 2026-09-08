@@ -17,6 +17,7 @@
         <iframe
             class="w-full border-0"
             style="height: var(--map-height);"
+            title="Map showing the business location"
             loading="lazy"
             allowfullscreen
             referrerpolicy="no-referrer-when-downgrade"

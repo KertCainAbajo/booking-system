@@ -99,10 +99,11 @@
                 <!-- Google Maps Embed -->
                 <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg mb-4">
                     <iframe 
-                        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Adelfa+Street,Mati+City,Davao+Oriental,Philippines&zoom=18&maptype=satellite"
+                        src="https://www.google.com/maps?q=Adelfa+Street,Don+Lis+Village,Mati+City,Davao+Oriental,Philippines&output=embed"
                         width="100%" 
                         height="100%" 
                         style="border:0;" 
+                        title="Map showing Dexter Auto Services location"
                         allowfullscreen="" 
                         loading="lazy" 
                         referrerpolicy="no-referrer-when-downgrade"
@@ -112,7 +113,7 @@
                 
                 <div class="bg-green-50 p-4 rounded-lg">
                     <p class="text-gray-700 text-sm">
-                        <span class="font-bold">Exact Location:</span> Adelfa Street, Don lis Village, City of Mati, Davao Oriental. Easy to find and ample parking available for customers.
+                        <span class="font-bold">Location:</span> Adelfa Street, Don lis Village, City of Mati, Davao Oriental.
                     </p>
                 </div>
             </div>
@@ -135,7 +136,16 @@
 
         <!-- Footer -->
         <div class="mt-12 text-center text-green-200 text-sm">
-            <p>&copy; {{ date('Y') }} Dexter Auto Services. Professional auto service at your convenience.</p>
+            <p>&copy; {{ date('Y') }} Dexter Auto Services.</p>
+            <div class="mt-2 flex justify-center gap-4">
+                <a href="{{ route('privacy.policy') }}" class="underline hover:no-underline">Privacy Policy</a>
+                <span aria-hidden="true">|</span>
+                <a href="{{ route('terms.conditions') }}" class="underline hover:no-underline">Terms and Conditions</a>
+                <span aria-hidden="true">|</span>
+                <a href="{{ route('cookie.policy') }}" class="underline hover:no-underline">Cookie Policy</a>
+                <span aria-hidden="true">|</span>
+                <a href="{{ route('refund.policy') }}" class="underline hover:no-underline">Refund Policy</a>
+            </div>
         </div>
     </div>
 </body>

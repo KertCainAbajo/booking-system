@@ -42,6 +42,11 @@ Route::get('/contact', function () {
     return view('guest-contact');
 })->name('guest.contact');
 
+Route::view('/privacy-policy', 'privacy-policy')->name('privacy.policy');
+Route::view('/terms-and-conditions', 'terms-and-conditions')->name('terms.conditions');
+Route::view('/cookie-policy', 'cookie-policy')->name('cookie.policy');
+Route::view('/refund-policy', 'refund-policy')->name('refund.policy');
+
 Route::get('/book', GuestBookingForm::class)->name('guest.booking');
 Route::get('/booking/confirmation/{reference}', BookingConfirmation::class)->name('guest.booking.confirmation');
 Route::get('/booking/track', GuestBookingTracker::class)->name('guest.booking.track');

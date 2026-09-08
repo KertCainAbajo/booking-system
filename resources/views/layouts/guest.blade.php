@@ -35,7 +35,7 @@
                     <!-- Main Headline -->
                     <div class="space-y-2 text-center mb-8">
                         <h1 class="text-3xl xl:text-4xl font-bold leading-tight tracking-tight text-white">
-                            Book Trusted <span class="text-green-700">Auto Service</span>
+                            Book <span class="text-green-700">Auto Service</span>
                         </h1>
                     </div>
                     
@@ -60,8 +60,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-white mb-1">Certified Technicians</h3>
-                                <p class="text-xs text-gray-400">Expert care for your vehicle</p>
+                                <h3 class="text-sm font-bold text-white mb-1">Service Requests</h3>
+                                <p class="text-xs text-gray-400">Submit and track your booking request</p>
                             </div>
                         </div>
                         
@@ -72,8 +72,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-white mb-1">Transparent Pricing</h3>
-                                <p class="text-xs text-gray-400">No hidden fees, upfront quotes</p>
+                                <h3 class="text-sm font-bold text-white mb-1">Price Estimates</h3>
+                                <p class="text-xs text-gray-400">Review estimated service prices</p>
                             </div>
                         </div>
                     </div>
@@ -84,6 +84,15 @@
                 <div class="flex-1 flex items-center justify-center px-4 sm:px-6 py-6 sm:py-8 md:py-12 bg-white">
                     <div class="w-full max-w-md">
                         {{ $slot }}
+                        <div class="mt-6 text-center text-sm">
+                            <a href="{{ route('privacy.policy') }}" class="underline hover:no-underline">Privacy Policy</a>
+                            <span class="mx-2" aria-hidden="true">|</span>
+                            <a href="{{ route('terms.conditions') }}" class="underline hover:no-underline">Terms and Conditions</a>
+                            <span class="mx-2" aria-hidden="true">|</span>
+                            <a href="{{ route('cookie.policy') }}" class="underline hover:no-underline">Cookie Policy</a>
+                            <span class="mx-2" aria-hidden="true">|</span>
+                            <a href="{{ route('refund.policy') }}" class="underline hover:no-underline">Refund Policy</a>
+                        </div>
                     </div>
                 </div>
             </div>

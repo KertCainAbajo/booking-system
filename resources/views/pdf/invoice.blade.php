@@ -275,7 +275,7 @@
                         <img src="{{ public_path('images/shop.png') }}" alt="Dexter Auto Services">
                         <div class="logo-text">
                             <div class="company-name">DEXTER AUTO SERVICES</div>
-                            <div class="company-tagline">Professional Auto Care</div>
+                            <div class="company-tagline">Auto Service</div>
                         </div>
                     </div>
                 </div>

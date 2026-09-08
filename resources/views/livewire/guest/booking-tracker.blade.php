@@ -8,7 +8,7 @@
                     DEXTER AUTO SERVICES
                 </h1>
             </div>
-            <p class="text-white text-base sm:text-lg md:text-xl font-semibold">Professional Auto Service Platform</p>
+            <p class="text-white text-base sm:text-lg md:text-xl font-semibold">Auto Service Booking</p>
         </div>
 
         <div class="text-center mb-6 sm:mb-8">

@@ -24,6 +24,7 @@ class BookingForm extends Component
     public $expandedCategories = []; // Track which categories are expanded
     public $servicesConfirmed = false; // Track if user clicked Save & Continue
     public $savedCategories = []; // Track which categories have saved services
+    public $policyConsent = false;
     
     // Customer information
     public $customerName = '';
@@ -333,6 +334,7 @@ class BookingForm extends Component
                 'selectedServices' => 'required|array|min:1',
                 'bookingDate' => 'required|date|after_or_equal:today',
                 'bookingTime' => 'required',
+                'policyConsent' => 'accepted',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             $errors = $e->validator->errors()->all();

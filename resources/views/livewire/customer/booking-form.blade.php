@@ -433,6 +433,20 @@
                 <p class="text-xs sm:text-sm text-white">* Final price may vary based on parts and additional services required</p>
             </div>
 
+            <div class="mb-6 rounded-lg border border-garage-neon/30 bg-garage-charcoal/40 p-4">
+                <label for="customer-policy-consent" class="flex items-start gap-3 text-sm text-white">
+                    <input id="customer-policy-consent" type="checkbox" wire:model="policyConsent"
+                           class="mt-1 h-5 w-5 rounded border-garage-neon/50 bg-garage-charcoal text-garage-neon focus:ring-garage-neon">
+                    <span>
+                        I have read and agree to the
+                        <a href="{{ route('privacy.policy') }}" target="_blank" rel="noopener" class="underline">Privacy Policy</a>,
+                        <a href="{{ route('terms.conditions') }}" target="_blank" rel="noopener" class="underline">Terms and Conditions</a>, and
+                        <a href="{{ route('refund.policy') }}" target="_blank" rel="noopener" class="underline">Refund Policy</a>.
+                    </span>
+                </label>
+                @error('policyConsent') <span class="mt-2 block text-sm text-red-400">{{ $message }}</span> @enderror
+            </div>
+
             <!-- Submit Button -->
             <button type="submit" 
                     wire:loading.attr="disabled"

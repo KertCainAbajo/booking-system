@@ -113,16 +113,16 @@
                 </p>
             </div>
 
-            <!-- Instant Confirmation Card -->
+            <!-- Booking Reference Card -->
             <div class="bg-white rounded-xl shadow-xl p-8 text-center transform hover:scale-105 transition-all duration-300">
                 <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
                     <svg class="w-10 h-10 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-3">Instant Confirmation</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Booking Reference</h3>
                 <p class="text-gray-600 leading-relaxed">
-                    Receive immediate booking confirmation with a unique tracking reference. Know your booking is secured right away.
+                    Receive a unique booking reference after submitting your request so you can track its status.
                 </p>
             </div>
 
@@ -254,7 +254,16 @@
 
         <!-- Footer Space -->
         <div class="mt-16 text-center text-green-200 text-sm">
-            <p>&copy; {{ date('Y') }} Dexter Auto Services. Professional auto service at your convenience.</p>
+            <p>&copy; {{ date('Y') }} Dexter Auto Services.</p>
+            <div class="mt-2 flex justify-center gap-4">
+                <a href="{{ route('privacy.policy') }}" class="underline hover:no-underline">Privacy Policy</a>
+                <span aria-hidden="true">|</span>
+                <a href="{{ route('terms.conditions') }}" class="underline hover:no-underline">Terms and Conditions</a>
+                <span aria-hidden="true">|</span>
+                <a href="{{ route('cookie.policy') }}" class="underline hover:no-underline">Cookie Policy</a>
+                <span aria-hidden="true">|</span>
+                <a href="{{ route('refund.policy') }}" class="underline hover:no-underline">Refund Policy</a>
+            </div>
         </div>
     </div>
 

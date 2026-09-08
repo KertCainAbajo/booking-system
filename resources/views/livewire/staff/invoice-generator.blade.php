@@ -119,7 +119,7 @@
                         <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-16 w-16 object-contain invoice-logo">
                         <div>
                             <h2 class="text-2xl font-bold print-text">DEXTER AUTO SERVICES</h2>
-                            <p class="text-sm text-garage-offwhite mt-1 print-text">Professional Auto Care</p>
+                            <p class="text-sm text-garage-offwhite mt-1 print-text">Auto Service</p>
                         </div>
                     </div>
                 </div>
