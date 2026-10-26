@@ -1,212 +1,191 @@
-<div>
-    <div class="space-y-6">
-        <!-- Welcome Header -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border-l-4 border-garage-neon relative overflow-hidden">
-            <!-- Carbon Fiber Pattern Overlay -->
-            <div class="absolute inset-0 bg-carbon-fiber opacity-50"></div>
-            
-            <div class="relative z-10">
-                <div class="flex items-center space-x-3 sm:space-x-4 mb-3">
-                    <!-- Car + Wrench Icon -->
-                    <svg class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                    </svg>
-                    <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider break-words">WELCOME, {{ strtoupper(auth()->user()->name) }}</h1>
-                </div>
-                <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">Your premium auto service control center</p>
-            </div>
-            
-            <!-- Garage Floor Marking -->
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-30"></div>
-        </div>
+@php
+    $hour = now()->hour;
+    $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+    $firstName = \Illuminate\Support\Str::of(auth()->user()->name)->explode(' ')->first();
 
-        <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-            <!-- Book Service Card -->
-            <a href="{{ route('customer.book') }}" wire:navigate 
-               class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite mb-2 service-tag">BOOK SERVICE</h3>
-                            <p class="text-garage-steel text-xs sm:text-sm">Schedule your next maintenance</p>
-                        </div>
-                        <!-- Wrench Icon -->
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white/40 group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="flex items-center text-white font-semibold group-hover:translate-x-2 transition-transform">
-                        <span class="service-tag text-sm">START NOW</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </div>
-                </div>
-            </a>
+    $statusStyles = [
+        'pending' => 'bg-amber-400/10 text-amber-300 ring-amber-400/30',
+        'approved' => 'bg-sky-400/10 text-sky-300 ring-sky-400/30',
+        'completed' => 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/30',
+        'cancelled' => 'bg-gray-400/10 text-gray-300 ring-gray-400/30',
+        'no_show' => 'bg-orange-400/10 text-orange-300 ring-orange-400/30',
+        'not_available' => 'bg-rose-400/10 text-rose-300 ring-rose-400/30',
+    ];
+@endphp
 
-            <!-- Track Booking Card -->
-            <a href="{{ route('customer.tracker') }}" wire:navigate 
-               class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden pulse-neon">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-garage-emerald/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <h3 class="text-xl font-bold text-garage-offwhite mb-2 service-tag">TRACK SERVICE</h3>
-                            <p class="text-garage-steel text-sm">Monitor service progress live</p>
-                        </div>
-                        <!-- Clipboard/Status Icon -->
-                        <svg class="w-12 h-12 text-white/60 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="flex items-center text-white font-semibold group-hover:translate-x-2 transition-transform">
-                        <span class="service-tag text-sm">CHECK STATUS</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </div>
-                </div>
-            </a>
+<div class="space-y-6 lg:space-y-8">
+    <!-- Hero -->
+    <section class="relative overflow-hidden rounded-3xl ring-1 ring-white/10 bg-gray-950">
+        <img src="{{ asset('images/7.jpg') }}" alt="" class="absolute inset-0 w-full h-full object-cover opacity-40" aria-hidden="true">
+        <div class="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/85 to-gray-950/30" aria-hidden="true"></div>
+        <div class="absolute -top-24 -left-24 w-80 h-80 rounded-full bg-emerald-500/20 blur-3xl" aria-hidden="true"></div>
 
-            <!-- Service History Card -->
-            <a href="{{ route('customer.history') }}" wire:navigate 
-               class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <h3 class="text-xl font-bold text-garage-offwhite mb-2 service-tag">SERVICE LOG</h3>
-                            <p class="text-garage-steel text-sm">View maintenance records</p>
-                        </div>
-                        <!-- History/Clock Icon -->
-                        <svg class="w-12 h-12 text-white/40 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="flex items-center text-white font-semibold group-hover:translate-x-2 transition-transform">
-                        <span class="service-tag text-sm">VIEW HISTORY</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Available Slots Section -->
-        <livewire:customer.available-slots />
-
-        <!-- All Bookings -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-6 h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <h2 class="text-2xl font-bold text-garage-offwhite service-tag">SERVICE RECORDS</h2>
-                </div>
-                @if($allBookings->count() > 0)
-                    <a href="{{ route('customer.tracker') }}" wire:navigate class="text-white hover:text-white text-sm font-semibold transition-colors service-tag flex items-center">
-                        <span>ACTIVE SERVICES</span>
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
+        <div class="relative grid gap-8 p-6 sm:p-8 lg:p-10 lg:grid-cols-[1fr_minmax(0,22rem)] lg:items-center">
+            <div>
+                <p class="text-sm font-medium text-emerald-300">{{ now()->format('l, F j') }}</p>
+                <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    {{ $greeting }}, {{ $firstName }}!
+                </h1>
+                <p class="mt-3 max-w-lg text-base sm:text-lg text-gray-300">
+                    Ready when your car is. Book a service, follow the repair, and review past work, all in one place.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <a href="{{ route('customer.book') }}" wire:navigate class="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-gradient-to-b from-emerald-500 to-emerald-600 text-white font-semibold shadow-lg shadow-emerald-900/50 hover:from-emerald-400 hover:to-emerald-600 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Book a service
                     </a>
+                    <a href="{{ route('customer.tracker') }}" wire:navigate class="inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-white/10 text-white font-semibold ring-1 ring-white/15 backdrop-blur hover:bg-white/15 transition">
+                        Track my car
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Next appointment -->
+            <div class="rounded-2xl bg-white/[0.06] ring-1 ring-white/10 backdrop-blur-md p-5">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">Next appointment</p>
+                @if ($nextBooking)
+                    <div class="mt-4 flex items-center gap-4">
+                        <div class="w-16 flex-shrink-0 rounded-xl bg-emerald-500 text-gray-950 text-center py-2">
+                            <div class="text-[11px] font-bold uppercase">{{ $nextBooking->booking_date->format('M') }}</div>
+                            <div class="text-2xl font-extrabold leading-none">{{ $nextBooking->booking_date->format('d') }}</div>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-lg font-bold text-white">{{ $nextBooking->booking_time->format('g:i A') }}</p>
+                            <p class="text-sm text-gray-300 truncate">{{ $nextBooking->booking_date->format('l') }} · {{ $nextBooking->vehicle?->make }} {{ $nextBooking->vehicle?->model }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 {{ $statusStyles[$nextBooking->status] ?? $statusStyles['pending'] }}">
+                            {{ ucwords(str_replace('_', ' ', $nextBooking->status)) }}
+                        </span>
+                        <a href="{{ route('customer.tracker') }}" wire:navigate class="text-sm font-semibold text-emerald-300 hover:text-emerald-200">View details →</a>
+                    </div>
+                @else
+                    <p class="mt-4 text-lg font-semibold text-white">Nothing scheduled</p>
+                    <p class="mt-1 text-sm text-gray-400">Pick an open slot below to book your next visit.</p>
                 @endif
             </div>
+        </div>
+    </section>
 
-            <!-- Garage Floor Divider -->
-            <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
+    <!-- Stats -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        @foreach ([
+            ['label' => 'Active bookings', 'value' => $stats['active'], 'hint' => 'Pending or approved', 'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', 'tone' => 'text-sky-300 bg-sky-400/10'],
+            ['label' => 'Services done', 'value' => $stats['completed'], 'hint' => 'Completed visits', 'icon' => 'M5 13l4 4L19 7', 'tone' => 'text-emerald-300 bg-emerald-400/10'],
+            ['label' => 'Total spent', 'value' => '₱' . number_format($stats['spent'], 0), 'hint' => 'On completed work', 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'tone' => 'text-amber-300 bg-amber-400/10'],
+            ['label' => 'My vehicles', 'value' => $stats['vehicles'], 'hint' => 'Saved to your account', 'icon' => 'M8 17a2 2 0 11-4 0 2 2 0 014 0zM20 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0', 'tone' => 'text-violet-300 bg-violet-400/10'],
+        ] as $stat)
+            <div class="rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.07] p-4 sm:p-5">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-gray-400">{{ $stat['label'] }}</p>
+                    <span class="w-9 h-9 rounded-xl flex items-center justify-center {{ $stat['tone'] }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ $stat['icon'] }}"/></svg>
+                    </span>
+                </div>
+                <p class="mt-3 text-2xl sm:text-3xl font-bold text-white">{{ $stat['value'] }}</p>
+                <p class="mt-1 text-xs sm:text-sm text-gray-500">{{ $stat['hint'] }}</p>
+            </div>
+        @endforeach
+    </section>
 
-            @forelse($allBookings as $booking)
-                <div class="border-l-4 {{ $booking->status === 'pending' ? 'border-white' : ($booking->status === 'approved' ? 'border-white' : ($booking->status === 'completed' ? 'border-white' : 'border-red-500')) }} bg-garage-charcoal/50 rounded-r-lg p-5 mb-4 hover:bg-garage-forest/30 transition-all duration-200">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="service-tag font-bold text-garage-offwhite text-lg">SERVICE #{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</span>
-                                <span class="service-tag px-3 py-1 text-xs rounded font-bold
-                                    {{ $booking->status === 'pending' ? 'bg-white/20 text-white border border-white/30' : '' }}
-                                    {{ $booking->status === 'approved' ? 'bg-white/20 text-white border border-white/30' : '' }}
-                                    {{ $booking->status === 'completed' ? 'bg-white/20 text-white border border-white/30' : '' }}
-                                    {{ $booking->status === 'cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : '' }}
-                                    {{ $booking->status === 'not_available' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : '' }}
-                                ">
-                                    {{ strtoupper(str_replace('_', ' ', $booking->status)) }}
+    <!-- Quick actions -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+        @foreach ([
+            ['route' => 'customer.book', 'title' => 'Book a service', 'text' => 'Choose a date, time and the work you need.', 'icon' => 'M12 4v16m8-8H4'],
+            ['route' => 'customer.tracker', 'title' => 'Track my car', 'text' => 'See live progress on your current repair.', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'],
+            ['route' => 'customer.history', 'title' => 'Service history', 'text' => 'Look back at past visits and invoices.', 'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
+        ] as $action)
+            <a href="{{ route($action['route']) }}" wire:navigate class="group flex items-center gap-4 rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.07] p-5 hover:bg-white/[0.06] hover:ring-emerald-400/30 transition">
+                <span class="w-12 h-12 flex-shrink-0 rounded-xl bg-emerald-500/10 ring-1 ring-emerald-400/20 flex items-center justify-center text-emerald-300 group-hover:bg-emerald-500 group-hover:text-gray-950 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ $action['icon'] }}"/></svg>
+                </span>
+                <span class="flex-1 min-w-0">
+                    <span class="block text-base font-semibold text-white">{{ $action['title'] }}</span>
+                    <span class="block text-sm text-gray-400">{{ $action['text'] }}</span>
+                </span>
+                <svg class="w-5 h-5 text-gray-600 group-hover:text-emerald-300 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
+        @endforeach
+    </section>
+
+    <!-- Available Slots Section -->
+    <livewire:customer.available-slots />
+
+    <!-- Recent bookings -->
+    <section class="rounded-3xl bg-white/[0.03] ring-1 ring-white/[0.07] p-5 sm:p-7">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div>
+                <h2 class="text-xl font-bold text-white">Recent bookings</h2>
+                <p class="text-sm text-gray-400">Your last {{ $allBookings->count() ?: 10 }} service requests</p>
+            </div>
+            @if ($allBookings->count() > 0)
+                <a href="{{ route('customer.history') }}" wire:navigate class="text-sm font-semibold text-emerald-300 hover:text-emerald-200">View all history →</a>
+            @endif
+        </div>
+
+        <div class="space-y-3">
+            @forelse ($allBookings as $booking)
+                <div class="rounded-2xl bg-black/20 ring-1 ring-white/[0.06] p-4 sm:p-5 hover:ring-white/15 transition">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <!-- Date tile -->
+                        <div class="flex sm:block items-center gap-3 sm:w-16 sm:text-center flex-shrink-0">
+                            <div class="w-14 sm:w-16 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-center py-2">
+                                <div class="text-[11px] font-semibold uppercase text-gray-400">{{ $booking->booking_date->format('M') }}</div>
+                                <div class="text-xl font-bold text-white leading-none">{{ $booking->booking_date->format('d') }}</div>
+                            </div>
+                            <div class="sm:mt-1.5 text-sm sm:text-xs font-medium text-gray-400">{{ $booking->booking_time->format('g:i A') }}</div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-semibold text-white">Service #{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</span>
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 {{ $statusStyles[$booking->status] ?? $statusStyles['pending'] }}">
+                                    {{ ucwords(str_replace('_', ' ', $booking->status)) }}
                                 </span>
                             </div>
-                            
-                            <!-- Service Receipt Style -->
-                            <div class="space-y-2 text-sm text-garage-steel mb-3">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    <span class="font-mono">{{ $booking->booking_date->format('M d, Y') }}</span>
-                                    <span class="text-garage-neon">|</span>
-                                    <svg class="w-4 h-4 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="font-mono">{{ $booking->booking_time->format('h:i A') }}</span>
+                            <div class="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-gray-300">
+                                <span>{{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</span>
+                                @if ($booking->vehicle?->plate_number)
+                                    <span class="plate-number text-xs">{{ $booking->vehicle->plate_number }}</span>
+                                @endif
+                            </div>
+                            @if ($booking->services->isNotEmpty())
+                                <div class="mt-2.5 flex flex-wrap gap-1.5">
+                                    @foreach ($booking->services as $service)
+                                        <span class="rounded-full bg-white/[0.05] px-2.5 py-0.5 text-xs text-gray-300 ring-1 ring-white/[0.08]">{{ $service->name }}</span>
+                                    @endforeach
                                 </div>
-                            </div>
-                            
-                            <!-- License Plate Style Vehicle Info -->
-                            <div class="mb-3">
-                                <div class="inline-flex items-center space-x-3">
-                                    <svg class="w-5 h-5 text-garage-steel" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                    <span class="text-garage-offwhite font-semibold">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</span>
-                                    <span class="plate-number text-sm">{{ $booking->vehicle->plate_number }}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex flex-wrap gap-2 text-sm">
-                                @foreach($booking->services as $service)
-                                    <span class="bg-garage-forest/50 text-garage-steel px-3 py-1 rounded-full border border-garage-neon/20">
-                                        {{ $service->name }}
-                                    </span>
-                                @endforeach
-                            </div>
+                            @endif
                         </div>
-                        
-                        <div class="text-right ml-6">
-                            <div class="text-2xl font-bold text-white mb-2 font-mono">₱{{ number_format($booking->total_amount, 2) }}</div>
-                            @if(in_array($booking->status, ['pending', 'approved']))
-                                <a href="{{ route('customer.tracker') }}" wire:navigate 
-                                   class="inline-flex items-center text-sm text-white hover:text-white font-semibold transition-colors service-tag">
-                                    <span>TRACK</span>
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
+
+                        <!-- Amount -->
+                        <div class="flex sm:flex-col items-center sm:items-end justify-between gap-2 sm:text-right">
+                            <span class="text-xl font-bold text-white">₱{{ number_format($booking->total_amount, 2) }}</span>
+                            @if (in_array($booking->status, ['pending', 'approved']))
+                                <a href="{{ route('customer.tracker') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-semibold text-emerald-300 hover:text-emerald-200">
+                                    Track
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                                 </a>
                             @endif
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="text-center py-16">
-                    <svg class="w-24 h-24 mx-auto text-garage-steel/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <p class="text-garage-steel text-lg mb-6">No service records found</p>
-                    <a href="{{ route('customer.book') }}" wire:navigate 
-                       class="inline-flex items-center px-6 py-3 bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold rounded-lg transition-all shadow-neon-green service-tag">
-                        <span>BOOK FIRST SERVICE</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
+                <div class="text-center py-14 rounded-2xl border border-dashed border-white/10">
+                    <span class="mx-auto w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-300">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </span>
+                    <p class="mt-4 text-lg font-semibold text-white">No bookings yet</p>
+                    <p class="mt-1 text-sm text-gray-400">Your service requests will show up here.</p>
+                    <a href="{{ route('customer.book') }}" wire:navigate class="mt-6 inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-emerald-500 text-gray-950 font-semibold hover:bg-emerald-400 transition">
+                        Book your first service
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
                 </div>
             @endforelse
         </div>
-    </div>
+    </section>
 </div>

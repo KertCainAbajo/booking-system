@@ -1,164 +1,99 @@
-<div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
+<section class="rounded-3xl bg-white/[0.03] ring-1 ring-white/[0.07] p-5 sm:p-7">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center space-x-3">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <h2 class="text-2xl font-bold text-garage-offwhite service-tag">AVAILABLE SLOTS</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-white">Open appointment slots</h2>
+            <p class="text-sm text-gray-400">Pick a day to see which times are still free.</p>
         </div>
-        <a href="{{ route('customer.book') }}" wire:navigate class="inline-flex items-center px-4 py-2 bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold rounded-lg transition-all shadow-neon-green service-tag text-sm">
-            <span>BOOK NOW</span>
-            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <a href="{{ route('customer.book') }}" wire:navigate class="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-emerald-500 text-gray-950 font-semibold hover:bg-emerald-400 transition">
+            Book now
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
             </svg>
         </a>
     </div>
 
-    <!-- Garage Floor Divider -->
-    <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
-
     <!-- Date Selection -->
-    <div class="mb-6">
-        <h3 class="text-sm font-semibold text-garage-steel mb-3 uppercase tracking-wider">Select Date</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
-            @foreach($availableDates as $dateInfo)
-                <button 
-                    wire:click="selectDate('{{ $dateInfo['date'] }}')"
-                    class="group relative bg-garage-charcoal/50 rounded-lg p-3 border-2 transition-all duration-200
-                        {{ $selectedDate === $dateInfo['date'] 
-                            ? 'border-garage-neon bg-garage-neon/10' 
-                            : ($dateInfo['isFullyBooked'] 
-                                ? 'border-red-500/50 bg-red-900/20' 
-                                : 'border-garage-steel/20 hover:border-garage-neon/50 hover:bg-garage-forest/30') }}
-                    ">
-                    <div class="text-center">
-                        <div class="text-xs font-semibold {{ $dateInfo['isToday'] ? 'text-garage-neon' : 'text-garage-steel' }} mb-1 uppercase tracking-wide">
-                            {{ $dateInfo['isToday'] ? 'TODAY' : $dateInfo['day'] }}
-                        </div>
-                        <div class="text-2xl font-bold 
-                            {{ $selectedDate === $dateInfo['date'] ? 'text-garage-neon' : ($dateInfo['isFullyBooked'] ? 'text-red-400' : 'text-garage-offwhite') }}
-                        ">
-                            {{ $dateInfo['dayNum'] }}
-                        </div>
-                        <div class="text-xs font-semibold {{ $dateInfo['isToday'] ? 'text-garage-neon' : 'text-garage-steel' }} uppercase">
-                            {{ $dateInfo['month'] }}
-                        </div>
-                        
-                        @if($dateInfo['isFullyBooked'])
-                            <div class="mt-1 text-[10px] font-bold text-red-500 uppercase tracking-wider">
-                                FULLY BOOKED
-                            </div>
-                        @elseif($dateInfo['isToday'])
-                            <div class="mt-1 text-[10px] font-bold text-garage-neon uppercase tracking-wider animate-pulse">
-                                BOOK NOW
-                            </div>
-                        @endif
-                    </div>
-                    
-                    @if($selectedDate === $dateInfo['date'])
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-garage-neon rounded-b"></div>
-                    @endif
-                </button>
-            @endforeach
-        </div>
+    <div class="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+        @foreach($availableDates as $dateInfo)
+            @php $isSelected = $selectedDate === $dateInfo['date']; @endphp
+            <button
+                wire:click="selectDate('{{ $dateInfo['date'] }}')"
+                @class([
+                    'snap-start flex-shrink-0 w-[5.5rem] sm:flex-1 sm:w-auto sm:min-w-[5.5rem] rounded-2xl py-3 px-2 text-center ring-1 transition',
+                    'bg-emerald-500 text-gray-950 ring-emerald-400 shadow-lg shadow-emerald-900/40' => $isSelected,
+                    'bg-rose-500/[0.06] ring-rose-500/30 text-rose-300' => ! $isSelected && $dateInfo['isFullyBooked'],
+                    'bg-white/[0.03] ring-white/10 text-gray-200 hover:ring-emerald-400/40 hover:bg-white/[0.06]' => ! $isSelected && ! $dateInfo['isFullyBooked'],
+                ])>
+                <div @class(['text-xs font-semibold uppercase tracking-wide', 'text-gray-900/70' => $isSelected, 'text-emerald-300' => ! $isSelected && $dateInfo['isToday'], 'text-gray-400' => ! $isSelected && ! $dateInfo['isToday']])>
+                    {{ $dateInfo['isToday'] ? 'Today' : \Illuminate\Support\Str::limit($dateInfo['day'], 3, '') }}
+                </div>
+                <div class="mt-1 text-2xl font-bold leading-none">{{ $dateInfo['dayNum'] }}</div>
+                <div @class(['mt-1 text-xs font-medium uppercase', 'text-gray-900/70' => $isSelected, 'text-gray-500' => ! $isSelected])>
+                    {{ $dateInfo['month'] }}
+                </div>
+                @if($dateInfo['isFullyBooked'])
+                    <div class="mt-1.5 text-[10px] font-bold uppercase tracking-wider">Full</div>
+                @endif
+            </button>
+        @endforeach
     </div>
 
     <!-- Time Slots -->
     @if($selectedDate)
-        <div>
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-semibold text-white uppercase tracking-wider">
-                    Available Time Slots - {{ \Carbon\Carbon::parse($selectedDate)->format('F d, Y') }}
+        <div class="mt-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <h3 class="text-base font-semibold text-white">
+                    {{ \Carbon\Carbon::parse($selectedDate)->format('l, F j') }}
                 </h3>
-                <div class="flex items-center space-x-4 text-xs">
-                    <div class="flex items-center space-x-1">
-                        <div class="w-3 h-3 rounded-full bg-garage-neon"></div>
-                        <span class="text-garage-steel">Available</span>
-                    </div>
-                    <div class="flex items-center space-x-1">
-                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <span class="text-garage-steel">Limited</span>
-                    </div>
-                    <div class="flex items-center space-x-1">
-                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                        <span class="text-garage-steel">Full</span>
-                    </div>
+                <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>Open</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400"></span>Almost full</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span>Full</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
                 @forelse($selectedDateSlots as $slot)
-                    <div class="relative bg-garage-charcoal/50 rounded-lg p-4 border-2 
-                        {{ $slot['isAvailable'] 
-                            ? ($slot['isLimited'] ? 'border-yellow-500/30' : 'border-garage-neon/30 hover:border-garage-neon') 
-                            : 'border-red-500/30 opacity-60' }}
-                        transition-all duration-200">
-                        
-                        <!-- Status Indicator -->
-                        <div class="absolute top-2 right-2">
+                    <div @class([
+                        'relative rounded-xl px-4 py-3.5 ring-1 transition',
+                        'bg-rose-500/[0.05] ring-rose-500/20 opacity-60' => $slot['isFull'],
+                        'bg-amber-400/[0.06] ring-amber-400/30' => ! $slot['isFull'] && $slot['isLimited'],
+                        'bg-emerald-400/[0.05] ring-emerald-400/25 hover:ring-emerald-400/60' => ! $slot['isFull'] && ! $slot['isLimited'],
+                    ])>
+                        <div class="flex items-center justify-between gap-2">
+                            <span @class([
+                                'text-lg font-bold tabular-nums',
+                                'text-rose-300 line-through decoration-rose-400/60' => $slot['isFull'],
+                                'text-amber-200' => ! $slot['isFull'] && $slot['isLimited'],
+                                'text-white' => ! $slot['isFull'] && ! $slot['isLimited'],
+                            ])>{{ $slot['displayTime'] }}</span>
+                            <span @class([
+                                'w-2 h-2 rounded-full',
+                                'bg-rose-400' => $slot['isFull'],
+                                'bg-amber-400 animate-pulse' => ! $slot['isFull'] && $slot['isLimited'],
+                                'bg-emerald-400' => ! $slot['isFull'] && ! $slot['isLimited'],
+                            ])></span>
+                        </div>
+                        <p @class([
+                            'mt-1 text-xs font-medium',
+                            'text-rose-300' => $slot['isFull'],
+                            'text-amber-300' => ! $slot['isFull'] && $slot['isLimited'],
+                            'text-gray-400' => ! $slot['isFull'] && ! $slot['isLimited'],
+                        ])>
                             @if($slot['isFull'])
-                                <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                            @elseif($slot['isLimited'])
-                                <div class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
+                                Fully booked
                             @else
-                                <div class="w-2 h-2 rounded-full bg-garage-neon"></div>
+                                {{ $slot['availableSpots'] }} {{ \Illuminate\Support\Str::plural('spot', $slot['availableSpots']) }} left
                             @endif
-                        </div>
-
-                        <div class="text-center">
-                            <!-- Date Display (only for fully booked slots) -->
-                            @if($slot['isFull'])
-                                <div class="text-xs font-semibold text-white mb-1 uppercase">
-                                    {{ \Carbon\Carbon::parse($selectedDate)->format('M d, Y') }}
-                                </div>
-                            @endif
-                            
-                            <!-- Time Display -->
-                            <div class="text-lg font-bold mb-2
-                                {{ $slot['isAvailable'] 
-                                    ? ($slot['isLimited'] ? 'text-yellow-400' : 'text-garage-neon') 
-                                    : 'text-red-400' }}
-                                font-mono">
-                                {{ $slot['displayTime'] }}
-                            </div>
-
-                            <!-- Availability Status -->
-                            <div class="text-xs font-semibold uppercase tracking-wide
-                                {{ $slot['isAvailable'] 
-                                    ? ($slot['isLimited'] ? 'text-yellow-400' : 'text-garage-steel') 
-                                    : 'text-red-400' }}">
-                                @if($slot['isFull'])
-                                    <div class="flex items-center justify-center space-x-1">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span>Fully Booked</span>
-                                    </div>
-                                @elseif($slot['isLimited'])
-                                    <div class="flex items-center justify-center space-x-1">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span>{{ $slot['availableSpots'] }} Spot Left</span>
-                                    </div>
-                                @else
-                                    <div class="flex items-center justify-center space-x-1">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span>{{ $slot['availableSpots'] }} Spots Open</span>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
+                        </p>
                     </div>
                 @empty
-                    <div class="col-span-full text-center py-8 text-garage-steel">
-                        <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <div class="col-span-full text-center py-10 rounded-2xl border border-dashed border-white/10 text-gray-400">
+                        <svg class="w-10 h-10 mx-auto mb-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <p>No available time slots for this date</p>
+                        <p>No open times on this day. Try another date.</p>
                     </div>
                 @endforelse
             </div>
@@ -166,20 +101,18 @@
     @endif
 
     <!-- Info Note -->
-    <div class="mt-6 pt-6 border-t border-garage-steel/20">
-        <div class="flex items-start space-x-3 text-sm text-garage-steel">
-            <svg class="w-5 h-5 text-garage-neon flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <div>
-                <p class="font-semibold text-garage-offwhite mb-1">Booking Information:</p>
-                <ul class="space-y-1 list-disc list-inside">
-                    <li>Business hours: 8:00 AM - 6:00 PM (Closed on Sundays)</li>
-                    <li>Lunch break: 12:00 PM - 1:00 PM</li>
-                    <li>Only 1 booking available per time slot - book early!</li>
-                    <li>Book your preferred slot before it fills up!</li>
-                </ul>
-            </div>
+    <div class="mt-6 rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.06] p-4 flex gap-3">
+        <svg class="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <div class="text-sm text-gray-400">
+            <p class="font-semibold text-gray-200 mb-1">Good to know</p>
+            <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-1">
+                <li>Open 8:00 AM – 6:00 PM, closed Sundays</li>
+                <li>Lunch break 12:00 – 1:00 PM</li>
+                <li>One car per time slot</li>
+                <li>Popular times fill up fast, so book early</li>
+            </ul>
         </div>
     </div>
-</div>
+</section>

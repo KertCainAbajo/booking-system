@@ -37,8 +37,26 @@ class Dashboard extends Component
             ->limit(10) // Show last 10 bookings
             ->get();
 
+        // Next upcoming appointment that is still active
+        $nextBooking = Booking::where('customer_id', $customer->id)
+            ->whereIn('status', ['pending', 'approved'])
+            ->whereDate('booking_date', '>=', today())
+            ->with('vehicle')
+            ->orderBy('booking_date')
+            ->orderBy('booking_time')
+            ->first();
+
+        $stats = [
+            'active' => Booking::where('customer_id', $customer->id)->whereIn('status', ['pending', 'approved'])->count(),
+            'completed' => Booking::where('customer_id', $customer->id)->where('status', 'completed')->count(),
+            'spent' => (float) Booking::where('customer_id', $customer->id)->where('status', 'completed')->sum('total_amount'),
+            'vehicles' => $customer->vehicles()->count(),
+        ];
+
         return view('livewire.customer.dashboard', [
             'allBookings' => $allBookings,
+            'nextBooking' => $nextBooking,
+            'stats' => $stats,
         ]);
     }
 }
