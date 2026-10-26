@@ -287,9 +287,9 @@
             <div class="info-row">
                 <div class="info-col">
                     <div class="section-title">Bill To:</div>
-                    <div class="customer-name">{{ $booking->customer->name }}</div>
-                    <div class="detail-row">{{ $booking->customer->email }}</div>
-                    <div class="detail-row">{{ $booking->customer->phone }}</div>
+                    <div class="customer-name">{{ $booking->customer->getDisplayName() }}</div>
+                    <div class="detail-row">{{ $booking->customer->getContactEmail() }}</div>
+                    <div class="detail-row">{{ $booking->customer->getContactPhone() }}</div>
                 </div>
                 <div class="info-col right">
                     <div class="detail-row">
@@ -315,7 +315,7 @@
                 {{ $booking->vehicle->make }} {{ $booking->vehicle->model }} ({{ $booking->vehicle->year }})
             </div>
             <div style="color: #666; font-size: 11px; margin-top: 3px;">
-                Registration: {{ $booking->vehicle->registration_number }}
+                Plate number: {{ $booking->vehicle->plate_number }}
             </div>
         </div>
 
@@ -339,9 +339,9 @@
                         @endif
                     </td>
                     <td class="center">{{ $service->pivot->quantity }}</td>
-                    <td class="right">${{ number_format($service->pivot->price, 2) }}</td>
+                    <td class="right">PHP {{ number_format($service->pivot->price, 2) }}</td>
                     <td class="right" style="font-weight: 600;">
-                        ${{ number_format($service->pivot->price * $service->pivot->quantity, 2) }}
+                        PHP {{ number_format($service->pivot->price * $service->pivot->quantity, 2) }}
                     </td>
                 </tr>
                 @endforeach
@@ -352,15 +352,15 @@
         <div class="totals">
             <div class="total-row">
                 <div class="total-label">Subtotal:</div>
-                <div class="total-value">${{ number_format($booking->total_amount, 2) }}</div>
+                <div class="total-value">PHP {{ number_format($booking->total_amount, 2) }}</div>
             </div>
             <div class="total-row">
                 <div class="total-label">Tax (0%):</div>
-                <div class="total-value">$0.00</div>
+                <div class="total-value">PHP 0.00</div>
             </div>
             <div class="total-row grand">
                 <div class="total-label">Total:</div>
-                <div class="total-value">${{ number_format($booking->total_amount, 2) }}</div>
+                <div class="total-value">PHP {{ number_format($booking->total_amount, 2) }}</div>
             </div>
         </div>
 

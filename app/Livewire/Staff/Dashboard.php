@@ -54,14 +54,12 @@ class Dashboard extends Component
         $today = now()->toDateString(); // Use date string for consistent comparison
         $yesterday = now()->subDay()->toDateString();
         
-        // Today's bookings - always query fresh from database, exclude archived
-        // Use fresh() to bypass any Eloquent caching
+        // Today's bookings - queried fresh on every render, exclude archived
         $todayBookingsList = Booking::with(['customer.user', 'vehicle', 'services'])
             ->where('is_archived', false)
             ->whereDate('booking_date', $today)
             ->orderBy('booking_time')
-            ->get()
-            ->fresh();
+            ->get();
 
         // This week's stats - optimized single query
         $weekStart = now()->startOfWeek()->toDateString();

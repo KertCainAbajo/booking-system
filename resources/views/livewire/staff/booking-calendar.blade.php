@@ -1,188 +1,144 @@
-<div>
-    <!-- Page Header -->
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border-l-4 border-garage-neon relative overflow-hidden mb-4 sm:mb-6">
-        <!-- Carbon Fiber Pattern Overlay -->
-        <div class="absolute inset-0 bg-carbon-fiber opacity-50"></div>
-        
-        <div class="relative z-10">
-            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center space-x-3 sm:space-x-4 mb-2 sm:mb-3">
-                        <!-- Calendar Icon -->
-                        <svg class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">BOOKING CALENDAR</h1>
-                    </div>
-                    <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">View customer appointments and bookings</p>
-                </div>
-                <a href="{{ route('owner.dashboard') }}" 
-                    class="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-garage-forest hover:bg-garage-darkgreen text-white rounded-lg transition-all border border-garage-neon/30 hover:border-garage-neon/50 service-tag text-sm sm:text-base flex-shrink-0">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    <span class="hidden sm:inline">BACK TO DASHBOARD</span>
-                    <span class="sm:hidden">BACK</span>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Garage Floor Marking -->
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-30"></div>
-    </div>
+@php
+    $chipStyles = [
+        'pending' => 'bg-amber-400/15 text-amber-200 ring-amber-400/30 hover:bg-amber-400/25',
+        'approved' => 'bg-sky-400/15 text-sky-200 ring-sky-400/30 hover:bg-sky-400/25',
+        'completed' => 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/30 hover:bg-emerald-400/25',
+        'cancelled' => 'bg-rose-400/10 text-rose-300 ring-rose-400/25 hover:bg-rose-400/20 line-through',
+        'no_show' => 'bg-orange-400/10 text-orange-300 ring-orange-400/25 hover:bg-orange-400/20',
+        'not_available' => 'bg-gray-400/10 text-gray-300 ring-gray-400/25 hover:bg-gray-400/20',
+    ];
+    $filters = ['all' => 'All', 'pending' => 'Pending', 'approved' => 'Approved', 'completed' => 'Completed', 'cancelled' => 'Cancelled'];
+    $days = collect($calendar)->flatten(1)->filter();
+    $todayKey = now()->format('Y-m-d');
+@endphp
 
-    <!-- Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-3 sm:p-4 md:p-5 text-center hover:border-garage-neon/40 transition-all">
-            <div class="text-2xl sm:text-3xl font-bold text-garage-offwhite mb-1 sm:mb-2 font-mono">{{ $stats['total'] }}</div>
-            <div class="text-xs text-garage-steel uppercase tracking-wider">Total This Month</div>
+<div class="space-y-6" x-data="{ openDay: @js($days->first(fn ($d) => $d['isToday']) ? $todayKey : null) }">
+    <!-- Header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-medium text-emerald-300">Calendar</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">{{ $monthName }}</h1>
+            <p class="mt-1 text-gray-400">{{ $stats['total'] }} {{ \Illuminate\Support\Str::plural('booking', $stats['total']) }} this month · click a day to see its bookings</p>
         </div>
-        <div class="bg-garage-charcoal/50 rounded-lg border border-yellow-500/20 p-3 sm:p-4 md:p-5 text-center hover:border-yellow-500/40 transition-all">
-            <div class="text-2xl sm:text-3xl font-bold text-yellow-400 mb-1 sm:mb-2 font-mono">{{ $stats['pending'] }}</div>
-            <div class="text-xs text-garage-steel uppercase tracking-wider">Pending</div>
-        </div>
-        <div class="bg-garage-charcoal/50 rounded-lg border border-blue-500/20 p-3 sm:p-4 md:p-5 text-center hover:border-blue-500/40 transition-all">
-            <div class="text-2xl sm:text-3xl font-bold text-blue-400 mb-1 sm:mb-2 font-mono">{{ $stats['approved'] }}</div>
-            <div class="text-xs text-garage-steel uppercase tracking-wider">Approved</div>
-        </div>
-        <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-3 sm:p-4 md:p-5 text-center hover:border-garage-neon/40 transition-all">
-            <div class="text-2xl sm:text-3xl font-bold text-garage-neon mb-1 sm:mb-2 font-mono">{{ $stats['completed'] }}</div>
-            <div class="text-xs text-garage-steel uppercase tracking-wider">Completed</div>
+        <div class="flex items-center gap-2">
+            <button wire:click="previousMonth" class="w-10 h-10 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-gray-300 hover:text-white hover:bg-white/10 flex items-center justify-center" aria-label="Previous month">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <button wire:click="today" class="h-10 px-4 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-sm font-semibold text-gray-200 hover:bg-white/10">Today</button>
+            <button wire:click="nextMonth" class="w-10 h-10 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-gray-300 hover:text-white hover:bg-white/10 flex items-center justify-center" aria-label="Next month">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
         </div>
     </div>
 
-    <!-- Calendar Controls -->
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 mb-4 sm:mb-6 border border-garage-neon/20">
-        <div class="flex flex-col gap-4">
-            <!-- Month Navigation -->
-            <div class="flex items-center justify-center gap-2 sm:gap-4">
-                <button wire:click="previousMonth" 
-                    class="p-2 sm:p-3 bg-garage-forest hover:bg-garage-neon/20 rounded-lg transition-all border border-garage-neon/20 hover:border-garage-neon/50 text-white flex-shrink-0">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-garage-offwhite text-center service-tag tracking-wider flex-shrink-0">{{ $monthName }}</h3>
-                <button wire:click="nextMonth" 
-                    class="p-2 sm:p-3 bg-garage-forest hover:bg-garage-neon/20 rounded-lg transition-all border border-garage-neon/20 hover:border-garage-neon/50 text-white flex-shrink-0">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-                <button wire:click="today" 
-                    class="px-4 sm:px-6 py-2 sm:py-3 bg-garage-neon hover:bg-garage-neon/80 text-garage-charcoal font-bold rounded-lg transition-all service-tag text-sm sm:text-base flex-shrink-0">
-                    TODAY
-                </button>
-            </div>
-
-            <!-- Filter -->
-            <div class="w-full">
-                <select wire:model.live="statusFilter" 
-                    class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3">
-                    <option value="all">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Calendar Grid -->
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage overflow-hidden border border-garage-neon/20">
-        <!-- Day Headers -->
-        <div class="grid grid-cols-7 gap-px bg-garage-forest/50">
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">SUN</div>
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">MON</div>
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">TUE</div>
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">WED</div>
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">THU</div>
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">FRI</div>
-            <div class="bg-garage-charcoal/70 p-1.5 sm:p-2 md:p-3 text-center font-bold text-garage-neon text-xs sm:text-sm service-tag tracking-wider">SAT</div>
-        </div>
-
-        <!-- Calendar Days -->
-        <div class="grid grid-cols-7 gap-px bg-garage-forest/50">
-            @foreach($calendar as $week)
-                @foreach($week as $day)
-                    @if($day === null)
-                        <div class="bg-garage-charcoal/30 min-h-[80px] sm:min-h-[100px] md:min-h-[120px] p-1 sm:p-1.5 md:p-2"></div>
-                    @else
-                        <div class="bg-garage-charcoal/50 min-h-[80px] sm:min-h-[100px] md:min-h-[120px] p-1 sm:p-1.5 md:p-2 {{ $day['isToday'] ? 'ring-2 ring-garage-neon' : '' }} {{ $day['isPast'] ? 'bg-garage-charcoal/20' : '' }} hover:bg-garage-forest/30 transition">
-                            <!-- Day Number -->
-                            <div class="flex items-center justify-between mb-0.5 sm:mb-1">
-                                <span class="text-xs sm:text-sm font-bold {{ $day['isToday'] ? 'bg-garage-neon text-garage-charcoal rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs' : 'text-garage-offwhite' }}">
-                                    {{ $day['day'] }}
-                                </span>
-                                @if($day['bookings']->count() > 0)
-                                    <span class="text-[10px] sm:text-xs bg-garage-neon text-garage-charcoal rounded-full px-1.5 sm:px-2 py-0.5 font-bold font-mono leading-none">
-                                        {{ $day['bookings']->count() }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            <!-- Bookings -->
-                            <div class="space-y-0.5 sm:space-y-1">
-                                @foreach($day['bookings']->take(2) as $booking)
-                                    <a href="{{ route('owner.booking.detail', $booking->id) }}" 
-                                        class="block text-[10px] sm:text-xs p-1 sm:p-1.5 rounded border
-                                        {{ $booking->status === 'pending' ? 'bg-yellow-400/20 border-yellow-400/30 hover:bg-yellow-400/30' : '' }}
-                                        {{ $booking->status === 'approved' ? 'bg-blue-400/20 border-blue-400/30 hover:bg-blue-400/30' : '' }}
-                                        {{ $booking->status === 'completed' ? 'bg-garage-neon/20 border-garage-neon/30 hover:bg-garage-neon/30' : '' }}
-                                        {{ $booking->status === 'cancelled' ? 'bg-red-500/20 border-red-500/30 hover:bg-red-500/30' : '' }}
-                                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 border-orange-500/30 hover:bg-orange-500/30' : '' }}
-                                        {{ $booking->status === 'not_available' ? 'bg-gray-500/20 border-gray-500/30 hover:bg-gray-500/30' : '' }}">
-                                        <div class="font-bold text-white leading-tight">{{ $booking->booking_time }}</div>
-                                        <div class="truncate text-white leading-tight hidden sm:block">{{ $booking->customer->getDisplayName() }}</div>
-                                    </a>
-                                @endforeach
-                                @if($day['bookings']->count() > 2)
-                                    <div class="text-[10px] sm:text-xs text-garage-steel font-bold pl-0.5 sm:pl-1 font-mono">
-                                        +{{ $day['bookings']->count() - 2 }} more
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
+    <!-- Month summary + filter -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap gap-2">
+            @foreach ($filters as $value => $label)
+                <button wire:click="$set('statusFilter', '{{ $value }}')"
+                        @class([
+                            'h-9 px-3.5 rounded-full text-sm font-medium ring-1 transition',
+                            'bg-emerald-400 text-gray-950 ring-emerald-400' => $statusFilter === $value,
+                            'bg-white/[0.04] text-gray-300 ring-white/10 hover:text-white hover:bg-white/10' => $statusFilter !== $value,
+                        ])>
+                    {{ $label }}
+                    @if ($value !== 'all' && isset($stats[$value]))
+                        <span class="ml-1 opacity-70">{{ $stats[$value] }}</span>
                     @endif
-                @endforeach
+                </button>
             @endforeach
         </div>
+        <div class="flex flex-wrap items-center gap-4 text-xs text-gray-400">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span>Pending</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-sky-400"></span>Approved</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>Completed</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-rose-400"></span>Cancelled</span>
+        </div>
     </div>
 
-    <!-- Legend -->
-    <div class="mt-4 sm:mt-6 bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-        <h4 class="font-bold text-garage-offwhite mb-3 sm:mb-4 service-tag tracking-wider flex items-center gap-2 text-sm sm:text-base">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-            </svg>
-            STATUS LEGEND:
-        </h4>
-        
-        <!-- Garage Floor Divider -->
-        <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-3 sm:mb-4"></div>
-        
-        <div class="flex flex-wrap gap-3 sm:gap-4">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-400/20 border-2 border-yellow-400/50 rounded flex-shrink-0"></div>
-                <span class="text-xs sm:text-sm text-garage-steel font-semibold">Pending</span>
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] items-start">
+        <!-- Month grid -->
+        <section class="cp-card overflow-hidden">
+            <div class="grid grid-cols-7 border-b border-white/[0.06]">
+                @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $dayName)
+                    <div class="py-3 text-center text-xs font-semibold uppercase tracking-wider {{ $dayName === 'Sun' ? 'text-rose-300/70' : 'text-gray-500' }}">{{ $dayName }}</div>
+                @endforeach
             </div>
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-blue-400/20 border-2 border-blue-400/50 rounded flex-shrink-0"></div>
-                <span class="text-xs sm:text-sm text-garage-steel font-semibold">Approved</span>
+            <div class="grid grid-cols-7">
+                @foreach ($calendar as $week)
+                    @for ($i = 0; $i < 7; $i++)
+                        @php $day = $week[$i] ?? null; @endphp
+                        @if ($day === null)
+                            <div class="min-h-[5.5rem] sm:min-h-[7.5rem] border-b border-r border-white/[0.04] bg-black/20"></div>
+                        @else
+                            @php $key = $day['date']->format('Y-m-d'); @endphp
+                            <button type="button" x-on:click="openDay = '{{ $key }}'"
+                                    class="group relative min-h-[5.5rem] sm:min-h-[7.5rem] p-1.5 sm:p-2 text-left border-b border-r border-white/[0.04] transition hover:bg-white/[0.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-400 {{ $day['isPast'] ? 'bg-black/10' : '' }}"
+                                    :class="openDay === '{{ $key }}' && '!bg-emerald-400/[0.07] ring-1 ring-inset ring-emerald-400/40'">
+                                <div class="flex items-center justify-between">
+                                    <span @class([
+                                        'w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold',
+                                        'bg-emerald-400 text-gray-950' => $day['isToday'],
+                                        'text-gray-500' => $day['isPast'] && ! $day['isToday'],
+                                        'text-gray-200' => ! $day['isPast'] && ! $day['isToday'],
+                                    ])>{{ $day['day'] }}</span>
+                                    @if ($day['bookings']->count() > 0)
+                                        <span class="text-[11px] font-semibold text-gray-400">{{ $day['bookings']->count() }}</span>
+                                    @endif
+                                </div>
+                                <div class="mt-1 space-y-1">
+                                    @foreach ($day['bookings']->sortBy('booking_time')->take(3) as $booking)
+                                        <div class="hidden sm:block truncate rounded-md px-1.5 py-0.5 text-[11px] font-medium ring-1 {{ $chipStyles[$booking->status] ?? $chipStyles['pending'] }}">
+                                            {{ $booking->booking_time->format('g:i') }} {{ \Illuminate\Support\Str::of($booking->customer->getDisplayName())->explode(' ')->first() }}
+                                        </div>
+                                        <span class="sm:hidden inline-block w-1.5 h-1.5 rounded-full {{ ['pending' => 'bg-amber-400', 'approved' => 'bg-sky-400', 'completed' => 'bg-emerald-400', 'cancelled' => 'bg-rose-400'][$booking->status] ?? 'bg-gray-400' }}"></span>
+                                    @endforeach
+                                    @if ($day['bookings']->count() > 3)
+                                        <div class="hidden sm:block text-[11px] font-medium text-gray-400 pl-1">+{{ $day['bookings']->count() - 3 }} more</div>
+                                    @endif
+                                </div>
+                            </button>
+                        @endif
+                    @endfor
+                @endforeach
             </div>
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-garage-neon/20 border-2 border-garage-neon/50 rounded flex-shrink-0"></div>
-                <span class="text-xs sm:text-sm text-garage-steel font-semibold">Completed</span>
+        </section>
+
+        <!-- Selected day -->
+        <aside class="cp-card p-5 xl:sticky xl:top-6">
+            <div x-show="!openDay" class="py-10 text-center">
+                <span class="mx-auto w-12 h-12 rounded-2xl bg-white/[0.05] flex items-center justify-center text-gray-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </span>
+                <p class="mt-3 font-medium text-gray-300">Pick a day</p>
+                <p class="text-sm text-gray-500">Its bookings will show here.</p>
             </div>
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="w-3 h-3 sm:w-4 sm:h-4 bg-red-500/20 border-2 border-red-500/50 rounded flex-shrink-0"></div>
-                <span class="text-xs sm:text-sm text-garage-steel font-semibold">Cancelled</span>
-            </div>
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="w-5 h-5 sm:w-6 sm:h-6 bg-garage-neon rounded-full flex-shrink-0"></div>
-                <span class="text-xs sm:text-sm text-garage-steel font-semibold">Today</span>
-            </div>
-        </div>
+
+            @foreach ($days as $day)
+                @php $key = $day['date']->format('Y-m-d'); @endphp
+                <div x-show="openDay === '{{ $key }}'" style="display: none;">
+                    <p class="text-sm font-medium text-emerald-300">{{ $day['isToday'] ? 'Today' : $day['date']->format('l') }}</p>
+                    <h2 class="text-xl font-bold text-white">{{ $day['date']->format('F j, Y') }}</h2>
+                    <p class="text-sm text-gray-400">{{ $day['bookings']->count() }} {{ \Illuminate\Support\Str::plural('booking', $day['bookings']->count()) }}</p>
+
+                    <ul class="mt-4 space-y-2">
+                        @forelse ($day['bookings']->sortBy('booking_time') as $booking)
+                            <li>
+                                <a href="{{ route('owner.booking.detail', $booking->id) }}" wire:navigate class="flex items-start gap-3 rounded-xl p-3 bg-black/20 ring-1 ring-white/[0.06] hover:ring-white/20 transition">
+                                    <span class="text-sm font-bold text-white tabular-nums w-16 flex-shrink-0">{{ $booking->booking_time->format('g:i A') }}</span>
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-sm font-medium text-white truncate">{{ $booking->customer->getDisplayName() }}</span>
+                                        <span class="block text-xs text-gray-400 truncate">{{ $booking->services->pluck('name')->join(', ') ?: 'No services' }}</span>
+                                        <x-status-badge :status="$booking->status" class="mt-1.5 !px-2 !py-0.5" />
+                                    </span>
+                                </a>
+                            </li>
+                        @empty
+                            <li class="py-6 text-center text-sm text-gray-500">No bookings on this day.</li>
+                        @endforelse
+                    </ul>
+                </div>
+            @endforeach
+        </aside>
     </div>
 </div>

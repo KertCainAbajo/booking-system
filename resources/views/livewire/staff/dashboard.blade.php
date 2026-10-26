@@ -1,519 +1,260 @@
-<div wire:poll.10s>
-    <div class="space-y-6">
-        <!-- Welcome Header -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border-l-4 border-garage-neon relative overflow-hidden">
-            <!-- Carbon Fiber Pattern Overlay -->
-            <div class="absolute inset-0 bg-carbon-fiber opacity-50"></div>
-            
-            <div class="relative z-10">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center space-x-3 sm:space-x-4">
-                        <!-- Wrench + Clipboard Icon -->
-                        <svg class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                        </svg>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">TODAY'S WORK</h1>
-                    </div>
-                    <!-- Live Update Indicator -->
-                    <div class="flex items-center gap-2">
-                        <button wire:click="refreshDashboard" class="flex items-center gap-2 bg-garage-charcoal/50 px-3 py-1.5 rounded-lg border border-garage-neon/20 hover:border-garage-neon/40 transition-all group">
-                            <svg class="w-3 h-3 text-garage-neon group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            <span class="text-xs text-garage-steel font-mono">REFRESH</span>
-                        </button>
-                        <div class="flex items-center gap-2 bg-garage-charcoal/50 px-3 py-1.5 rounded-lg border border-garage-neon/20">
-                            <div class="w-2 h-2 bg-garage-neon rounded-full animate-pulse"></div>
-                            <span class="text-xs text-garage-steel font-mono">LIVE</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">Welcome back! Here's your overview for today</p>
-                    @if($lastUpdateTime ?? false)
-                        <span class="text-xs text-garage-steel/70 font-mono">Updated: {{ $lastUpdateTime }}</span>
-                    @endif
-                </div>
-            </div>
-            
-            <!-- Garage Floor Marking -->
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-30"></div>
-        </div>
+@php
+    $activeToday = $todayBookings->whereNotIn('status', ['cancelled', 'no_show', 'not_available']);
+    $expectedRevenue = $activeToday->sum('total_amount');
+    $nextUp = $todayBookings->whereIn('status', ['pending', 'approved'])
+        ->first(fn ($b) => $b->booking_time->format('H:i') >= now()->format('H:i'));
 
-        <!-- Quick Actions -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <!-- View Calendar Card -->
-            <a href="{{ route('owner.calendar') }}" 
-               class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite mb-2 service-tag">VIEW CALENDAR</h3>
-                            <p class="text-garage-steel text-xs sm:text-sm">See all bookings in calendar view</p>
-                        </div>
-                        <!-- Calendar Icon -->
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white/40 group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="flex items-center text-white font-semibold group-hover:translate-x-2 transition-transform">
-                        <span class="service-tag text-sm">OPEN CALENDAR</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </div>
-                </div>
-            </a>
+    $mix = [
+        ['key' => 'pending', 'label' => 'Waiting', 'color' => 'bg-amber-400'],
+        ['key' => 'approved', 'label' => 'Approved', 'color' => 'bg-sky-400'],
+        ['key' => 'completed', 'label' => 'Completed', 'color' => 'bg-emerald-400'],
+        ['key' => 'cancelled', 'label' => 'Cancelled', 'color' => 'bg-rose-400'],
+    ];
+@endphp
 
-            <!-- My Profile Card -->
-            <a href="{{ route('owner.profile') }}" 
-               class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                
-                <div class="relative z-10">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite mb-2 service-tag">MY PROFILE</h3>
-                            <p class="text-garage-steel text-xs sm:text-sm">View and update your profile</p>
-                        </div>
-                        <!-- User Icon -->
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white/40 group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="flex items-center text-white font-semibold group-hover:translate-x-2 transition-transform">
-                        <span class="service-tag text-sm">EDIT PROFILE</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <!-- Today's Stats -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">TODAY'S OVERVIEW</h3>
-                </div>
-                
-                <!-- Comparison with Yesterday -->
-                @if($yesterdayTotal > 0 || $todayStats['total'] > 0)
-                    <div class="flex items-center gap-2 bg-garage-charcoal/50 px-3 py-2 rounded-lg border {{ $todayStats['change_direction'] === 'up' ? 'border-garage-neon/30' : ($todayStats['change_direction'] === 'down' ? 'border-red-500/30' : 'border-garage-steel/30') }}">
-                        @if($todayStats['change_direction'] === 'up')
-                            <svg class="w-4 h-4 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                            </svg>
-                            <span class="text-xs font-bold text-garage-neon">+{{ $todayStats['change_percent'] }}% vs Yesterday</span>
-                        @elseif($todayStats['change_direction'] === 'down')
-                            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
-                            </svg>
-                            <span class="text-xs font-bold text-red-400">{{ $todayStats['change_percent'] }}% vs Yesterday</span>
-                        @else
-                            <svg class="w-4 h-4 text-garage-steel" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"></path>
-                            </svg>
-                            <span class="text-xs font-bold text-garage-steel">Same as Yesterday</span>
-                        @endif
-                    </div>
+<div wire:poll.10s class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-medium text-emerald-300">{{ now()->format('l, F j, Y') }}</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">Today's work</h1>
+            <p class="mt-1 text-gray-400">
+                @if ($nextUp)
+                    Next up: <span class="font-semibold text-white">{{ $nextUp->booking_time->format('g:i A') }}</span>
+                    · {{ $nextUp->customer->getDisplayName() }} · {{ $nextUp->vehicle?->make }} {{ $nextUp->vehicle?->model }}
+                @elseif ($todayStats['total'] > 0)
+                    No more open jobs scheduled for the rest of today.
+                @else
+                    No bookings today. A good day to catch up.
                 @endif
-            </div>
-
-            <!-- Garage Floor Divider -->
-            <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Bar Chart Section -->
-                <div class="bg-garage-charcoal/30 rounded-lg border border-garage-neon/20 p-4">
-                    <h4 class="text-sm font-bold text-garage-offwhite mb-4 uppercase tracking-wider">Booking Status Distribution</h4>
-                    <div class="space-y-3">
-                        <!-- Total Bar -->
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-xs text-garage-steel uppercase">Total</span>
-                                <span class="text-xs font-bold text-garage-offwhite">{{ $todayStats['total'] }}</span>
-                            </div>
-                            <div class="h-8 bg-garage-charcoal/50 rounded-lg overflow-hidden border border-garage-neon/10">
-                                <div class="h-full bg-gradient-to-r from-garage-neon to-garage-neon/70 flex items-center justify-end pr-2 transition-all duration-1000" style="width: 100%">
-                                    <span class="text-xs font-bold text-garage-charcoal">100%</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pending Bar -->
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-xs text-garage-steel uppercase">Pending</span>
-                                <span class="text-xs font-bold text-yellow-400">{{ $todayStats['pending'] }} ({{ $todayStats['pending_percent'] }}%)</span>
-                            </div>
-                            <div class="h-8 bg-garage-charcoal/50 rounded-lg overflow-hidden border border-yellow-500/10">
-                                <div class="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 flex items-center justify-end pr-2 transition-all duration-1000" style="width: {{ min($todayStats['pending_percent'], 100) }}%">
-                                    @if($todayStats['pending_percent'] > 10)
-                                        <span class="text-xs font-bold text-garage-charcoal">{{ $todayStats['pending_percent'] }}%</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Approved Bar -->
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-xs text-garage-steel uppercase">Approved</span>
-                                <span class="text-xs font-bold text-blue-400">{{ $todayStats['approved'] }} ({{ $todayStats['approved_percent'] }}%)</span>
-                            </div>
-                            <div class="h-8 bg-garage-charcoal/50 rounded-lg overflow-hidden border border-blue-500/10">
-                                <div class="h-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-end pr-2 transition-all duration-1000" style="width: {{ min($todayStats['approved_percent'], 100) }}%">
-                                    @if($todayStats['approved_percent'] > 10)
-                                        <span class="text-xs font-bold text-white">{{ $todayStats['approved_percent'] }}%</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Completed Bar -->
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-xs text-garage-steel uppercase">Completed</span>
-                                <span class="text-xs font-bold text-garage-neon">{{ $todayStats['completed'] }} ({{ $todayStats['completed_percent'] }}%)</span>
-                            </div>
-                            <div class="h-8 bg-garage-charcoal/50 rounded-lg overflow-hidden border border-garage-neon/10">
-                                <div class="h-full bg-gradient-to-r from-garage-neon to-green-400 flex items-center justify-end pr-2 transition-all duration-1000" style="width: {{ min($todayStats['completed_percent'], 100) }}%">
-                                    @if($todayStats['completed_percent'] > 10)
-                                        <span class="text-xs font-bold text-garage-charcoal">{{ $todayStats['completed_percent'] }}%</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Cancelled Bar -->
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <span class="text-xs text-garage-steel uppercase">Cancelled</span>
-                                <span class="text-xs font-bold text-red-400">{{ $todayStats['cancelled'] }} ({{ $todayStats['cancelled_percent'] }}%)</span>
-                            </div>
-                            <div class="h-8 bg-garage-charcoal/50 rounded-lg overflow-hidden border border-red-500/10">
-                                <div class="h-full bg-gradient-to-r from-red-400 to-red-500 flex items-center justify-end pr-2 transition-all duration-1000" style="width: {{ min($todayStats['cancelled_percent'], 100) }}%">
-                                    @if($todayStats['cancelled_percent'] > 10)
-                                        <span class="text-xs font-bold text-white">{{ $todayStats['cancelled_percent'] }}%</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Donut Chart & KPIs Section -->
-                <div class="space-y-4">
-                    <!-- Donut Chart -->
-                    <div class="bg-garage-charcoal/30 rounded-lg border border-garage-neon/20 p-4">
-                        <h4 class="text-sm font-bold text-garage-offwhite mb-4 uppercase tracking-wider">Status Breakdown</h4>
-                        <div class="flex items-center justify-center">
-                            <div class="relative w-48 h-48">
-                                <!-- SVG Donut Chart -->
-                                @php
-                                    $total = $todayStats['total'] ?: 1;
-                                    $pending = $todayStats['pending'];
-                                    $approved = $todayStats['approved'];
-                                    $completed = $todayStats['completed'];
-                                    $cancelled = $todayStats['cancelled'];
-                                    
-                                    $radius = 70;
-                                    $circumference = 2 * pi() * $radius;
-                                    
-                                    $pendingAngle = ($pending / $total) * 360;
-                                    $approvedAngle = ($approved / $total) * 360;
-                                    $completedAngle = ($completed / $total) * 360;
-                                    $cancelledAngle = ($cancelled / $total) * 360;
-                                    
-                                    $pendingDash = ($pending / $total) * $circumference;
-                                    $approvedDash = ($approved / $total) * $circumference;
-                                    $completedDash = ($completed / $total) * $circumference;
-                                    $cancelledDash = ($cancelled / $total) * $circumference;
-                                    
-                                    $pendingOffset = 0;
-                                    $approvedOffset = $pendingDash;
-                                    $completedOffset = $pendingDash + $approvedDash;
-                                    $cancelledOffset = $pendingDash + $approvedDash + $completedDash;
-                                @endphp
-                                
-                                <svg viewBox="0 0 160 160" class="transform -rotate-90">
-                                    <!-- Pending -->
-                                    <circle cx="80" cy="80" r="{{ $radius }}" fill="none" stroke="#facc15" stroke-width="20" 
-                                            stroke-dasharray="{{ $pendingDash }} {{ $circumference }}"
-                                            stroke-dashoffset="-{{ $pendingOffset }}" class="transition-all duration-1000"/>
-                                    <!-- Approved -->
-                                    <circle cx="80" cy="80" r="{{ $radius }}" fill="none" stroke="#60a5fa" stroke-width="20" 
-                                            stroke-dasharray="{{ $approvedDash }} {{ $circumference }}"
-                                            stroke-dashoffset="-{{ $approvedOffset }}" class="transition-all duration-1000"/>
-                                    <!-- Completed -->
-                                    <circle cx="80" cy="80" r="{{ $radius }}" fill="none" stroke="#39ff14" stroke-width="20" 
-                                            stroke-dasharray="{{ $completedDash }} {{ $circumference }}"
-                                            stroke-dashoffset="-{{ $completedOffset }}" class="transition-all duration-1000"/>
-                                    <!-- Cancelled -->
-                                    <circle cx="80" cy="80" r="{{ $radius }}" fill="none" stroke="#f87171" stroke-width="20" 
-                                            stroke-dasharray="{{ $cancelledDash }} {{ $circumference }}"
-                                            stroke-dashoffset="-{{ $cancelledOffset }}" class="transition-all duration-1000"/>
-                                </svg>
-                                
-                                <!-- Center Text -->
-                                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                    <div class="text-3xl font-bold text-garage-neon font-mono">{{ $todayStats['total'] }}</div>
-                                    <div class="text-xs text-garage-steel uppercase">Total</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Key Metrics Grid -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-gradient-to-br from-garage-forest/30 to-garage-charcoal/50 rounded-lg border border-garage-neon/30 p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-3 h-3 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span class="text-[10px] text-garage-steel uppercase tracking-wider">Success</span>
-                            </div>
-                            <div class="text-xl font-bold text-garage-neon font-mono">{{ $todayStats['success_rate'] }}%</div>
-                        </div>
-
-                        <div class="bg-gradient-to-br from-garage-forest/30 to-garage-charcoal/50 rounded-lg border border-blue-500/30 p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                <span class="text-[10px] text-garage-steel uppercase tracking-wider">Complete</span>
-                            </div>
-                            <div class="text-xl font-bold text-blue-400 font-mono">{{ $todayStats['completion_rate'] }}%</div>
-                        </div>
-
-                        <div class="bg-gradient-to-br from-garage-forest/30 to-garage-charcoal/50 rounded-lg border border-purple-500/30 p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-3 h-3 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <span class="text-[10px] text-garage-steel uppercase tracking-wider">Per Hour</span>
-                            </div>
-                            <div class="text-xl font-bold text-purple-400 font-mono">{{ $todayStats['avg_per_hour'] }}</div>
-                        </div>
-
-                        <div class="bg-gradient-to-br from-garage-forest/30 to-garage-charcoal/50 rounded-lg border border-orange-500/30 p-3">
-                            <div class="flex items-center gap-2 mb-1">
-                                <svg class="w-3 h-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                </svg>
-                                <span class="text-[10px] text-garage-steel uppercase tracking-wider">Yesterday</span>
-                            </div>
-                            <div class="text-xl font-bold text-orange-400 font-mono">{{ $yesterdayTotal }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </p>
         </div>
-
-        <!-- This Week's Stats -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
-            <div class="flex items-center space-x-3 mb-6">
-                <svg class="w-6 h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
-                <h3 class="text-xl font-bold text-garage-offwhite service-tag">THIS WEEK'S STATS</h3>
-            </div>
-
-            <!-- Garage Floor Divider -->
-            <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
-
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-5 text-center hover:border-garage-neon/40 transition-all">
-                    <div class="text-3xl font-bold text-garage-offwhite mb-2 font-mono">{{ $weekStats['total'] }}</div>
-                    <div class="text-xs text-garage-steel uppercase tracking-wider">Total Bookings</div>
-                </div>
-                <div class="bg-garage-charcoal/50 rounded-lg border border-yellow-500/20 p-5 text-center hover:border-yellow-500/40 transition-all">
-                    <div class="text-3xl font-bold text-yellow-400 mb-2 font-mono">{{ $weekStats['pending'] }}</div>
-                    <div class="text-xs text-garage-steel uppercase tracking-wider">Pending</div>
-                </div>
-                <div class="bg-garage-charcoal/50 rounded-lg border border-blue-500/20 p-5 text-center hover:border-blue-500/40 transition-all">
-                    <div class="text-3xl font-bold text-blue-400 mb-2 font-mono">{{ $weekStats['approved'] }}</div>
-                    <div class="text-xs text-garage-steel uppercase tracking-wider">Approved</div>
-                </div>
-                <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-5 text-center hover:border-garage-neon/40 transition-all">
-                    <div class="text-3xl font-bold text-garage-neon mb-2 font-mono">{{ $weekStats['completed'] }}</div>
-                    <div class="text-xs text-garage-steel uppercase tracking-wider">Completed</div>
-                </div>
-                <div class="bg-garage-charcoal/50 rounded-lg border border-red-500/20 p-5 text-center hover:border-red-500/40 transition-all">
-                    <div class="text-3xl font-bold text-red-400 mb-2 font-mono">{{ $weekStats['cancelled'] }}</div>
-                    <div class="text-xs text-garage-steel uppercase tracking-wider">Cancelled</div>
-                </div>
-            </div>
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-2 h-10 px-3.5 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-sm text-gray-300">
+                <span class="relative flex w-2 h-2">
+                    <span class="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                    <span class="relative inline-flex w-2 h-2 rounded-full bg-emerald-400"></span>
+                </span>
+                Live · {{ \Carbon\Carbon::createFromFormat('H:i:s', $lastUpdateTime)->format('g:i:s A') }}
+            </span>
+            <button wire:click="refreshDashboard" class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/[0.04] ring-1 ring-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition" aria-label="Refresh now">
+                <svg class="w-5 h-5" wire:loading.class="animate-spin" wire:target="refreshDashboard" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+            <a href="{{ route('owner.calendar') }}" wire:navigate class="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-emerald-400 text-gray-950 text-sm font-semibold hover:bg-emerald-300 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Calendar
+            </a>
         </div>
+    </div>
 
-        <!-- Today's Bookings -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                    </svg>
-                    <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">TODAY'S BOOKINGS</h3>
-                </div>
-                @if($todayBookings->count() > 0)
-                    <span class="bg-garage-neon/20 text-garage-neon px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold border border-garage-neon/30 service-tag">
-                        {{ $todayBookings->count() }} BOOKING(S)
+    <!-- KPIs -->
+    <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Jobs today</p>
+            <p class="mt-2 text-3xl font-bold text-white">{{ $todayStats['total'] }}</p>
+            <p class="mt-1 text-xs sm:text-sm">
+                @if ($yesterdayTotal === 0)
+                    <span class="text-gray-500">None yesterday</span>
+                @elseif ($todayStats['change_direction'] === 'same')
+                    <span class="text-gray-500">Same as yesterday ({{ $yesterdayTotal }})</span>
+                @else
+                    <span class="{{ $todayStats['change_direction'] === 'up' ? 'text-emerald-300' : 'text-rose-300' }}">
+                        {{ $todayStats['change_direction'] === 'up' ? '▲' : '▼' }} {{ abs($todayStats['change_percent']) }}%
                     </span>
+                    <span class="text-gray-500">vs yesterday ({{ $yesterdayTotal }})</span>
                 @endif
+            </p>
+        </div>
+
+        <a href="{{ route('owner.bookings') }}" wire:navigate @class([
+            'rounded-3xl p-4 sm:p-5 ring-1 transition',
+            'bg-amber-400/10 ring-amber-400/40 hover:ring-amber-400/70' => $todayStats['pending'] > 0,
+            'bg-white/[0.03] ring-white/[0.07] hover:ring-white/20' => $todayStats['pending'] === 0,
+        ])>
+            <p @class(['text-sm font-medium', 'text-amber-200' => $todayStats['pending'] > 0, 'text-gray-400' => $todayStats['pending'] === 0])>Waiting approval</p>
+            <p @class(['mt-2 text-3xl font-bold', 'text-amber-300' => $todayStats['pending'] > 0, 'text-white' => $todayStats['pending'] === 0])>{{ $todayStats['pending'] }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-gray-400">{{ $todayStats['pending'] > 0 ? 'Needs your action →' : 'All caught up' }}</p>
+        </a>
+
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Approved</p>
+            <p class="mt-2 text-3xl font-bold text-sky-300">{{ $todayStats['approved'] }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500">Booked in, not done yet</p>
+        </div>
+
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Completed</p>
+            <p class="mt-2 text-3xl font-bold text-emerald-300">{{ $todayStats['completed'] }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500">{{ $todayStats['completion_rate'] }}% of today's jobs</p>
+        </div>
+
+        <div class="cp-card p-4 sm:p-5 col-span-2 lg:col-span-1">
+            <p class="text-sm font-medium text-gray-400">Expected revenue</p>
+            <p class="mt-2 text-3xl font-bold text-white">₱{{ number_format($expectedRevenue, 0) }}</p>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500">From {{ $activeToday->count() }} active {{ \Illuminate\Support\Str::plural('job', $activeToday->count()) }}</p>
+        </div>
+    </section>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] items-start">
+        <!-- Today's schedule -->
+        <section class="cp-card p-5 sm:p-7">
+            <div class="flex items-center justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Today's schedule</h2>
+                    <p class="text-sm text-gray-400">In order of appointment time</p>
+                </div>
+                <a href="{{ route('owner.bookings') }}" wire:navigate class="text-sm font-semibold text-emerald-300 hover:text-emerald-200">All bookings →</a>
             </div>
 
-            <!-- Garage Floor Divider -->
-            <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
+            @forelse ($todayBookings as $booking)
+                @php
+                    $isPast = $booking->booking_time->format('H:i') < now()->format('H:i');
+                    $isNext = $nextUp && $nextUp->id === $booking->id;
+                    $isClosed = in_array($booking->status, ['completed', 'cancelled', 'no_show', 'not_available']);
+                @endphp
+                <div class="relative flex gap-4 {{ $loop->last ? '' : 'pb-4' }}">
+                    <!-- Timeline rail -->
+                    <div class="flex flex-col items-center w-16 flex-shrink-0">
+                        <span @class(['text-sm font-bold tabular-nums', 'text-emerald-300' => $isNext, 'text-gray-500' => $isClosed, 'text-white' => ! $isNext && ! $isClosed])>
+                            {{ $booking->booking_time->format('g:i') }}
+                        </span>
+                        <span class="text-[11px] uppercase text-gray-500">{{ $booking->booking_time->format('A') }}</span>
+                        @unless ($loop->last)
+                            <span class="mt-2 w-px flex-1 bg-white/10"></span>
+                        @endunless
+                    </div>
 
-            @forelse($todayBookings as $booking)
-                <div class="border-l-4 {{ $booking->status === 'pending' ? 'border-yellow-400' : ($booking->status === 'approved' ? 'border-blue-400' : ($booking->status === 'completed' ? 'border-garage-neon' : 'border-red-500')) }} bg-garage-charcoal/50 rounded-r-lg p-3 sm:p-4 md:p-5 mb-3 sm:mb-4 hover:bg-garage-forest/30 transition-all duration-200">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                                <span class="text-xs sm:text-sm font-bold text-garage-offwhite font-mono bg-garage-forest/50 px-2 sm:px-3 py-1 rounded flex-shrink-0">{{ $booking->booking_time }}</span>
-                                <h4 class="font-bold text-garage-offwhite service-tag text-sm sm:text-base break-words">{{ strtoupper($booking->customer->getDisplayName()) }}</h4>
-                                <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0
-                                    {{ $booking->status === 'pending' ? 'bg-yellow-400/20 text-yellow-400 border border-yellow-400/30' : '' }}
-                                    {{ $booking->status === 'approved' ? 'bg-blue-400/20 text-blue-400 border border-blue-400/30' : '' }}
-                                    {{ $booking->status === 'completed' ? 'bg-garage-neon/20 text-garage-neon border border-garage-neon/30' : '' }}
-                                    {{ $booking->status === 'cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : '' }}
-                                    {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : '' }}
-                                    {{ $booking->status === 'not_available' ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30' : '' }}">
-                                    {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : ($booking->status === 'not_available' ? 'NOT AVAILABLE' : strtoupper($booking->status)) }}
-                                </span>
-                                @if($booking->marked_as_late)
-                                    <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0 bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse flex items-center gap-1">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        RUNNING LATE
-                                        @if($booking->estimated_arrival_time)
-                                            - ETA: {{ $booking->estimated_arrival_time->format('h:i A') }}
-                                        @endif
-                                    </span>
+                    <!-- Job card -->
+                    <div @class([
+                        'flex-1 min-w-0 rounded-2xl p-4 ring-1 transition',
+                        'bg-emerald-400/[0.07] ring-emerald-400/40' => $isNext,
+                        'bg-amber-400/[0.05] ring-amber-400/30' => ! $isNext && $booking->status === 'pending',
+                        'bg-black/20 ring-white/[0.06] opacity-70' => ! $isNext && $isClosed,
+                        'bg-black/20 ring-white/[0.08]' => ! $isNext && ! $isClosed && $booking->status !== 'pending',
+                    ])>
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="font-semibold text-white">{{ $booking->customer->getDisplayName() }}</span>
+                                    <x-status-badge :status="$booking->status" />
+                                    @if ($isNext)
+                                        <span class="cp-badge bg-emerald-400 text-gray-950 ring-emerald-400">Next up</span>
+                                    @endif
+                                    @if ($booking->marked_as_late)
+                                        <span class="cp-badge bg-orange-400/10 text-orange-300 ring-orange-400/40">
+                                            Running late{{ $booking->estimated_arrival_time ? ' · ETA ' . $booking->estimated_arrival_time->format('g:i A') : '' }}
+                                        </span>
+                                    @elseif ($isPast && in_array($booking->status, ['pending', 'approved']))
+                                        <span class="cp-badge bg-rose-400/10 text-rose-300 ring-rose-400/30">Overdue</span>
+                                    @endif
+                                </div>
+                                <div class="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-gray-300">
+                                    <span>{{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</span>
+                                    @if ($booking->vehicle?->plate_number)
+                                        <span class="plate-number text-xs">{{ $booking->vehicle->plate_number }}</span>
+                                    @endif
+                                    <span class="text-gray-500">· Mechanic: <span class="{{ $booking->mechanic_name ? 'text-gray-300' : 'text-gray-500 italic' }}">{{ $booking->mechanic_name ?: 'not set' }}</span></span>
+                                </div>
+                                @if ($booking->services->isNotEmpty())
+                                    <div class="mt-2.5 flex flex-wrap gap-1.5">
+                                        @foreach ($booking->services as $service)
+                                            <span class="rounded-full bg-white/[0.05] px-2.5 py-0.5 text-xs text-gray-300 ring-1 ring-white/[0.08]">{{ $service->name }}</span>
+                                        @endforeach
+                                    </div>
                                 @endif
                             </div>
-                            <div class="space-y-1 sm:space-y-2 text-xs sm:text-sm text-garage-steel mb-2 sm:mb-3">
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-garage-steel flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                    <span class="text-garage-offwhite font-semibold break-words">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</span>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                                @foreach($booking->services as $service)
-                                    <span class="bg-garage-forest/50 text-garage-steel px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-garage-neon/20 text-xs">
-                                        {{ $service->name }}
-                                    </span>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between lg:flex-col lg:text-right lg:ml-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-garage-neon/10">
-                            <div class="text-xl sm:text-2xl font-bold text-white font-mono">₱{{ number_format($booking->total_amount, 2) }}</div>
-                            <a href="{{ route('owner.booking.detail', $booking->id) }}" 
-                                class="inline-flex items-center text-xs sm:text-sm text-white hover:text-white font-semibold transition-colors service-tag lg:mt-2">
-                                <span>DETAILS</span>
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center py-12 sm:py-16">
-                    <svg class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mx-auto text-garage-steel/30 mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <p class="text-garage-steel text-base sm:text-lg mb-2 service-tag">NO BOOKINGS FOR TODAY</p>
-                    <p class="text-garage-steel/70 text-xs sm:text-sm">Enjoy your day!</p>
-                </div>
-            @endforelse
-        </div>
-
-        <!-- Upcoming Bookings -->
-        @if($upcomingBookings->count() > 0)
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        <div>
-                            <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag inline">UPCOMING BOOKINGS</h3>
-                            <span class="text-garage-steel text-xs sm:text-sm ml-2">(Next 7 Days)</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('owner.calendar') }}" class="text-white hover:text-white text-xs sm:text-sm font-semibold transition-colors service-tag flex items-center flex-shrink-0">
-                        <span>VIEW IN CALENDAR</span>
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </a>
-                </div>
-
-                <!-- Garage Floor Divider -->
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
-
-                @foreach($upcomingBookings as $booking)
-                    <div class="border-l-4 {{ $booking->status === 'pending' ? 'border-yellow-400' : 'border-blue-400' }} bg-garage-charcoal/50 rounded-r-lg p-3 sm:p-4 md:p-5 mb-3 sm:mb-4 hover:bg-garage-forest/30 transition-all duration-200">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                                    <span class="text-xs sm:text-sm font-bold text-garage-steel font-mono bg-garage-forest/50 px-2 sm:px-3 py-1 rounded flex-shrink-0">
-                                        {{ \Carbon\Carbon::parse($booking->booking_date)->format('M d, Y') }}
-                                    </span>
-                                    <span class="text-xs sm:text-sm font-mono text-garage-steel flex-shrink-0">{{ $booking->booking_time }}</span>
-                                    <h4 class="font-bold text-garage-offwhite service-tag text-sm sm:text-base break-words">{{ strtoupper($booking->customer->getDisplayName()) }}</h4>
-                                    <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0
-                                        {{ $booking->status === 'pending' ? 'bg-yellow-400/20 text-yellow-400 border border-yellow-400/30' : '' }}
-                                        {{ $booking->status === 'approved' ? 'bg-blue-400/20 text-blue-400 border border-blue-400/30' : '' }}
-                                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : '' }}">
-                                        {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : strtoupper($booking->status) }}
-                                    </span>
-                                    @if($booking->marked_as_late)
-                                        <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0 bg-orange-500/20 text-orange-400 border border-orange-500/30 animate-pulse flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            RUNNING LATE
-                                            @if($booking->estimated_arrival_time)
-                                                - ETA: {{ $booking->estimated_arrival_time->format('h:i A') }}
-                                            @endif
-                                        </span>
-                                    @endif
-                                </div>
-                                <div class="flex items-center gap-2 text-xs sm:text-sm">
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-garage-steel flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                    <span class="text-garage-offwhite font-semibold break-words">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between lg:flex-col lg:text-right lg:ml-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-garage-neon/10">
-                                <div class="text-xl sm:text-2xl font-bold text-white font-mono">₱{{ number_format($booking->total_amount, 2) }}</div>
-                                <a href="{{ route('owner.booking.detail', $booking->id) }}" 
-                                    class="inline-flex items-center text-xs sm:text-sm text-white hover:text-white font-semibold transition-colors service-tag lg:mt-2">
-                                    <span>DETAILS</span>
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
+                            <div class="flex sm:flex-col items-center sm:items-end justify-between gap-2 flex-shrink-0">
+                                <span class="text-lg font-bold text-white tabular-nums">₱{{ number_format($booking->total_amount, 2) }}</span>
+                                <a href="{{ route('owner.booking.detail', $booking->id) }}" wire:navigate
+                                   @class([
+                                       'inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-sm font-semibold transition',
+                                       'bg-amber-400 text-gray-950 hover:bg-amber-300' => $booking->status === 'pending',
+                                       'bg-white/[0.06] text-white ring-1 ring-white/10 hover:bg-white/10' => $booking->status !== 'pending',
+                                   ])>
+                                    {{ $booking->status === 'pending' ? 'Review' : 'Open' }}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
                             </div>
                         </div>
                     </div>
-                @endforeach
-            </div>
-        @endif
+                </div>
+            @empty
+                <div class="text-center py-14 rounded-2xl border border-dashed border-white/10">
+                    <span class="mx-auto w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-300">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </span>
+                    <p class="mt-4 text-lg font-semibold text-white">No bookings for today</p>
+                    <p class="mt-1 text-sm text-gray-400">New bookings show up here automatically.</p>
+                </div>
+            @endforelse
+        </section>
+
+        <!-- Side column -->
+        <div class="space-y-6">
+            <!-- Status mix -->
+            <section class="cp-card p-5 sm:p-6">
+                <h2 class="text-base font-bold text-white">Today's status</h2>
+                <div class="mt-4 flex h-3 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                    @foreach ($mix as $part)
+                        @if ($todayStats[$part['key']] > 0)
+                            <span class="{{ $part['color'] }} h-full" style="width: {{ $todayStats[$part['key'] . '_percent'] }}%"></span>
+                        @endif
+                    @endforeach
+                </div>
+                <ul class="mt-4 space-y-2.5">
+                    @foreach ($mix as $part)
+                        <li class="flex items-center justify-between text-sm">
+                            <span class="flex items-center gap-2 text-gray-300"><span class="w-2.5 h-2.5 rounded-full {{ $part['color'] }}"></span>{{ $part['label'] }}</span>
+                            <span class="font-semibold text-white tabular-nums">{{ $todayStats[$part['key']] }} <span class="text-gray-500 font-normal">({{ $todayStats[$part['key'] . '_percent'] }}%)</span></span>
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
+
+            <!-- This week -->
+            <section class="cp-card p-5 sm:p-6">
+                <div class="flex items-baseline justify-between">
+                    <h2 class="text-base font-bold text-white">This week</h2>
+                    <span class="text-xs text-gray-500">{{ now()->startOfWeek()->format('M j') }} – {{ now()->endOfWeek()->format('M j') }}</span>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-2.5">
+                    <div class="cp-panel p-3 col-span-2 flex items-center justify-between">
+                        <span class="text-sm text-gray-400">Total bookings</span>
+                        <span class="text-2xl font-bold text-white">{{ $weekStats['total'] }}</span>
+                    </div>
+                    <div class="cp-panel p-3"><p class="text-xs text-gray-400">Waiting</p><p class="text-xl font-bold text-amber-300">{{ $weekStats['pending'] }}</p></div>
+                    <div class="cp-panel p-3"><p class="text-xs text-gray-400">Approved</p><p class="text-xl font-bold text-sky-300">{{ $weekStats['approved'] }}</p></div>
+                    <div class="cp-panel p-3"><p class="text-xs text-gray-400">Completed</p><p class="text-xl font-bold text-emerald-300">{{ $weekStats['completed'] }}</p></div>
+                    <div class="cp-panel p-3"><p class="text-xs text-gray-400">Cancelled</p><p class="text-xl font-bold text-rose-300">{{ $weekStats['cancelled'] }}</p></div>
+                </div>
+            </section>
+
+            <!-- Coming up -->
+            <section class="cp-card p-5 sm:p-6">
+                <div class="flex items-baseline justify-between">
+                    <h2 class="text-base font-bold text-white">Next 7 days</h2>
+                    <a href="{{ route('owner.calendar') }}" wire:navigate class="text-xs font-semibold text-emerald-300 hover:text-emerald-200">Calendar →</a>
+                </div>
+                <ul class="mt-4 space-y-2">
+                    @forelse ($upcomingBookings as $booking)
+                        <li>
+                            <a href="{{ route('owner.booking.detail', $booking->id) }}" wire:navigate class="flex items-center gap-3 rounded-xl p-2.5 -mx-2.5 hover:bg-white/[0.04] transition">
+                                <span class="w-11 flex-shrink-0 rounded-lg bg-white/[0.05] ring-1 ring-white/10 text-center py-1">
+                                    <span class="block text-[10px] font-semibold uppercase text-gray-400">{{ $booking->booking_date->format('M') }}</span>
+                                    <span class="block text-base font-bold text-white leading-none">{{ $booking->booking_date->format('d') }}</span>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-sm font-medium text-white truncate">{{ $booking->customer->getDisplayName() }}</span>
+                                    <span class="block text-xs text-gray-400 truncate">{{ $booking->booking_time->format('g:i A') }} · {{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</span>
+                                </span>
+                                <x-status-badge :status="$booking->status" class="!px-2 !py-0.5" />
+                            </a>
+                        </li>
+                    @empty
+                        <li class="text-sm text-gray-500">Nothing booked yet for the coming week.</li>
+                    @endforelse
+                </ul>
+            </section>
+        </div>
     </div>
 </div>

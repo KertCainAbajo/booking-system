@@ -31,8 +31,36 @@ class BookingHistory extends Component
         $this->resetPage();
     }
 
+    public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateFrom()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateTo()
+    {
+        $this->resetPage();
+    }
+
+    public function clearFilters()
+    {
+        $this->search = '';
+        $this->statusFilter = '';
+        $this->dateFrom = '';
+        $this->dateTo = '';
+        $this->resetPage();
+    }
+
     public function sortByColumn($column)
     {
+        if (! in_array($column, ['booking_date', 'archived_at', 'total_amount'], true)) {
+            return;
+        }
+
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -59,8 +87,13 @@ class BookingHistory extends Component
                         ->orWhere('email', 'like', '%' . $this->search . '%')
                         ->orWhere('phone', 'like', '%' . $this->search . '%');
                 })
+                ->orWhereHas('customer', function($customerQuery) {
+                    // Guest bookings keep the contact details on the customer record
+                    $customerQuery->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                })
                 ->orWhereHas('vehicle', function($vehicleQuery) {
-                    $vehicleQuery->where('registration_number', 'like', '%' . $this->search . '%')
+                    $vehicleQuery->where('plate_number', 'like', '%' . $this->search . '%')
                         ->orWhere('make', 'like', '%' . $this->search . '%')
                         ->orWhere('model', 'like', '%' . $this->search . '%');
                 })

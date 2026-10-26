@@ -1,155 +1,137 @@
-<div>
-    <!-- Page Header -->
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border-l-4 border-garage-neon relative overflow-hidden mb-4 sm:mb-6">
-        <!-- Carbon Fiber Pattern Overlay -->
-        <div class="absolute inset-0 bg-carbon-fiber opacity-50"></div>
-        
-        <div class="relative z-10">
-            <div class="flex items-center space-x-3 sm:space-x-4 mb-2 sm:mb-3">
-                <!-- History Icon -->
-                <svg class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">BOOKING HISTORY</h1>
-            </div>
-            <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">Archived completed and cancelled bookings</p>
-        </div>
-        
-        <!-- Garage Floor Marking -->
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-30"></div>
-    </div>
+@php
+    $sortIcon = fn ($column) => $sortBy === $column ? ($sortDirection === 'asc' ? '↑' : '↓') : '';
+@endphp
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-4 sm:p-5 text-center hover:border-garage-neon/40 transition-all">
-            <p class="text-xs text-garage-steel uppercase tracking-wider mb-1 sm:mb-2">Total Archived</p>
-            <p class="text-2xl sm:text-3xl font-bold text-garage-offwhite font-mono">{{ $stats['total'] }}</p>
-        </div>
-        <div class="bg-garage-charcoal/50 rounded-lg border border-garage-neon/20 p-4 sm:p-5 text-center hover:border-garage-neon/40 transition-all">
-            <p class="text-xs text-garage-steel uppercase tracking-wider mb-1 sm:mb-2">Completed</p>
-            <p class="text-2xl sm:text-3xl font-bold text-garage-neon font-mono">{{ $stats['completed'] }}</p>
-        </div>
-        <div class="bg-garage-charcoal/50 rounded-lg border border-red-500/20 p-4 sm:p-5 text-center hover:border-red-500/40 transition-all">
-            <p class="text-xs text-garage-steel uppercase tracking-wider mb-1 sm:mb-2">Cancelled</p>
-            <p class="text-2xl sm:text-3xl font-bold text-red-400 font-mono">{{ $stats['cancelled'] }}</p>
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-medium text-emerald-300">History</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">Archived bookings</h1>
+            <p class="mt-1 text-gray-400">Finished and cancelled jobs move here automatically every night.</p>
         </div>
     </div>
 
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-        <!-- Search and Filters -->
-        <div class="mb-4 sm:mb-6 grid grid-cols-1 gap-3 sm:gap-4">
+    <!-- Totals -->
+    <section class="grid grid-cols-3 gap-3 sm:gap-4">
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Total archived</p>
+            <p class="mt-2 text-3xl font-bold text-white">{{ $stats['total'] }}</p>
+        </div>
+        <button wire:click="$set('statusFilter', '{{ $statusFilter === 'completed' ? '' : 'completed' }}')" @class(['rounded-3xl p-4 sm:p-5 text-left ring-1 transition', 'bg-emerald-400/10 ring-emerald-400/50' => $statusFilter === 'completed', 'bg-white/[0.03] ring-white/[0.07] hover:ring-white/20' => $statusFilter !== 'completed'])>
+            <p class="text-sm font-medium text-gray-400">Completed</p>
+            <p class="mt-2 text-3xl font-bold text-emerald-300">{{ $stats['completed'] }}</p>
+        </button>
+        <button wire:click="$set('statusFilter', '{{ $statusFilter === 'cancelled' ? '' : 'cancelled' }}')" @class(['rounded-3xl p-4 sm:p-5 text-left ring-1 transition', 'bg-rose-400/10 ring-rose-400/50' => $statusFilter === 'cancelled', 'bg-white/[0.03] ring-white/[0.07] hover:ring-white/20' => $statusFilter !== 'cancelled'])>
+            <p class="text-sm font-medium text-gray-400">Cancelled</p>
+            <p class="mt-2 text-3xl font-bold text-rose-300">{{ $stats['cancelled'] }}</p>
+        </button>
+    </section>
+
+    <section class="cp-card">
+        <!-- Filters -->
+        <div class="p-4 sm:p-5 border-b border-white/[0.06] grid gap-3 lg:grid-cols-[minmax(0,1fr)_13rem_11rem_11rem_auto] items-end">
             <div>
-                <input wire:model.live="search" type="text" placeholder="Search by customer, vehicle, or reference..." 
-                    class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite placeholder-garage-steel shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3">
+                <label class="cp-label">Search</label>
+                <div class="relative">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/></svg>
+                    <input wire:model.live.debounce.300ms="search" type="text" placeholder="Name, phone, plate, car or reference" class="cp-input !pl-12">
+                </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <select wire:model.live="statusFilter" class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3">
-                    <option value="">All Status</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="no_show">Not Arriving</option>
-                </select>
-                <input wire:model.live="dateFrom" type="date" placeholder="Booking Date"
-                    class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3">
+            <div>
+                <label class="cp-label">Status</label>
+                <x-cp-select model="statusFilter" live label="Status" placeholder="All statuses" :searchable="false"
+                    :options="['' => 'All statuses', 'completed' => 'Completed', 'cancelled' => 'Cancelled', 'no_show' => 'No show', 'not_available' => 'Not available']" />
             </div>
+            <div>
+                <label for="dateFrom" class="cp-label">Archived from</label>
+                <input id="dateFrom" wire:model.live="dateFrom" type="date" class="cp-input">
+            </div>
+            <div>
+                <label for="dateTo" class="cp-label">to</label>
+                <input id="dateTo" wire:model.live="dateTo" type="date" class="cp-input">
+            </div>
+            <button wire:click="clearFilters" class="cp-btn-ghost whitespace-nowrap">Show all</button>
         </div>
-        
-        <!-- Garage Floor Divider -->
-        <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
 
-        <!-- Bookings Table -->
-        <div class="overflow-x-auto -mx-4 sm:mx-0">
-            <div class="inline-block min-w-full align-middle">
-                <div class="overflow-hidden">
-                    <table class="min-w-full divide-y divide-garage-neon/20">
-                        <thead class="bg-garage-charcoal/70">
-                            <tr>
-                                <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Reference</th>
-                                <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Customer</th>
-                                <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-garage-neon uppercase service-tag tracking-wider hidden md:table-cell">Vehicle</th>
-                                <th wire:click="sortByColumn('booking_date')" class="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-garage-neon uppercase cursor-pointer hover:bg-garage-forest/50 service-tag tracking-wider">
-                                    <div class="flex items-center gap-1">
-                                        <span class="hidden sm:inline">Booking Date</span>
-                                        <span class="sm:hidden">Date</span>
-                                        @if($sortBy === 'booking_date')
-                                            <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
-                                        @endif
-                                    </div>
-                                </th>
-                                <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Status</th>
-                                <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-garage-neon uppercase service-tag tracking-wider hidden sm:table-cell">Amount</th>
-                                <th class="px-3 sm:px-4 py-2 sm:py-3 text-center text-[10px] sm:text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-garage-charcoal/30 divide-y divide-garage-neon/10">
-                    @forelse($bookings as $booking)
-                    <tr class="hover:bg-garage-forest/30 transition-colors">
-                        <td class="px-3 sm:px-4 py-3 sm:py-4">
-                            <span class="text-garage-offwhite font-mono font-semibold text-xs sm:text-sm">{{ $booking->booking_reference }}</span>
-                        </td>
-                        <td class="px-3 sm:px-4 py-3 sm:py-4">
-                            <div class="text-garage-offwhite font-medium text-xs sm:text-sm">{{ $booking->customer->name }}</div>
-                            <div class="text-garage-steel text-[10px] sm:text-xs">{{ $booking->customer->email }}</div>
-                        </td>
-                        <td class="px-3 sm:px-4 py-3 sm:py-4 hidden md:table-cell">
-                            <div class="text-garage-offwhite text-sm">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</div>
-                            <div class="text-garage-steel text-xs">{{ $booking->vehicle->registration_number }}</div>
-                        </td>
-                        <td class="px-3 sm:px-4 py-3 sm:py-4">
-                            <div class="text-garage-offwhite text-xs sm:text-sm">{{ $booking->booking_date->format('M d, Y') }}</div>
-                            <div class="text-garage-steel text-[10px] sm:text-xs">{{ $booking->booking_time->format('h:i A') }}</div>
-                        </td>
-                        <td class="px-3 sm:px-4 py-3 sm:py-4">
-                            @if($booking->status === 'completed')
-                                <span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-garage-neon/20 text-garage-neon border border-garage-neon/30 service-tag">
-                                    COMPLETED
-                                </span>
-                            @elseif($booking->status === 'cancelled')
-                                <span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30 service-tag">
-                                    CANCELLED
-                                </span>
-                            @elseif($booking->status === 'no_show')
-                                <span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/30 service-tag">
-                                    NOT ARRIVING
-                                </span>
-                            @elseif($booking->status === 'not_available')
-                                <span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30 service-tag">
-                                    NOT AVAILABLE
-                                </span>
-                            @endif
-                        </td>
-                        <td class="px-3 sm:px-4 py-3 sm:py-4 hidden sm:table-cell">
-                            <span class="text-garage-offwhite font-mono font-bold text-sm">₱{{ number_format($booking->total_amount, 2) }}</span>
-                        </td>
-                        <td class="px-3 sm:px-4 py-3 sm:py-4 text-center">
-                            <button wire:click="viewBooking({{ $booking->id }})"
-                                class="inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 bg-garage-neon/20 text-garage-neon border border-garage-neon/30 rounded hover:bg-garage-neon hover:text-garage-black font-semibold transition-all text-xs sm:text-sm service-tag">
-                                VIEW
-                            </button>
-                        </td>
+        <!-- Table (desktop) -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-xs uppercase tracking-wider text-gray-500 border-b border-white/[0.06]">
+                        <th class="px-5 py-3 font-medium">Reference</th>
+                        <th class="px-5 py-3 font-medium">Customer</th>
+                        <th class="px-5 py-3 font-medium">Vehicle</th>
+                        <th class="px-5 py-3 font-medium"><button wire:click="sortByColumn('booking_date')" class="uppercase tracking-wider hover:text-white">Appointment {{ $sortIcon('booking_date') }}</button></th>
+                        <th class="px-5 py-3 font-medium">Status</th>
+                        <th class="px-5 py-3 font-medium text-right"><button wire:click="sortByColumn('total_amount')" class="uppercase tracking-wider hover:text-white">Amount {{ $sortIcon('total_amount') }}</button></th>
+                        <th class="px-5 py-3 font-medium"><button wire:click="sortByColumn('archived_at')" class="uppercase tracking-wider hover:text-white">Archived {{ $sortIcon('archived_at') }}</button></th>
+                        <th class="px-5 py-3"></th>
                     </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.05]">
+                    @forelse ($bookings as $booking)
+                        <tr wire:key="h-{{ $booking->id }}" class="hover:bg-white/[0.02] transition">
+                            <td class="px-5 py-4 font-mono text-xs text-gray-300">{{ $booking->booking_reference ?? '#' . $booking->id }}</td>
+                            <td class="px-5 py-4">
+                                <div class="font-medium text-white">{{ $booking->customer->getDisplayName() }}</div>
+                                <div class="text-xs text-gray-400">{{ $booking->customer->getContactPhone() }}</div>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="text-gray-200">{{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</div>
+                                @if ($booking->vehicle?->plate_number)
+                                    <span class="plate-number text-[11px] inline-block mt-1">{{ $booking->vehicle->plate_number }}</span>
+                                @endif
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="text-white">{{ $booking->booking_date->format('M d, Y') }}</div>
+                                <div class="text-xs text-gray-400">{{ $booking->booking_time->format('g:i A') }}</div>
+                            </td>
+                            <td class="px-5 py-4"><x-status-badge :status="$booking->status" /></td>
+                            <td class="px-5 py-4 text-right font-semibold text-white tabular-nums">₱{{ number_format($booking->total_amount, 2) }}</td>
+                            <td class="px-5 py-4 text-xs text-gray-400">{{ $booking->archived_at?->format('M d, Y') }}</td>
+                            <td class="px-5 py-4 text-right">
+                                <a href="{{ route('owner.booking.detail', $booking->id) }}" wire:navigate class="inline-flex items-center h-9 px-3.5 rounded-lg text-sm font-semibold bg-white/[0.06] text-white ring-1 ring-white/10 hover:bg-white/10">Open</a>
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="7" class="px-3 sm:px-4 py-6 sm:py-8 text-center">
-                            <div class="text-garage-steel">
-                                <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                                </svg>
-                                <p class="text-base sm:text-lg font-semibold">No archived bookings found</p>
-                                <p class="text-xs sm:text-sm mt-1">Try adjusting your search or filters</p>
-                            </div>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="8" class="px-5 py-16 text-center">
+                                <p class="text-lg font-semibold text-white">No archived bookings here</p>
+                                <p class="mt-1 text-sm text-gray-400">Try a wider date range, or press "Show all".</p>
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
-                </div>
-            </div>
         </div>
 
-        <!-- Pagination -->
-        <div class="mt-4 sm:mt-6">
-            {{ $bookings->links() }}
-        </div>
-    </div>
+        <!-- Cards (mobile) -->
+        <ul class="md:hidden divide-y divide-white/[0.05]">
+            @forelse ($bookings as $booking)
+                <li wire:key="hm-{{ $booking->id }}">
+                    <a href="{{ route('owner.booking.detail', $booking->id) }}" wire:navigate class="block p-4 hover:bg-white/[0.02]">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="font-semibold text-white truncate">{{ $booking->customer->getDisplayName() }}</div>
+                                <div class="text-xs text-gray-400">{{ $booking->booking_date->format('M d, Y') }} · {{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</div>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <x-status-badge :status="$booking->status" />
+                                <div class="mt-1 font-semibold text-white tabular-nums">₱{{ number_format($booking->total_amount, 2) }}</div>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            @empty
+                <li class="p-10 text-center text-gray-400">No archived bookings here.</li>
+            @endforelse
+        </ul>
+
+        @if ($bookings->hasPages())
+            <div class="p-4 sm:p-5 border-t border-white/[0.06]">
+                {{ $bookings->links('livewire.cp-pagination') }}
+            </div>
+        @endif
+    </section>
 </div>

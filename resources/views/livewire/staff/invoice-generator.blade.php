@@ -1,287 +1,140 @@
-<div>
+<div class="space-y-6">
     <style>
-        .invoice-logo {
-            filter: brightness(0) invert(1);
-        }
-        
         @media print {
-            /* Hide everything except invoice */
-            body * {
-                visibility: hidden;
-            }
-            
-            /* Hide header, navigation, footer */
-            header, nav, footer, .navbar, .sidebar, .menu, [role="navigation"] {
-                display: none !important;
-            }
-            
-            /* Show only invoice content */
-            #invoice-content, #invoice-content * {
-                visibility: visible;
-            }
-            
-            #invoice-content {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            
-            /* Fit to one page */
-            @page {
-                size: A4;
-                margin: 10mm;
-            }
-            
-            /* Remove browser header/footer */
-            @page {
-                margin-top: 0;
-                margin-bottom: 0;
-            }
-            
-            body {
-                margin: 0;
-                padding: 0;
-            }
-            
-            /* Hide browser default header/footer */
-            title {
-                display: none;
-            }
-            
-            /* Reduce sizes to fit one page */
-            .max-w-4xl {
-                max-width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            
-            .p-8 {
-                padding: 15px !important;
-            }
-            
-            .p-6 {
-                padding: 10px !important;
-            }
-            
-            .p-4 {
-                padding: 8px !important;
-            }
-            
-            .mb-8 {
-                margin-bottom: 10px !important;
-            }
-            
-            .py-8 {
-                padding-top: 0 !important;
-                padding-bottom: 0 !important;
-            }
-            
-            /* Reset header for print */
-            .print-header {
-                background: white !important;
-                border-bottom: 3px solid #2d5016 !important;
-            }
-            
-            .print-text {
-                color: #1a1a1a !important;
-            }
-            
-            .invoice-logo {
-                filter: none !important;
-            }
-            
-            /* Reduce table spacing */
-            table {
-                font-size: 11px;
-            }
-            
-            table td, table th {
-                padding: 6px !important;
-            }
+            body * { visibility: hidden; }
+            #invoice-content, #invoice-content * { visibility: visible; }
+            #invoice-content { position: absolute; inset: 0 auto auto 0; width: 100%; box-shadow: none !important; border-radius: 0 !important; }
+            @page { size: A4; margin: 12mm; }
         }
     </style>
-    
-    <div class="max-w-4xl mx-auto py-8 px-4">
-        <!-- Invoice Container -->
-        <div class="bg-white rounded-lg shadow-2xl overflow-hidden" id="invoice-content">
-        <!-- Invoice Header -->
-        <div class="bg-gradient-to-r from-garage-charcoal to-garage-darkgreen text-white p-8 print-header">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h1 class="text-4xl font-bold mb-2 print-text">INVOICE</h1>
-                    <p class="text-garage-offwhite print-text">Booking: {{ $booking->booking_reference }}</p>
-                </div>
-                <div class="text-right">
-                    <div class="flex items-center justify-end gap-3 mb-2">
-                        <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="h-16 w-16 object-contain invoice-logo">
-                        <div>
-                            <h2 class="text-2xl font-bold print-text">DEXTER AUTO SERVICES</h2>
-                            <p class="text-sm text-garage-offwhite mt-1 print-text">Auto Service</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-end justify-between gap-4 print:hidden">
+        <div>
+            <a href="{{ route('owner.booking.detail', $booking->id) }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                Back to booking #{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}
+            </a>
+            <h1 class="mt-2 text-3xl font-bold tracking-tight text-white">Invoice</h1>
         </div>
+        <div class="flex flex-wrap gap-2">
+            <button onclick="window.print()" class="cp-btn-ghost">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Print
+            </button>
+            <button wire:click="downloadPdf" wire:loading.attr="disabled" wire:target="downloadPdf" class="cp-btn-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span wire:loading.remove wire:target="downloadPdf">Download PDF</span>
+                <span wire:loading wire:target="downloadPdf">Preparing...</span>
+            </button>
+        </div>
+    </div>
 
-        <!-- Invoice Info -->
-        <div class="p-8">
-            <div class="grid grid-cols-2 gap-8 mb-8">
-                <!-- Bill To -->
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-600 uppercase mb-3">Bill To:</h3>
-                    <div class="text-gray-800">
-                        <p class="font-bold text-lg">{{ $booking->customer->name }}</p>
-                        <p>{{ $booking->customer->email }}</p>
-                        <p>{{ $booking->customer->phone }}</p>
+    <!-- Invoice paper -->
+    <article id="invoice-content" class="mx-auto max-w-3xl rounded-3xl bg-white text-gray-900 shadow-2xl shadow-black/50 overflow-hidden">
+        <div class="h-2 bg-gradient-to-r from-emerald-500 to-emerald-700"></div>
+        <div class="p-8 sm:p-10">
+            <!-- Letterhead -->
+            <header class="flex flex-wrap items-start justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services" class="w-16 h-16 object-contain">
+                    <div>
+                        <p class="text-xl font-extrabold tracking-tight">Dexter Auto Services</p>
+                        <p class="text-sm text-gray-500">Don Luis Village, Adelfa St, City of Mati</p>
+                        <p class="text-sm text-gray-500">+63 927 007 1538</p>
                     </div>
                 </div>
-
-                <!-- Invoice Details -->
                 <div class="text-right">
-                    <div class="space-y-2">
-                        <div>
-                            <span class="text-sm text-gray-600">Invoice Date:</span>
-                            <span class="font-semibold ml-2">{{ now()->format('M d, Y') }}</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-600">Booking Date:</span>
-                            <span class="font-semibold ml-2">{{ $booking->booking_date->format('M d, Y') }}</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-600">Status:</span>
-                            <span class="ml-2 px-3 py-1 rounded-full text-xs font-bold 
-                                {{ $booking->status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                   ($booking->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 
-                                   'bg-yellow-100 text-yellow-800') }}">
-                                {{ strtoupper($booking->status) }}
-                            </span>
-                        </div>
-                    </div>
+                    <p class="text-3xl font-extrabold tracking-tight text-emerald-700">INVOICE</p>
+                    <p class="mt-1 text-sm text-gray-500">No. <span class="font-mono font-semibold text-gray-800">{{ $booking->booking_reference ?? str_pad($booking->id, 6, '0', STR_PAD_LEFT) }}</span></p>
+                    <p class="text-sm text-gray-500">Issued {{ now()->format('M d, Y') }}</p>
                 </div>
-            </div>
+            </header>
 
-            <!-- Vehicle Information -->
-            <div class="bg-gray-50 rounded-lg p-4 mb-8">
-                <h3 class="text-sm font-semibold text-gray-600 uppercase mb-2">Vehicle Details:</h3>
-                <p class="text-gray-800">
-                    <span class="font-bold">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</span>
-                    <span class="text-gray-600 ml-2">({{ $booking->vehicle->year }})</span>
-                </p>
-                <p class="text-gray-600 text-sm">Registration: {{ $booking->vehicle->registration_number }}</p>
-            </div>
+            <!-- Parties -->
+            <section class="mt-8 grid gap-6 sm:grid-cols-3 rounded-2xl bg-gray-50 p-5">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Bill to</p>
+                    <p class="mt-1 font-semibold">{{ $booking->customer->getDisplayName() }}</p>
+                    <p class="text-sm text-gray-600">{{ $booking->customer->getContactPhone() }}</p>
+                    <p class="text-sm text-gray-600 break-all">{{ $booking->customer->getContactEmail() }}</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Vehicle</p>
+                    <p class="mt-1 font-semibold">{{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</p>
+                    <p class="text-sm text-gray-600">{{ $booking->vehicle?->year }} · Plate {{ $booking->vehicle?->plate_number }}</p>
+                </div>
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Service date</p>
+                    <p class="mt-1 font-semibold">{{ $booking->booking_date->format('M d, Y') }}</p>
+                    <p class="text-sm text-gray-600">{{ $booking->booking_time->format('g:i A') }}@if ($booking->mechanic_name) · {{ $booking->mechanic_name }}@endif</p>
+                </div>
+            </section>
 
-            <!-- Services Table -->
-            <div class="mb-8">
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b-2 border-gray-300">
-                            <th class="text-left py-3 text-sm font-semibold text-gray-600 uppercase">Service</th>
-                            <th class="text-center py-3 text-sm font-semibold text-gray-600 uppercase">Quantity</th>
-                            <th class="text-right py-3 text-sm font-semibold text-gray-600 uppercase">Unit Price</th>
-                            <th class="text-right py-3 text-sm font-semibold text-gray-600 uppercase">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($booking->services as $service)
-                        <tr class="border-b border-gray-200">
-                            <td class="py-4 text-gray-800">
-                                <div class="font-medium">{{ $service->name }}</div>
-                                @if($service->description)
-                                <div class="text-sm text-gray-600 mt-1">{{ $service->description }}</div>
+            <!-- Lines -->
+            <table class="mt-8 w-full text-sm">
+                <thead>
+                    <tr class="border-b-2 border-gray-200 text-left text-xs uppercase tracking-wider text-gray-500">
+                        <th class="py-3 font-semibold">Service</th>
+                        <th class="py-3 font-semibold text-center w-16">Qty</th>
+                        <th class="py-3 font-semibold text-right w-32">Unit price</th>
+                        <th class="py-3 font-semibold text-right w-32">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($booking->services as $service)
+                        <tr class="border-b border-gray-100">
+                            <td class="py-3.5 pr-4">
+                                <p class="font-medium">{{ $service->name }}</p>
+                                @if ($service->description)
+                                    <p class="text-xs text-gray-500">{{ $service->description }}</p>
                                 @endif
                             </td>
-                            <td class="py-4 text-center text-gray-800">{{ $service->pivot->quantity }}</td>
-                            <td class="py-4 text-right text-white">${{ number_format($service->pivot->price, 2) }}</td>
-                            <td class="py-4 text-right font-bold text-white">
-                                ${{ number_format($service->pivot->price * $service->pivot->quantity, 2) }}
-                            </td>
+                            <td class="py-3.5 text-center tabular-nums">{{ $service->pivot->quantity }}</td>
+                            <td class="py-3.5 text-right tabular-nums">₱{{ number_format($service->pivot->price, 2) }}</td>
+                            <td class="py-3.5 text-right font-semibold tabular-nums">₱{{ number_format($service->pivot->price * $service->pivot->quantity, 2) }}</td>
                         </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+            </table>
 
             <!-- Totals -->
-            <div class="flex justify-end mb-8">
-                <div class="w-64">
-                    <div class="flex justify-between py-2 border-t border-gray-300">
-                        <span class="text-gray-600">Subtotal:</span>
-                        <span class="font-semibold text-gray-800">${{ number_format($booking->total_amount, 2) }}</span>
+            <div class="mt-6 flex justify-end">
+                <dl class="w-full max-w-xs space-y-2 text-sm">
+                    <div class="flex justify-between"><dt class="text-gray-500">Subtotal</dt><dd class="tabular-nums">₱{{ number_format($booking->total_amount, 2) }}</dd></div>
+                    <div class="flex justify-between"><dt class="text-gray-500">Tax (0%)</dt><dd class="tabular-nums">₱0.00</dd></div>
+                    <div class="flex justify-between items-baseline border-t-2 border-gray-200 pt-3">
+                        <dt class="font-bold">Total due</dt>
+                        <dd class="text-2xl font-extrabold text-emerald-700 tabular-nums">₱{{ number_format($booking->total_amount, 2) }}</dd>
                     </div>
-                    <div class="flex justify-between py-2">
-                        <span class="text-gray-600">Tax (0%):</span>
-                        <span class="font-semibold text-gray-800">$0.00</span>
-                    </div>
-                    <div class="flex justify-between py-3 border-t-2 border-gray-300">
-                        <span class="text-lg font-bold text-gray-800">Total:</span>
-                        <span class="text-2xl font-bold text-garage-darkgreen">
-                            ${{ number_format($booking->total_amount, 2) }}
-                        </span>
-                    </div>
-                </div>
+                    @if ($booking->payment)
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <dt>Payment ({{ ucwords(str_replace('_', ' ', $booking->payment->payment_method)) }})</dt>
+                            <dd class="font-semibold {{ $booking->payment->payment_status === 'paid' ? 'text-emerald-700' : 'text-amber-600' }}">{{ ucfirst($booking->payment->payment_status) }}</dd>
+                        </div>
+                    @endif
+                </dl>
             </div>
 
-            <!-- Notes -->
-            @if($booking->notes)
-            <div class="bg-gray-50 rounded-lg p-4 mb-8">
-                <h3 class="text-sm font-semibold text-gray-600 uppercase mb-2">Notes:</h3>
-                <p class="text-gray-700">{{ $booking->notes }}</p>
-            </div>
+            @if ($booking->notes)
+                <section class="mt-8 rounded-2xl bg-gray-50 p-5">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Notes</p>
+                    <p class="mt-1 text-sm text-gray-700">{{ $booking->notes }}</p>
+                </section>
             @endif
 
-            <!-- Footer -->
-            <div class="text-center pt-8 border-t border-gray-300">
-                <p class="text-gray-600 text-sm">Thank you for your business!</p>
-                <p class="text-gray-500 text-xs mt-2">
-                    This invoice was generated on {{ now()->format('M d, Y \a\t h:i A') }}
-                </p>
-            </div>
+            <footer class="mt-10 pt-6 border-t border-gray-200 text-center">
+                <p class="font-semibold text-gray-700">Thank you for trusting Dexter Auto Services!</p>
+                <p class="mt-1 text-xs text-gray-400">Generated {{ now()->format('M d, Y \a\t g:i A') }}</p>
+            </footer>
         </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="mt-6 flex gap-4 justify-center print:hidden">
-        <button wire:click="downloadPdf" 
-            class="flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold transition-all shadow-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            DOWNLOAD PDF
-        </button>
-        
-        <button onclick="window.print()" 
-            class="flex items-center gap-2 bg-garage-darkgreen text-white px-6 py-3 rounded-lg hover:bg-garage-forest font-bold transition-all shadow-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-            </svg>
-            PRINT INVOICE
-        </button>
-        
-        <a href="{{ route('owner.booking.detail', $booking->id) }}" 
-            class="flex items-center gap-2 bg-garage-charcoal text-white px-6 py-3 rounded-lg hover:bg-gray-700 font-bold transition-all shadow-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            BACK TO BOOKING
-        </a>
-    </div>
-    </div>
+    </article>
 
     <script>
-        // Change page title for printing
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const originalTitle = document.title;
-            
-            window.addEventListener('beforeprint', function() {
-                document.title = 'Invoice {{ $booking->booking_reference }}';
-            });
-            
-            window.addEventListener('afterprint', function() {
-                document.title = originalTitle;
-            });
+            window.addEventListener('beforeprint', () => document.title = 'Invoice {{ $booking->booking_reference }}');
+            window.addEventListener('afterprint', () => document.title = originalTitle);
         });
     </script>
 </div>
