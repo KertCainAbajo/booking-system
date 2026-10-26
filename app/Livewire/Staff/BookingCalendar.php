@@ -7,7 +7,7 @@ use Livewire\Attributes\Layout;
 use App\Models\Booking;
 use Carbon\Carbon;
 
-#[Layout('layouts.staff')]
+#[Layout('layouts.owner')]
 class BookingCalendar extends Component
 {
     public $statusFilter = 'all';

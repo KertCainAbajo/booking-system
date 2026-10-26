@@ -16,7 +16,7 @@
                     </div>
                     <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-11 sm:ml-14 md:ml-16">View customer appointments and bookings</p>
                 </div>
-                <a href="{{ route('staff.dashboard') }}" 
+                <a href="{{ route('owner.dashboard') }}" 
                     class="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-garage-forest hover:bg-garage-darkgreen text-white rounded-lg transition-all border border-garage-neon/30 hover:border-garage-neon/50 service-tag text-sm sm:text-base flex-shrink-0">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -125,7 +125,7 @@
                             <!-- Bookings -->
                             <div class="space-y-0.5 sm:space-y-1">
                                 @foreach($day['bookings']->take(2) as $booking)
-                                    <a href="{{ route('staff.booking.detail', $booking->id) }}" 
+                                    <a href="{{ route('owner.booking.detail', $booking->id) }}" 
                                         class="block text-[10px] sm:text-xs p-1 sm:p-1.5 rounded border
                                         {{ $booking->status === 'pending' ? 'bg-yellow-400/20 border-yellow-400/30 hover:bg-yellow-400/30' : '' }}
                                         {{ $booking->status === 'approved' ? 'bg-blue-400/20 border-blue-400/30 hover:bg-blue-400/30' : '' }}

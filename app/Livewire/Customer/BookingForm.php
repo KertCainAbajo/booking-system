@@ -10,6 +10,9 @@ use App\Models\Vehicle;
 use App\Models\Booking;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 #[Layout('layouts.customer')]
 class BookingForm extends Component
@@ -25,94 +28,83 @@ class BookingForm extends Component
     public $servicesConfirmed = false; // Track if user clicked Save & Continue
     public $savedCategories = []; // Track which categories have saved services
     public $policyConsent = false;
-    
+
     // Customer information
     public $customerName = '';
     public $customerPhone = '';
     public $customerAddress = '';
-    
+
     // Error modal
     public $showErrorModal = false;
     public $errorMessage = '';
-    
+
     // Success modal
     public $showSuccessModal = false;
 
-    // New vehicle form
+    // New vehicle: entered inline and saved together with the booking
     public $showNewVehicleForm = false;
+    public $carName = ''; // e.g. "Toyota Vios" - split into make/model on save
     public $newVehicle = [
-        'make' => '',
-        'model' => '',
         'year' => '',
         'plate_number' => '',
         'vin_number' => ''
     ];
-    public $brandSelection = ''; // 'predefined' or 'other'
-    public $customBrand = ''; // for custom brand input
-    public $modelSelection = ''; // selected model or 'other'
-    public $customModel = ''; // for custom model input
-    public $availableModels = []; // models for selected brand
 
-    // Car brands list
-    public $carBrands = [
-        'Acura', 'Alfa Romeo', 'Aston Martin', 'Audi', 'Bentley', 'BMW', 'Bugatti',
-        'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 'Citroën', 'Dodge', 'Ferrari',
-        'Fiat', 'Ford', 'Genesis', 'GMC', 'Honda', 'Hummer', 'Hyundai', 'Infiniti',
-        'Isuzu', 'Jaguar', 'Jeep', 'Kia', 'Lamborghini', 'Land Rover', 'Lexus',
-        'Lincoln', 'Lotus', 'Maserati', 'Mazda', 'McLaren', 'Mercedes-Benz', 'MG',
-        'Mini', 'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Porsche', 'Ram',
-        'Renault', 'Rolls-Royce', 'Saab', 'Subaru', 'Suzuki', 'Tesla', 'Toyota',
-        'Volkswagen', 'Volvo'
-    ];
-
-    // Car models by brand
-    public $carModels = [
-        'Toyota' => ['Camry', 'Corolla', 'RAV4', 'Highlander', '4Runner', 'Tacoma', 'Tundra', 'Sienna', 'Prius', 'Avalon', 'Yaris', 'C-HR', 'Venza', 'Sequoia'],
-        'Honda' => ['Civic', 'Accord', 'CR-V', 'Pilot', 'HR-V', 'Odyssey', 'Ridgeline', 'Passport', 'Insight', 'Fit'],
-        'Ford' => ['F-150', 'Mustang', 'Explorer', 'Escape', 'Edge', 'Expedition', 'Ranger', 'Bronco', 'Maverick', 'Transit', 'Fusion', 'Focus', 'EcoSport'],
-        'Chevrolet' => ['Silverado', 'Equinox', 'Malibu', 'Traverse', 'Tahoe', 'Suburban', 'Colorado', 'Blazer', 'Trax', 'Camaro', 'Corvette', 'Impala', 'Cruze'],
-        'Nissan' => ['Altima', 'Sentra', 'Rogue', 'Pathfinder', 'Frontier', 'Titan', 'Murano', 'Kicks', 'Armada', 'Maxima', 'Versa', '370Z', 'Leaf'],
-        'BMW' => ['3 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'Z4', 'i4', 'iX', 'M3', 'M5', '4 Series', 'X6'],
-        'Mercedes-Benz' => ['C-Class', 'E-Class', 'S-Class', 'GLC', 'GLE', 'GLA', 'GLB', 'GLS', 'A-Class', 'CLA', 'EQS', 'EQE', 'G-Class'],
-        'Audi' => ['A3', 'A4', 'A6', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron', 'TT', 'R8', 'S4', 'S6', 'RS5'],
-        'Lexus' => ['ES', 'IS', 'LS', 'RX', 'NX', 'GX', 'LX', 'UX', 'RC', 'LC'],
-        'Hyundai' => ['Elantra', 'Sonata', 'Tucson', 'Santa Fe', 'Palisade', 'Kona', 'Venue', 'Ioniq', 'Veloster', 'Accent'],
-        'Kia' => ['Forte', 'Optima', 'Sorento', 'Sportage', 'Telluride', 'Soul', 'Seltos', 'Niro', 'Stinger', 'Rio', 'Carnival'],
-        'Mazda' => ['Mazda3', 'Mazda6', 'CX-3', 'CX-5', 'CX-9', 'CX-30', 'CX-50', 'MX-5 Miata'],
-        'Subaru' => ['Outback', 'Forester', 'Crosstrek', 'Impreza', 'Legacy', 'Ascent', 'WRX', 'BRZ'],
-        'Volkswagen' => ['Jetta', 'Passat', 'Tiguan', 'Atlas', 'Golf', 'ID.4', 'Taos', 'Arteon'],
-        'Jeep' => ['Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Renegade', 'Gladiator', 'Wagoneer', 'Grand Wagoneer'],
-        'Ram' => ['1500', '2500', '3500', 'ProMaster'],
-        'GMC' => ['Sierra', 'Terrain', 'Acadia', 'Yukon', 'Canyon'],
-        'Dodge' => ['Charger', 'Challenger', 'Durango', 'Journey'],
-        'Tesla' => ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
-        'Porsche' => ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan', 'Boxster', 'Cayman'],
-        'Volvo' => ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90'],
-        'Land Rover' => ['Range Rover', 'Range Rover Sport', 'Range Rover Evoque', 'Discovery', 'Defender'],
-        'Acura' => ['ILX', 'TLX', 'RLX', 'RDX', 'MDX', 'NSX'],
-        'Infiniti' => ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
-        'Cadillac' => ['CT4', 'CT5', 'Escalade', 'XT4', 'XT5', 'XT6', 'Lyriq'],
-        'Buick' => ['Encore', 'Envision', 'Enclave'],
-        'Lincoln' => ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
-        'Genesis' => ['G70', 'G80', 'G90', 'GV70', 'GV80'],
-        'Mitsubishi' => ['Mirage', 'Outlander', 'Eclipse Cross', 'Outlander Sport'],
+    // Car models by brand, used for the "Your car" suggestions
+    protected array $carModels = [
+        'Toyota' => ['Vios', 'Wigo', 'Innova', 'Fortuner', 'Hilux', 'Rush', 'Avanza', 'Veloz', 'Raize', 'Corolla Altis', 'Corolla Cross', 'Camry', 'Hiace', 'Land Cruiser', 'RAV4', 'Yaris', 'Prius', 'Tamaraw'],
+        'Mitsubishi' => ['Mirage', 'Mirage G4', 'Xpander', 'Xpander Cross', 'Montero Sport', 'Strada', 'L300', 'Adventure', 'Outlander', 'Eclipse Cross'],
+        'Honda' => ['City', 'Civic', 'Jazz', 'BR-V', 'HR-V', 'CR-V', 'Brio', 'Accord', 'Mobilio', 'Odyssey'],
+        'Nissan' => ['Almera', 'Navara', 'Terra', 'Urvan', 'Kicks', 'Patrol', 'Juke', 'Sentra', 'X-Trail', 'Livina'],
+        'Ford' => ['Ranger', 'Everest', 'Territory', 'EcoSport', 'Raptor', 'Mustang', 'Explorer', 'Fiesta', 'Focus', 'F-150', 'Expedition'],
+        'Isuzu' => ['D-Max', 'mu-X', 'Crosswind', 'Traviz', 'N-Series', 'Alterra'],
+        'Suzuki' => ['Ertiga', 'Swift', 'Celerio', 'Dzire', 'Jimny', 'S-Presso', 'XL7', 'APV', 'Carry', 'Vitara'],
+        'Hyundai' => ['Accent', 'Reina', 'Creta', 'Stargazer', 'Tucson', 'Santa Fe', 'Starex', 'Elantra', 'Kona', 'Palisade'],
+        'Kia' => ['Picanto', 'Soluto', 'Stonic', 'Seltos', 'Sportage', 'Sorento', 'Carnival', 'Rio', 'K2500'],
+        'Chevrolet' => ['Trailblazer', 'Colorado', 'Spark', 'Sail', 'Trax', 'Tracker', 'Captiva', 'Suburban', 'Tahoe'],
+        'Mazda' => ['Mazda2', 'Mazda3', 'Mazda6', 'CX-3', 'CX-30', 'CX-5', 'CX-9', 'BT-50', 'MX-5'],
+        'Subaru' => ['Forester', 'XV', 'Outback', 'Impreza', 'WRX', 'BRZ', 'Legacy'],
+        'Geely' => ['Coolray', 'Okavango', 'Emgrand', 'Azkarra'],
+        'MG' => ['MG5', 'ZS', 'RX5', 'MG3', 'HS'],
+        'Chery' => ['Tiggo 2', 'Tiggo 5x', 'Tiggo 7 Pro', 'Tiggo 8'],
+        'BYD' => ['Atto 3', 'Dolphin', 'Seal', 'Sealion'],
+        'Foton' => ['Gratour', 'Thunder', 'Toplander', 'Tornado'],
+        'Volkswagen' => ['Santana', 'Lavida', 'Lamando', 'T-Cross', 'Tiguan', 'Golf', 'Jetta'],
+        'BMW' => ['3 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7'],
+        'Mercedes-Benz' => ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'GLA', 'GLC', 'GLE', 'Sprinter'],
+        'Audi' => ['A3', 'A4', 'A6', 'Q3', 'Q5', 'Q7'],
+        'Lexus' => ['ES', 'IS', 'LS', 'RX', 'NX', 'LX'],
+        'Jeep' => ['Wrangler', 'Grand Cherokee', 'Cherokee', 'Compass', 'Gladiator'],
+        'Peugeot' => ['2008', '3008', '5008'],
+        'Volvo' => ['S60', 'S90', 'XC40', 'XC60', 'XC90'],
+        'Land Rover' => ['Defender', 'Discovery', 'Range Rover', 'Range Rover Sport', 'Range Rover Evoque'],
+        'Porsche' => ['911', 'Cayenne', 'Macan', 'Panamera', 'Taycan'],
+        'Tesla' => ['Model 3', 'Model Y', 'Model S', 'Model X'],
         'Mini' => ['Cooper', 'Countryman', 'Clubman'],
-        'Alfa Romeo' => ['Giulia', 'Stelvio'],
-        'Jaguar' => ['XE', 'XF', 'F-Pace', 'E-Pace', 'I-Pace'],
-        'Maserati' => ['Ghibli', 'Levante', 'Quattroporte'],
+        'Dodge' => ['Charger', 'Challenger', 'Durango'],
+        'GMC' => ['Sierra', 'Yukon', 'Canyon'],
+        'Ram' => ['1500', '2500'],
     ];
 
     public function mount()
     {
         $this->bookingDate = now()->addDay()->format('Y-m-d');
         $this->bookingTime = '09:00';
-        
+
         // Pre-fill customer information
         $customer = Customer::where('user_id', Auth::id())->first();
         if ($customer) {
             $this->customerName = $customer->getDisplayName();
             $this->customerPhone = $customer->getContactPhone();
             $this->customerAddress = $customer->address ?? '';
+
+            // First-time customers go straight to entering their car; a single saved car is picked for them
+            $vehicleIds = $customer->vehicles()->pluck('id');
+            if ($vehicleIds->isEmpty()) {
+                $this->showNewVehicleForm = true;
+            } elseif ($vehicleIds->count() === 1) {
+                $this->selectedVehicle = $vehicleIds->first();
+            }
         }
     }
 
@@ -121,38 +113,23 @@ class BookingForm extends Component
         $this->calculateTotal();
     }
 
-    public function updatedBrandSelection($value)
+    public function chooseVehicle($vehicleId)
     {
-        // Reset model selection when brand changes
-        $this->modelSelection = '';
-        $this->customModel = '';
-        $this->newVehicle['model'] = '';
-        
-        // If a predefined brand is selected, set it to newVehicle.make
-        if ($value && $value !== 'other') {
-            $this->newVehicle['make'] = $value;
-            // Load models for this brand
-            $this->availableModels = $this->carModels[$value] ?? [];
-        } else {
-            $this->newVehicle['make'] = '';
-            $this->availableModels = [];
-        }
+        $this->selectedVehicle = $vehicleId;
+        $this->showNewVehicleForm = false;
+        $this->resetErrorBag(['selectedVehicle', 'carName', 'newVehicle.year', 'newVehicle.plate_number', 'newVehicle.vin_number']);
     }
 
-    public function updatedModelSelection($value)
+    public function startNewVehicle()
     {
-        // If a predefined model is selected, set it to newVehicle.model
-        if ($value && $value !== 'other') {
-            $this->newVehicle['model'] = $value;
-        } else {
-            $this->newVehicle['model'] = '';
-        }
+        $this->selectedVehicle = '';
+        $this->showNewVehicleForm = true;
     }
 
     public function cancelNewVehicle()
     {
         $this->showNewVehicleForm = false;
-        $this->reset(['newVehicle', 'brandSelection', 'customBrand', 'modelSelection', 'customModel', 'availableModels']);
+        $this->reset(['newVehicle', 'carName']);
     }
 
     public function calculateTotal()
@@ -178,13 +155,13 @@ class BookingForm extends Component
         }
         // Reset confirmation when services are modified
         $this->servicesConfirmed = false;
-        
+
         // Reset saved status for the category of this service
         $service = Service::find($serviceId);
         if ($service) {
             $this->savedCategories = array_values(array_diff($this->savedCategories, [$service->service_category_id]));
         }
-        
+
         $this->calculateTotal();
     }
 
@@ -193,13 +170,13 @@ class BookingForm extends Component
         $this->selectedServices = array_values(array_diff($this->selectedServices, [$serviceId]));
         // Reset confirmation when services are modified
         $this->servicesConfirmed = false;
-        
+
         // Reset saved status for the category of this service
         $service = Service::find($serviceId);
         if ($service) {
             $this->savedCategories = array_values(array_diff($this->savedCategories, [$service->service_category_id]));
         }
-        
+
         $this->calculateTotal();
     }
 
@@ -209,21 +186,21 @@ class BookingForm extends Component
         $categoryServiceIds = Service::where('service_category_id', $categoryId)
             ->pluck('id')
             ->toArray();
-        
+
         // Check if any services from this category are selected
         $selectedInCategory = array_intersect($this->selectedServices, $categoryServiceIds);
-        
+
         if (count($selectedInCategory) > 0) {
             // Mark this category as saved
             if (!in_array($categoryId, $this->savedCategories)) {
                 $this->savedCategories[] = $categoryId;
             }
-            
+
             $category = ServiceCategory::find($categoryId);
             $serviceCount = count($selectedInCategory);
             $message = $serviceCount . ' service' . ($serviceCount > 1 ? 's' : '') . ' from ' . $category->name . ' saved successfully!';
             session()->flash('success', $message);
-            
+
             // Collapse this category
             $this->expandedCategories = array_values(array_diff($this->expandedCategories, [$categoryId]));
         }
@@ -234,11 +211,11 @@ class BookingForm extends Component
         if (count($this->selectedServices) > 0) {
             $wasConfirmed = $this->servicesConfirmed;
             $this->servicesConfirmed = true;
-            $message = $wasConfirmed 
-                ? 'Services updated successfully! You can continue adding more or proceed with booking.' 
+            $message = $wasConfirmed
+                ? 'Services updated successfully! You can continue adding more or proceed with booking.'
                 : 'Services saved! You can continue adding more services or proceed with booking details.';
             session()->flash('services-saved', $message);
-            
+
             // Close all expanded categories
             $this->expandedCategories = [];
         }
@@ -249,58 +226,56 @@ class BookingForm extends Component
         if (empty($this->selectedServices)) {
             return 0;
         }
-        
+
         $categoryServiceIds = Service::where('service_category_id', $categoryId)
             ->pluck('id')
             ->toArray();
-        
+
         return count(array_intersect($this->selectedServices, $categoryServiceIds));
     }
 
-    public function addNewVehicle()
+    /**
+     * Split a typed car name like "Toyota Vios" into make and model,
+     * recognising multi-word brands such as "Land Rover".
+     */
+    protected function splitCarName(string $name): array
     {
-        // If 'Other' is selected, use custom brand
-        if ($this->brandSelection === 'other') {
-            $this->newVehicle['make'] = $this->customBrand;
-        }
+        $name = trim(preg_replace('/\s+/', ' ', $name));
 
-        // If 'Other' is selected for model, use custom model
-        if ($this->modelSelection === 'other') {
-            $this->newVehicle['model'] = $this->customModel;
-        }
-
-        $this->validate([
-            'newVehicle.make' => 'required|string|max:255',
-            'newVehicle.model' => 'required|string|max:255',
-            'newVehicle.year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
-            'newVehicle.plate_number' => 'required|string|unique:vehicles,plate_number',
-        ]);
-
-        $customer = Customer::where('user_id', Auth::id())->first();
-        
-        try {
-            $vehicle = Vehicle::create([
-                'customer_id' => $customer->id,
-                'make' => $this->newVehicle['make'],
-                'model' => $this->newVehicle['model'],
-                'year' => $this->newVehicle['year'],
-                'plate_number' => $this->newVehicle['plate_number'],
-                'vin_number' => $this->newVehicle['vin_number'],
-            ]);
-
-            $this->selectedVehicle = $vehicle->id;
-            $this->showNewVehicleForm = false;
-            $this->reset(['newVehicle', 'brandSelection', 'customBrand', 'modelSelection', 'customModel', 'availableModels']);
-            session()->flash('success', 'Vehicle added successfully!');
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() == 23000) {
-                $this->showErrorModal = true;
-                $this->errorMessage = 'This plate number is already registered. Please use a different plate number or select the existing vehicle from the dropdown.';
-                return;
+        foreach (array_keys($this->carModels) as $brand) {
+            if (Str::startsWith(Str::lower($name . ' '), Str::lower($brand . ' '))) {
+                return [$brand, trim(Str::substr($name, Str::length($brand)))];
             }
-            
-            throw $e;
         }
+
+        $parts = explode(' ', $name, 2);
+
+        return [Str::title($parts[0]), $parts[1] ?? ''];
+    }
+
+    protected function vehicleRules(): array
+    {
+        return [
+            'carName' => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
+                [, $model] = $this->splitCarName((string) $value);
+                if ($model === '') {
+                    $fail('Please include the model too, for example "Toyota Vios".');
+                }
+            }],
+            'newVehicle.year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'newVehicle.plate_number' => 'required|string|max:20|unique:vehicles,plate_number',
+            'newVehicle.vin_number' => 'nullable|string|max:50',
+        ];
+    }
+
+    protected function vehicleMessages(): array
+    {
+        return [
+            'carName.required' => 'Please tell us your car, for example "Toyota Vios".',
+            'newVehicle.year.required' => 'Please choose the year of your car.',
+            'newVehicle.plate_number.required' => 'Please enter your plate number.',
+            'newVehicle.plate_number.unique' => 'This plate number is already registered. If it is your car, pick it from your saved cars instead.',
+        ];
     }
 
     public function closeErrorModal()
@@ -308,7 +283,7 @@ class BookingForm extends Component
         $this->showErrorModal = false;
         $this->errorMessage = '';
     }
-    
+
     public function closeSuccessModal()
     {
         $this->showSuccessModal = false;
@@ -323,23 +298,32 @@ class BookingForm extends Component
             $this->errorMessage = 'Please select at least one service.';
             return;
         }
-        
-        // Validate with error handling
+
+        $addingVehicle = $this->showNewVehicleForm;
+        if ($addingVehicle) {
+            $this->newVehicle['plate_number'] = Str::upper(trim((string) $this->newVehicle['plate_number']));
+        }
+
+        // Validate the booking and, when entering a new car, the car details in one pass
+        $rules = [
+            'customerName' => 'required|string|max:255',
+            'customerPhone' => 'required|string|max:20',
+            'customerAddress' => 'required|string|max:500',
+            'selectedServices' => 'required|array|min:1',
+            'bookingDate' => 'required|date|after_or_equal:today',
+            'bookingTime' => 'required',
+            'policyConsent' => 'accepted',
+        ];
+        $rules += $addingVehicle
+            ? $this->vehicleRules()
+            : ['selectedVehicle' => 'required|exists:vehicles,id'];
+
         try {
-            $this->validate([
-                'customerName' => 'required|string|max:255',
-                'customerPhone' => 'required|string|max:20',
-                'customerAddress' => 'required|string|max:500',
-                'selectedVehicle' => 'required|exists:vehicles,id',
-                'selectedServices' => 'required|array|min:1',
-                'bookingDate' => 'required|date|after_or_equal:today',
-                'bookingTime' => 'required',
-                'policyConsent' => 'accepted',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            $errors = $e->validator->errors()->all();
+            $this->validate($rules, $this->vehicleMessages() + ['selectedVehicle.required' => 'Please choose which car this booking is for.']);
+        } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
             $this->showErrorModal = true;
-            $this->errorMessage = implode(' ', $errors);
+            $this->errorMessage = implode(' ', $e->validator->errors()->all());
             return;
         }
 
@@ -358,25 +342,47 @@ class BookingForm extends Component
         try {
             $customer = Customer::where('user_id', Auth::id())->first();
 
-            $booking = Booking::create([
-                'customer_id' => $customer->id,
-                'vehicle_id' => $this->selectedVehicle,
-                'booking_date' => $this->bookingDate,
-                'booking_time' => $this->bookingTime,
-                'status' => 'pending',
-                'total_amount' => $this->estimatedTotal,
-                'notes' => $this->notes,
-            ]);
+            DB::transaction(function () use ($customer, $addingVehicle) {
+                if ($addingVehicle) {
+                    [$make, $model] = $this->splitCarName($this->carName);
 
-            // Attach services
-            foreach ($this->selectedServices as $serviceId) {
-                $service = Service::find($serviceId);
-                if ($service) {
-                    $booking->services()->attach($serviceId, [
-                        'quantity' => 1,
-                        'price' => $service->base_price,
+                    $vehicle = Vehicle::create([
+                        'customer_id' => $customer->id,
+                        'make' => $make,
+                        'model' => $model,
+                        'year' => $this->newVehicle['year'],
+                        'plate_number' => $this->newVehicle['plate_number'],
+                        'vin_number' => $this->newVehicle['vin_number'] ?: null,
                     ]);
+
+                    $this->selectedVehicle = $vehicle->id;
                 }
+
+                $booking = Booking::create([
+                    'customer_id' => $customer->id,
+                    'vehicle_id' => $this->selectedVehicle,
+                    'booking_date' => $this->bookingDate,
+                    'booking_time' => $this->bookingTime,
+                    'status' => 'pending',
+                    'total_amount' => $this->estimatedTotal,
+                    'notes' => $this->notes,
+                ]);
+
+                // Attach services
+                foreach ($this->selectedServices as $serviceId) {
+                    $service = Service::find($serviceId);
+                    if ($service) {
+                        $booking->services()->attach($serviceId, [
+                            'quantity' => 1,
+                            'price' => $service->base_price,
+                        ]);
+                    }
+                }
+            });
+
+            if ($addingVehicle) {
+                $this->showNewVehicleForm = false;
+                $this->reset(['newVehicle', 'carName']);
             }
 
             // Broadcast event to update staff dashboard in real-time
@@ -385,6 +391,9 @@ class BookingForm extends Component
             // Show success modal instead of redirecting immediately
             $this->showSuccessModal = true;
         } catch (\Exception $e) {
+            if ($addingVehicle) {
+                $this->selectedVehicle = '';
+            }
             $this->showErrorModal = true;
             $this->errorMessage = 'An error occurred while creating your booking. Please try again.';
             return;
@@ -394,22 +403,22 @@ class BookingForm extends Component
     public function render()
     {
         $categories = ServiceCategory::with('services')->get();
-        
+
         // Get all selected services (for summary sidebar)
-        $allSelectedServices = !empty($this->selectedServices) 
+        $allSelectedServices = !empty($this->selectedServices)
             ? Service::whereIn('id', $this->selectedServices)->get()
             : collect();
-        
+
         // Get service counts per category
         $categoryCounts = [];
         foreach ($categories as $category) {
             $categoryCounts[$category->id] = $this->getServiceCountByCategory($category->id);
         }
-        
+
         $customer = Customer::where('user_id', Auth::id())->first();
         $vehicles = $customer ? $customer->vehicles : collect();
 
-        // Generate year options (from current year to 1950)
+        // Generate year options (from next year back to 1950)
         $currentYear = date('Y');
         $years = range($currentYear + 1, 1950);
 
@@ -419,6 +428,7 @@ class BookingForm extends Component
             'categoryCounts' => $categoryCounts,
             'vehicles' => $vehicles,
             'years' => $years,
+            'carCatalog' => $this->carModels,
         ]);
     }
 }

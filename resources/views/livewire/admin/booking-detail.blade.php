@@ -192,24 +192,8 @@
                 </div>
             </div>
 
-            <!-- Assign Staff -->
-            @if($booking->status !== 'cancelled' && $booking->status !== 'completed')
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
-                <h3 class="text-xl font-bold text-garage-neon mb-4 service-tag">ASSIGN STAFF</h3>
-                <div class="space-y-2">
-                    <label class="block text-sm font-medium text-garage-steel uppercase tracking-wider">Select Staff Member</label>
-                    <select wire:change="assignStaff($event.target.value)" 
-                        class="w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon">
-                        <option value="">-- Select Staff --</option>
-                        @foreach($availableStaff as $staff)
-                            <option value="{{ $staff->id }}" {{ $booking->assigned_staff_id == $staff->id ? 'selected' : '' }}>
-                                {{ $staff->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            @endif
+            <!-- Mechanic -->
+            <x-mechanic-form :booking="$booking" />
 
             <!-- Customer Information -->
             <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
@@ -274,31 +258,6 @@
                     @endif
                 </div>
             </div>
-
-            <!-- Assigned Staff -->
-            @if($booking->assignedStaff)
-                <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20">
-                    <h3 class="text-xl font-bold text-garage-neon mb-4 service-tag">ASSIGNED STAFF</h3>
-                    
-                    <!-- Garage Floor Divider -->
-                    <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4"></div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <p class="text-sm text-garage-steel uppercase tracking-wider">Name</p>
-                            <p class="font-semibold text-garage-offwhite">{{ $booking->assignedStaff->name }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-garage-steel uppercase tracking-wider">Email</p>
-                            <p class="text-garage-offwhite">{{ $booking->assignedStaff->email }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-garage-steel uppercase tracking-wider">Phone</p>
-                            <p class="text-garage-offwhite">{{ $booking->assignedStaff->phone }}</p>
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <!-- Payment Information -->
             @if($booking->payment)

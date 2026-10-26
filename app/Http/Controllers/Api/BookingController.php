@@ -18,7 +18,7 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if (!in_array($user->role?->name, ['customer', 'staff', 'business_owner', 'it_admin'], true)) {
+        if (!in_array($user->role?->name, ['customer', 'business_owner', 'super_admin'], true)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
         $perPage = $request->input('per_page', 15);
@@ -30,8 +30,8 @@ class BookingController extends Controller
                 ->orderBy('booking_date', 'desc')
                 ->paginate($perPage);
         } else {
-            // Staff and admins see all bookings
-            $bookings = Booking::with(['customer', 'service', 'vehicle', 'assignedStaff'])
+            // Owners and admins see all bookings
+            $bookings = Booking::with(['customer', 'service', 'vehicle'])
                 ->orderBy('booking_date', 'desc')
                 ->paginate($perPage);
         }
@@ -121,10 +121,10 @@ class BookingController extends Controller
     {
         try {
             $user = $request->user();
-            if (!in_array($user->role?->name, ['customer', 'staff', 'business_owner', 'it_admin'], true)) {
+            if (!in_array($user->role?->name, ['customer', 'business_owner', 'super_admin'], true)) {
                 return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
-            $booking = Booking::with(['customer', 'service', 'vehicle', 'assignedStaff'])->findOrFail($id);
+            $booking = Booking::with(['customer', 'service', 'vehicle'])->findOrFail($id);
 
             // Check authorization - customers can only see their own bookings
             if ($user->role && $user->role->name === 'customer') {
@@ -175,7 +175,7 @@ class BookingController extends Controller
 
         try {
             $user = $request->user();
-            if (!in_array($user->role?->name, ['customer', 'staff', 'business_owner', 'it_admin'], true)) {
+            if (!in_array($user->role?->name, ['customer', 'business_owner', 'super_admin'], true)) {
                 return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
             $booking = Booking::findOrFail($id);
@@ -193,7 +193,7 @@ class BookingController extends Controller
             $updateData = $request->only(['booking_date', 'booking_time', 'notes']);
 
             // Only staff, owners, and IT admins may change booking status.
-            if (in_array($user->role?->name, ['staff', 'business_owner', 'it_admin'], true)) {
+            if (in_array($user->role?->name, ['business_owner', 'super_admin'], true)) {
                 $updateData['status'] = $request->input('status', $booking->status);
             }
 
@@ -236,7 +236,7 @@ class BookingController extends Controller
                         'message' => 'Unauthorized to cancel this booking',
                     ], 403);
                 }
-            } elseif (!in_array($user->role?->name, ['staff', 'business_owner', 'it_admin'], true)) {
+            } elseif (!in_array($user->role?->name, ['business_owner', 'super_admin'], true)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized to cancel this booking',
@@ -333,14 +333,14 @@ class BookingController extends Controller
      */
     public function allBookings(Request $request)
     {
-        if (!in_array($request->user()->role?->name, ['staff', 'business_owner', 'it_admin'], true)) {
+        if (!in_array($request->user()->role?->name, ['business_owner', 'super_admin'], true)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
         $perPage = $request->input('per_page', 15);
         $status = $request->input('status');
 
-        $query = Booking::with(['customer', 'service', 'vehicle', 'assignedStaff']);
+        $query = Booking::with(['customer', 'service', 'vehicle']);
 
         if ($status) {
             $query->where('status', $status);

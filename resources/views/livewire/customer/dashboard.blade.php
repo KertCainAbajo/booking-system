@@ -2,15 +2,6 @@
     $hour = now()->hour;
     $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
     $firstName = \Illuminate\Support\Str::of(auth()->user()->name)->explode(' ')->first();
-
-    $statusStyles = [
-        'pending' => 'bg-amber-400/10 text-amber-300 ring-amber-400/30',
-        'approved' => 'bg-sky-400/10 text-sky-300 ring-sky-400/30',
-        'completed' => 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/30',
-        'cancelled' => 'bg-gray-400/10 text-gray-300 ring-gray-400/30',
-        'no_show' => 'bg-orange-400/10 text-orange-300 ring-orange-400/30',
-        'not_available' => 'bg-rose-400/10 text-rose-300 ring-rose-400/30',
-    ];
 @endphp
 
 <div class="space-y-6 lg:space-y-8">
@@ -56,9 +47,7 @@
                         </div>
                     </div>
                     <div class="mt-4 flex items-center justify-between">
-                        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 {{ $statusStyles[$nextBooking->status] ?? $statusStyles['pending'] }}">
-                            {{ ucwords(str_replace('_', ' ', $nextBooking->status)) }}
-                        </span>
+                        <x-status-badge :status="$nextBooking->status" />
                         <a href="{{ route('customer.tracker') }}" wire:navigate class="text-sm font-semibold text-emerald-300 hover:text-emerald-200">View details →</a>
                     </div>
                 @else
@@ -142,9 +131,7 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="font-semibold text-white">Service #{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</span>
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 {{ $statusStyles[$booking->status] ?? $statusStyles['pending'] }}">
-                                    {{ ucwords(str_replace('_', ' ', $booking->status)) }}
-                                </span>
+                                <x-status-badge :status="$booking->status" />
                             </div>
                             <div class="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-gray-300">
                                 <span>{{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</span>

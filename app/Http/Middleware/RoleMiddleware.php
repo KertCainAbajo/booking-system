@@ -27,13 +27,12 @@ class RoleMiddleware
             abort(403, 'No role assigned to user');
         }
         
-        // Check if user's role matches the required role
-        if ($user->role->name !== $role) {
+        // Check if user's role matches the required role (several can be given as "a|b")
+        if (! in_array($user->role->name, explode('|', $role), true)) {
             // Redirect to appropriate dashboard based on user's role
             $dashboardRoute = match($user->role->name) {
-                'it_admin' => 'admin.dashboard',
+                'super_admin' => 'admin.dashboard',
                 'business_owner' => 'owner.dashboard',
-                'staff' => 'staff.dashboard',
                 'customer' => 'customer.dashboard',
                 default => 'customer.dashboard', // Default to customer dashboard for safety
             };

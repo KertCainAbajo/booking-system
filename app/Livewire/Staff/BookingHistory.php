@@ -7,7 +7,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use App\Models\Booking;
 
-#[Layout('layouts.staff')]
+#[Layout('layouts.owner')]
 class BookingHistory extends Component
 {
     use WithPagination;
@@ -43,12 +43,12 @@ class BookingHistory extends Component
 
     public function viewBooking($id)
     {
-        return redirect()->route('staff.booking.detail', $id);
+        return redirect()->route('owner.booking.detail', $id);
     }
 
     public function render()
     {
-        $query = Booking::with(['customer.user', 'vehicle', 'assignedStaff', 'services'])
+        $query = Booking::with(['customer.user', 'vehicle', 'services'])
             ->where('is_archived', true);
 
         // Search filter

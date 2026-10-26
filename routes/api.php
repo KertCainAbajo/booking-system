@@ -57,13 +57,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/booking-history', [BookingController::class, 'history']);
     });
     
-    Route::middleware('role:staff|business_owner|it_admin')->group(function () {
+    Route::middleware('role:business_owner|super_admin')->group(function () {
         Route::get('/customers', [CustomerController::class, 'index']);
         Route::get('/customers/{id}', [CustomerController::class, 'show']);
         Route::get('/all-bookings', [BookingController::class, 'allBookings']);
     });
     
-    Route::middleware('role:it_admin')->group(function () {
+    Route::middleware('role:super_admin')->group(function () {
         Route::post('/customers', [CustomerController::class, 'store']);
         Route::put('/customers/{id}', [CustomerController::class, 'update']);
         Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);

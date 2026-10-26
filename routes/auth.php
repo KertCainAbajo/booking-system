@@ -8,15 +8,11 @@ use Livewire\Volt\Volt;
 
 // Unified Login Route - All user types use the same login page
 Route::middleware('guest')->group(function () {
-    // Main login route for all user types (customers, staff, admin, business owner)
+    // Main login route for all user types (customer, business owner, super admin)
     Volt::route('login', 'pages.auth.login')
         ->name('login');
 
-    // Redirect old staff and customer login routes to unified login
-    Route::get('staff/login', function () {
-        return redirect()->route('login');
-    })->name('staff.login');
-
+    // Redirect the old customer login route to the unified login
     Route::get('customer/login', function () {
         return redirect()->route('login');
     })->name('customer.login');
@@ -24,11 +20,6 @@ Route::middleware('guest')->group(function () {
     // Customer registration enabled
     Volt::route('register', 'pages.auth.register')
         ->name('register');
-
-    // Staff registration disabled - staff must be created by admin
-    Route::get('staff/register', function () {
-        abort(404);
-    })->name('staff.register');
 
     Volt::route('forgot-password', 'pages.auth.forgot-password')
         ->name('password.request');

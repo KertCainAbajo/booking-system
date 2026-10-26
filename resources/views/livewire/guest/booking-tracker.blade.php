@@ -242,8 +242,8 @@
                         </div>
                     </div>
 
-                    <!-- Assigned Staff (if any) -->
-                    @if ($booking->assigned_staff_id)
+                    <!-- Mechanic (if any) -->
+                    @if ($booking->mechanic_name)
                         <div class="bg-garage-charcoal/50 border-2 border-blue-500/50 rounded-lg p-5 mb-6">
                             <div class="flex items-center">
                                 <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mr-4">
@@ -252,8 +252,8 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-white service-tag">ASSIGNED STAFF</p>
-                                    <p class="font-bold text-white text-lg">{{ $booking->assignedStaff->name }}</p>
+                                    <p class="text-sm font-semibold text-white service-tag">YOUR MECHANIC</p>
+                                    <p class="font-bold text-white text-lg">{{ $booking->mechanic_name }}</p>
                                 </div>
                             </div>
                         </div>

@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $total_amount
  * @property string|null $notes
  * @property int|null $assigned_staff_id
+ * @property string|null $mechanic_name
+ * @property string|null $mechanic_phone
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */
@@ -30,6 +32,8 @@ class Booking extends Model
         'total_amount',
         'notes',
         'assigned_staff_id',
+        'mechanic_name',
+        'mechanic_phone',
         'is_archived',
         'archived_at',
         'marked_as_late',

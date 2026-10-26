@@ -3,7 +3,7 @@
     <div class="mb-6">
         <!-- Back Button -->
         <div class="flex justify-end mb-6">
-            <a href="{{ route('staff.bookings') }}" wire:navigate
+            <a href="{{ route('owner.bookings') }}" wire:navigate
                 class="inline-flex items-center space-x-2 text-garage-neon hover:text-white font-semibold transition-all group">
                 <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -177,8 +177,8 @@
                             <p class="font-bold text-white text-3xl font-mono">₱{{ number_format($booking->total_amount, 2) }}</p>
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs text-garage-steel uppercase tracking-wider font-semibold">Assigned To</label>
-                            <p class="font-medium text-garage-offwhite">{{ $booking->assignedStaff ? $booking->assignedStaff->name : 'Unassigned' }}</p>
+                            <label class="text-xs text-garage-steel uppercase tracking-wider font-semibold">Mechanic</label>
+                            <p class="font-medium text-garage-offwhite">{{ $booking->mechanic_name ?: 'Not assigned yet' }}</p>
                         </div>
                     </div>
 
@@ -355,6 +355,9 @@
                 </div>
             </div>
 
+            <!-- Mechanic -->
+            <x-mechanic-form :booking="$booking" />
+
             <!-- Payment Information -->
             @if($booking->payment)
             <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-6 border border-garage-neon/20 relative overflow-hidden">
@@ -410,7 +413,7 @@
                     
                     <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-6"></div>
                     
-                    <a href="{{ route('staff.invoice', $booking->id) }}" 
+                    <a href="{{ route('owner.invoice', $booking->id) }}" 
                         class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-garage-forest to-garage-darkgreen text-white py-3 px-4 rounded-lg hover:from-garage-darkgreen hover:to-garage-forest font-bold transition-all shadow-lg hover:shadow-garage-neon/30 border border-garage-neon/20 service-tag">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>

@@ -42,7 +42,7 @@ class BookingManagement extends Component
 
     public function render()
     {
-        $query = Booking::with(['customer.user', 'vehicle', 'assignedStaff', 'services']);
+        $query = Booking::with(['customer.user', 'vehicle', 'services']);
 
         // Search filter
         if ($this->search) {

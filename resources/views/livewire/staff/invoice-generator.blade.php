@@ -260,7 +260,7 @@
             PRINT INVOICE
         </button>
         
-        <a href="{{ route('staff.booking.detail', $booking->id) }}" 
+        <a href="{{ route('owner.booking.detail', $booking->id) }}" 
             class="flex items-center gap-2 bg-garage-charcoal text-white px-6 py-3 rounded-lg hover:bg-gray-700 font-bold transition-all shadow-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

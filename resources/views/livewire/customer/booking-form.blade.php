@@ -1,569 +1,500 @@
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <style>
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
-            background-size: 20px 20px;
-            background-position: center;
-            background-repeat: no-repeat;
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-        }
-        
-        input[type="date"] {
-            color-scheme: dark;
-        }
-    </style>
-    
-    <!-- Header with Back Button -->
-    <div class="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
+<div class="space-y-6">
+    <x-success-modal />
+
+    <!-- Page header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-white service-tag mb-2">SERVICE BOOKING</h2>
-            <p class="text-white text-sm sm:text-base">Schedule your vehicle maintenance appointment</p>
+            <p class="text-sm font-medium text-emerald-300">Book a Service</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">Schedule your visit</h1>
+            <p class="mt-1 text-gray-400">Five quick steps. Fields marked <span class="text-rose-400">*</span> are required.</p>
         </div>
-        <a href="{{ route('customer.dashboard') }}" wire:navigate 
-           class="inline-flex items-center px-4 sm:px-5 py-2 sm:py-2.5 bg-garage-forest hover:bg-garage-darkgreen text-garage-offwhite text-sm sm:text-base font-semibold rounded-lg transition-all border border-garage-neon/20 hover:border-garage-neon/40 w-fit">
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            <span class="service-tag">BACK</span>
+        <a href="tel:+639270071538" class="cp-btn-ghost">
+            <svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            Prefer to call?
         </a>
     </div>
 
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border border-garage-neon/30">
-
-        <x-success-modal />
-
-        <!-- Required Fields Notice -->
-        <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-garage-neon/10 border-l-4 border-garage-neon rounded-r-lg">
-            <p class="text-white text-xs sm:text-sm flex items-center">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span class="font-semibold">Fields marked with <span class="text-garage-neon">*</span> are required</span>
-            </p>
-        </div>
-
-        <form wire:submit="submitBooking">
-            <!-- Customer Information -->
-            <div class="mb-6 sm:mb-8">
-                <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    CUSTOMER INFORMATION
-                </label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+    <form wire:submit="submitBooking" class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] items-start">
+        <div class="space-y-6 min-w-0">
+            <!-- Step 1: Customer information -->
+            <section class="cp-card p-5 sm:p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="w-9 h-9 rounded-full bg-emerald-400 text-gray-950 font-bold flex items-center justify-center">1</span>
                     <div>
-                        <label class="block text-xs sm:text-sm font-semibold text-garage-steel mb-2">Full Name *</label>
-                        <input type="text" wire:model="customerName" placeholder="Enter your full name" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
-                        @error('customerName') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                        <h2 class="text-lg font-bold text-white">Your details</h2>
+                        <p class="text-sm text-gray-400">So we can reach you about this booking.</p>
+                    </div>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="customerName" class="cp-label">Full name <span class="text-rose-400">*</span></label>
+                        <input id="customerName" type="text" wire:model="customerName" placeholder="Juan Dela Cruz" class="cp-input" autocomplete="name">
+                        @error('customerName') <span class="cp-error">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-xs sm:text-sm font-semibold text-garage-steel mb-2">Phone Number *</label>
-                        <input type="text" wire:model="customerPhone" placeholder="Enter your phone number" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 font-mono">
-                        @error('customerPhone') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                        <label for="customerPhone" class="cp-label">Phone number <span class="text-rose-400">*</span></label>
+                        <input id="customerPhone" type="text" wire:model="customerPhone" placeholder="0917 123 4567" class="cp-input" autocomplete="tel">
+                        @error('customerPhone') <span class="cp-error">{{ $message }}</span> @enderror
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs sm:text-sm font-semibold text-garage-steel mb-2">Address *</label>
-                        <textarea wire:model="customerAddress" rows="2" placeholder="Enter your complete address" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50"></textarea>
-                        @error('customerAddress') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                        <label for="customerAddress" class="cp-label">Address <span class="text-rose-400">*</span></label>
+                        <textarea id="customerAddress" wire:model="customerAddress" rows="2" placeholder="House no., street, barangay, city" class="cp-input"></textarea>
+                        @error('customerAddress') <span class="cp-error">{{ $message }}</span> @enderror
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Select Vehicle -->
-            <div class="mb-6 sm:mb-8">
-                <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                    </svg>
-                    SELECT VEHICLE *
-                </label>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <select wire:model="selectedVehicle" class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-semibold">
-                        <option value="">Choose a vehicle</option>
+            <!-- Step 2: Vehicle -->
+            <section class="cp-card p-5 sm:p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="w-9 h-9 rounded-full bg-emerald-400 text-gray-950 font-bold flex items-center justify-center">2</span>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Your car <span class="text-rose-400">*</span></h2>
+                        <p class="text-sm text-gray-400">
+                            {{ $vehicles->isEmpty() ? 'Tell us about your car. We\'ll remember it for next time.' : 'Tap the car you\'re bringing in.' }}
+                        </p>
+                    </div>
+                </div>
+
+                @if ($vehicles->isNotEmpty())
+                    <div class="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Your cars">
                         @foreach ($vehicles as $vehicle)
-                            <option value="{{ $vehicle->id }}">
-                                {{ $vehicle->year }} {{ $vehicle->make }} {{ $vehicle->model }} - {{ $vehicle->plate_number }}
-                            </option>
-                        @endforeach>
-                    </select>
-                    <button type="button" wire:click="$set('showNewVehicleForm', true)" 
-                            class="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-neon hover:bg-garage-emerald text-garage-black rounded-lg transition-all shadow-neon-green font-bold service-tag whitespace-nowrap">
-                        + ADD
-                    </button>
-                </div>
-                @error('selectedVehicle') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
-            </div>
+                            @php $isChosen = ! $showNewVehicleForm && (string) $selectedVehicle === (string) $vehicle->id; @endphp
+                            <button type="button" wire:click="chooseVehicle({{ $vehicle->id }})" role="radio" aria-checked="{{ $isChosen ? 'true' : 'false' }}"
+                                    @class([
+                                        'flex items-center gap-4 p-4 rounded-2xl text-left ring-1 transition',
+                                        'bg-emerald-400/10 ring-emerald-400/60' => $isChosen,
+                                        'bg-black/20 ring-white/[0.08] hover:ring-white/25' => ! $isChosen,
+                                    ])>
+                                <span @class(['w-6 h-6 flex-shrink-0 rounded-full ring-2 flex items-center justify-center', 'ring-emerald-400 bg-emerald-400' => $isChosen, 'ring-white/25' => ! $isChosen])>
+                                    @if ($isChosen)
+                                        <svg class="w-4 h-4 text-gray-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    @endif
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block font-semibold text-white truncate">{{ $vehicle->make }} {{ $vehicle->model }}</span>
+                                    <span class="block text-sm text-gray-400">{{ $vehicle->year }} model</span>
+                                </span>
+                                <span class="plate-number text-xs flex-shrink-0">{{ $vehicle->plate_number }}</span>
+                            </button>
+                        @endforeach
 
-            <!-- New Vehicle Form -->
-            @if ($showNewVehicleForm)
-                <div class="mb-6 sm:mb-8 p-4 sm:p-6 bg-garage-charcoal/70 rounded-lg border-2 border-garage-neon/40">
-                    <h3 class="font-bold mb-4 sm:mb-5 text-lg sm:text-xl text-white service-tag flex items-center">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        ADD NEW VEHICLE
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">MAKE (BRAND) *</label>
-                            <select wire:model.live="brandSelection" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
-                                <option value="">Select a brand</option>
-                                @foreach ($carBrands as $brand)
-                                    <option value="{{ $brand }}">{{ $brand }}</option>
-                                @endforeach
-                                <option value="other">Other (Type your own)</option>
-                            </select>
-                            
-                            @if($brandSelection === 'other')
-                                <input type="text" wire:model="customBrand" placeholder="Enter your vehicle brand" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 mt-3">
-                            @endif
-                            
-                            @error('newVehicle.make') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">MODEL *</label>
-                            
-                            @if($brandSelection && $brandSelection !== 'other' && count($availableModels) > 0)
-                                <select wire:model.live="modelSelection" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
-                                    <option value="">Select a model</option>
-                                    @foreach ($availableModels as $model)
-                                        <option value="{{ $model }}">{{ $model }}</option>
-                                    @endforeach
-                                    <option value="other">Other (Type your own)</option>
-                                </select>
-                                
-                                @if($modelSelection === 'other')
-                                    <input type="text" wire:model="customModel" placeholder="Enter your vehicle model" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50 mt-3">
-                                @endif
-                            @else
-                                <input type="text" wire:model="newVehicle.model" placeholder="e.g., Civic, Camry, Mustang" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
-                            @endif
-                            
-                            @error('newVehicle.model') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">YEAR *</label>
-                            <select wire:model="newVehicle.year" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon">
-                                <option value="">Select year</option>
-                                @foreach ($years as $year)
-                                    <option value="{{ $year }}">{{ $year }}</option>
-                                @endforeach
-                            </select>
-                            @error('newVehicle.year') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">PLATE NUMBER *</label>
-                            <input type="text" wire:model="newVehicle.plate_number" placeholder="e.g., ABC-1234" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
-                            @error('newVehicle.plate_number') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs sm:text-sm font-semibold text-white mb-2">VIN NUMBER (Optional)</label>
-                            <input type="text" wire:model="newVehicle.vin_number" placeholder="17-digit VIN" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-black border-2 border-garage-steel/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50">
-                            @error('newVehicle.vin_number') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
-                        <button type="button" wire:click="addNewVehicle" class="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-neon hover:bg-garage-emerald text-garage-black rounded-lg transition-all font-bold service-tag shadow-neon-green">
-                            SAVE VEHICLE
-                        </button>
-                        <button type="button" wire:click="cancelNewVehicle" class="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-steel/20 text-white hover:bg-garage-steel/30 rounded-lg transition-all font-semibold">
-                            CANCEL
+                        <button type="button" wire:click="startNewVehicle"
+                                @class([
+                                    'flex items-center gap-4 p-4 rounded-2xl text-left transition border-2 border-dashed',
+                                    'border-emerald-400/60 bg-emerald-400/10' => $showNewVehicleForm,
+                                    'border-white/15 hover:border-white/30' => ! $showNewVehicleForm,
+                                ])>
+                            <span class="w-6 h-6 flex-shrink-0 rounded-full bg-white/10 flex items-center justify-center text-emerald-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            </span>
+                            <span class="font-semibold text-gray-200">Add another car</span>
                         </button>
                     </div>
-                </div>
-            @endif
+                    @error('selectedVehicle') <span class="cp-error">{{ $message }}</span> @enderror
+                @endif
 
-            <!-- Services Section with Grid Layout -->
-            <div class="mb-6 sm:mb-8">
-                <label class="block text-xs sm:text-sm font-bold text-white mb-3 sm:mb-4 service-tag flex items-center">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                    </svg>
-                    SELECT SERVICES *
-                </label>
+                @if ($showNewVehicleForm)
+                    <div @class(['space-y-4', 'mt-4 cp-panel p-5' => $vehicles->isNotEmpty()])>
+                        <!-- Car: type to search, or browse brand -> model -->
+                        <div wire:key="car-name-field"
+                             x-data="{
+                                open: false,
+                                typing: false,
+                                active: 0,
+                                brand: null,
+                                q: $wire.entangle('carName'),
+                                catalog: @js($carCatalog),
+                                get all() { return Object.entries(this.catalog).flatMap(([b, ms]) => ms.map(m => b + ' ' + m)) },
+                                get mode() { return this.typing && (this.q || '').trim() ? 'search' : (this.brand ? 'models' : 'brands') },
+                                get items() {
+                                    if (this.mode === 'search') {
+                                        const words = this.q.trim().toLowerCase().split(/\s+/);
+                                        const has = (s) => words.every(w => s.toLowerCase().includes(w));
+                                        const brands = Object.keys(this.catalog).filter(has).map(b => ({ kind: 'brand', label: b, value: b, hint: 'See models' }));
+                                        const cars = this.all.filter(has).slice(0, 8).map(s => ({ kind: 'car', label: s, value: s }));
+                                        return [...brands, ...cars];
+                                    }
+                                    if (this.mode === 'models') {
+                                        return [
+                                            ...this.catalog[this.brand].map(m => ({ kind: 'car', label: m, value: this.brand + ' ' + m })),
+                                            { kind: 'other', label: 'Other ' + this.brand + ' model', value: this.brand },
+                                        ];
+                                    }
+                                    return Object.keys(this.catalog).map(b => ({ kind: 'brand', label: b, value: b, hint: this.catalog[b].length + ' models' }));
+                                },
+                                isCurrent(item) { return item.kind === 'car' && item.value.toLowerCase() === (this.q || '').trim().toLowerCase() },
+                                show() {
+                                    const current = (this.q || '').trim().toLowerCase();
+                                    this.open = true;
+                                    this.typing = false;
+                                    this.brand = Object.keys(this.catalog).find(b => current.startsWith(b.toLowerCase() + ' ')) || null;
+                                    this.active = Math.max(0, this.items.findIndex(i => this.isCurrent(i)));
+                                    this.scroll();
+                                },
+                                choose(item) {
+                                    if (item.kind === 'brand') {
+                                        this.brand = item.value; this.typing = false; this.active = 0;
+                                        this.$refs.input.focus(); this.scroll();
+                                        return;
+                                    }
+                                    if (item.kind === 'other') {
+                                        this.q = item.value + ' '; this.typing = true; this.open = false;
+                                        this.$nextTick(() => { const el = this.$refs.input; el.focus(); el.setSelectionRange(el.value.length, el.value.length); });
+                                        return;
+                                    }
+                                    this.q = item.value; this.open = false; this.typing = false;
+                                },
+                                back() { this.brand = null; this.active = 0; this.$refs.input.focus(); this.scroll(); },
+                                move(d) {
+                                    if (!this.open) return this.show();
+                                    const n = this.items.length;
+                                    if (!n) return;
+                                    this.active = (this.active + d + n) % n;
+                                    this.scroll();
+                                },
+                                scroll() { this.$nextTick(() => this.$refs.list?.querySelector('[data-active=true]')?.scrollIntoView({ block: 'nearest' })) },
+                             }"
+                             x-on:click.outside="open = false"
+                             class="relative">
+                            <label for="carName" class="cp-label">Your car <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/></svg>
+                                <input id="carName" type="text" autocomplete="off" x-ref="input"
+                                       x-model="q"
+                                       x-on:input="typing = true; open = true; active = 0"
+                                       x-on:focus="if (!open) show()"
+                                       x-on:click="if (!open) show()"
+                                       x-on:keydown.arrow-down.prevent="move(1)"
+                                       x-on:keydown.arrow-up.prevent="move(-1)"
+                                       x-on:keydown.enter.prevent="if (open && items[active]) choose(items[active])"
+                                       x-on:keydown.escape="open = false"
+                                       placeholder="Type your car, or pick from the list"
+                                       class="cp-input !pl-12 !pr-14"
+                                       :class="open && '!border-emerald-400 ring-4 ring-emerald-400/15'">
+                                <button type="button" tabindex="-1"
+                                        x-on:click="open ? (open = false) : (show(), $refs.input.focus())"
+                                        class="absolute right-1.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5"
+                                        aria-label="Show car list">
+                                    <svg class="w-5 h-5 transition-transform" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                            </div>
 
-                @if (session()->has('services-saved'))
-                    <div x-data="{ show: true }" 
-                         x-show="show" 
-                         x-init="setTimeout(() => show = false, 5000)"
-                         x-transition:enter="transition ease-out duration-400"
-                         x-transition:enter-start="opacity-0 transform -translate-x-8 scale-95"
-                         x-transition:enter-end="opacity-100 transform translate-x-0 scale-100"
-                         x-transition:leave="transition ease-in duration-500"
-                         x-transition:leave-start="opacity-100 transform translate-x-0"
-                         x-transition:leave-end="opacity-0 transform translate-x-8"
-                         class="bg-garage-neon/20 border-l-4 border-garage-neon px-6 py-4 rounded-lg mb-4">
-                        <span class="text-white font-semibold">{{ session('services-saved') }}</span>
+                            <div x-show="open" x-transition.opacity.duration.100ms style="display: none;"
+                                 class="absolute z-40 mt-2 w-full overflow-hidden rounded-2xl bg-[#141a17] ring-1 ring-white/10 shadow-2xl shadow-black/60">
+                                <div x-show="mode !== 'search'" class="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-white/[0.06] text-sm">
+                                    <button type="button" x-show="mode === 'models'" x-on:click="back()" class="inline-flex items-center gap-1 font-medium text-emerald-300 hover:text-emerald-200">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                        All brands
+                                    </button>
+                                    <span x-show="mode === 'brands'" class="text-gray-400">Choose your car's brand</span>
+                                    <span x-show="mode === 'models'" class="text-gray-400">Choose the <span class="font-semibold text-white" x-text="brand"></span> model</span>
+                                </div>
+
+                                <ul x-ref="list" class="max-h-72 overflow-y-auto p-1.5" role="listbox">
+                                    <template x-for="(item, i) in items" :key="item.kind + ':' + item.value + ':' + i">
+                                        <li role="option" :aria-selected="isCurrent(item).toString()" :data-active="(i === active).toString()"
+                                            x-on:click="choose(item)" x-on:mouseenter="active = i"
+                                            class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-base"
+                                            :class="i === active ? 'bg-emerald-400/15 text-white' : 'text-gray-200'">
+                                            <span class="truncate" :class="item.kind === 'other' && 'text-emerald-300'" x-text="item.label"></span>
+                                            <span class="flex items-center gap-2 flex-shrink-0 text-sm text-gray-500">
+                                                <span x-show="item.hint" x-text="item.hint"></span>
+                                                <svg x-show="item.kind === 'brand'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                                <svg x-show="isCurrent(item)" class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            </span>
+                                        </li>
+                                    </template>
+                                    <li x-show="mode === 'search' && !items.length" class="px-3 py-4 text-sm text-gray-400">
+                                        Not on our list? That's fine, we'll save "<span class="text-white" x-text="(q || '').trim()"></span>" as you typed it.
+                                    </li>
+                                </ul>
+                            </div>
+                            @error('carName') <span class="cp-error">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label class="cp-label">Year <span class="text-rose-400">*</span></label>
+                                <x-cp-select
+                                    model="newVehicle.year"
+                                    label="Year"
+                                    placeholder="Select year"
+                                    :options="collect($years)->mapWithKeys(fn ($y) => [$y => $y])->all()"
+                                />
+                                @error('newVehicle.year') <span class="cp-error">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label for="plateNumber" class="cp-label">Plate number <span class="text-rose-400">*</span></label>
+                                <input id="plateNumber" type="text" wire:model="newVehicle.plate_number" placeholder="e.g. ABC 1234" class="cp-input uppercase placeholder:normal-case">
+                                @error('newVehicle.plate_number') <span class="cp-error">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <div x-data="{ showVin: @js(filled($newVehicle['vin_number'] ?? '')) }">
+                            <button type="button" x-show="!showVin" x-on:click="showVin = true; $nextTick(() => $refs.vin.focus())" class="text-sm font-medium text-emerald-300 hover:text-emerald-200">
+                                + Add VIN (optional)
+                            </button>
+                            <div x-show="showVin" style="display: none;">
+                                <label for="vinNumber" class="cp-label">VIN <span class="text-gray-500">(optional)</span></label>
+                                <input id="vinNumber" x-ref="vin" type="text" wire:model="newVehicle.vin_number" placeholder="17-character VIN" class="cp-input">
+                                @error('newVehicle.vin_number') <span class="cp-error">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                            <p class="flex items-center gap-2 text-sm text-gray-400">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                We'll save this car to your account when you submit.
+                            </p>
+                            @if ($vehicles->isNotEmpty())
+                                <button type="button" wire:click="cancelNewVehicle" class="text-sm font-medium text-gray-400 hover:text-white">Cancel</button>
+                            @endif
+                        </div>
                     </div>
                 @endif
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <!-- Left: Categories and Services (2/3 width) -->
-                    <div class="lg:col-span-2 space-y-3 sm:space-y-4 pb-4 sm:pb-6">
-                        @foreach ($categories as $category)
-                            <div class="border-2 border-garage-neon/30 rounded-lg overflow-hidden bg-garage-charcoal/50">
-                                <!-- Category Header -->
-                                <button type="button" 
-                                        wire:click="toggleCategory({{ $category->id }})"
-                                        class="w-full p-3 sm:p-5 bg-gradient-to-r from-garage-forest to-garage-darkgreen hover:from-garage-neon/10 hover:to-garage-forest transition-all flex items-center justify-between border-b-2 border-garage-neon/20">
-                                    <div class="flex items-center">
-                                        <span class="text-xl sm:text-2xl mr-2 sm:mr-3 text-white">
-                                            {{ in_array($category->id, $expandedCategories) ? '▼' : '▶' }}
-                                        </span>
-                                        <div class="text-left">
-                                            <div class="flex items-center gap-2 sm:gap-3">
-                                                <span class="font-bold text-white text-base sm:text-lg service-tag">{{ strtoupper($category->name) }}</span>
-                                                @if ($categoryCounts[$category->id] > 0)
-                                                    <span class="inline-flex items-center justify-center min-w-[24px] sm:min-w-[28px] h-6 sm:h-7 px-1.5 sm:px-2 text-xs sm:text-sm font-bold text-garage-black bg-garage-neon rounded-full service-tag">
-                                                        {{ $categoryCounts[$category->id] }}
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <div class="text-xs sm:text-sm text-white mt-1">{{ $category->services->count() }} services available</div>
-                                        </div>
-                                    </div>
-                                </button>
+            </section>
 
-                                <!-- Services List (Expandable) -->
-                                @if (in_array($category->id, $expandedCategories))
-                                    <div class="p-3 sm:p-4 bg-garage-black/30">
-                                        <div class="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
-                                            @foreach ($category->services as $service)
-                                                <div wire:click="toggleService({{ $service->id }})"
-                                                     class="flex items-start p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all
-                                                            {{ in_array($service->id, $selectedServices) ? 'border-garage-neon bg-garage-neon/10 shadow-neon-green' : 'border-garage-steel/30 hover:border-garage-neon/50 bg-garage-charcoal/50' }}">
-                                                    <div class="flex-shrink-0 mt-0.5 sm:mt-1 mr-3 sm:mr-4">
-                                                        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center
-                                                                    {{ in_array($service->id, $selectedServices) ? 'bg-garage-neon border-garage-neon shadow-neon-green' : 'border-garage-steel/50' }}">
-                                                            @if (in_array($service->id, $selectedServices))
-                                                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-garage-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                                                </svg>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-1 min-w-0">
-                                                        <div class="font-bold text-white text-sm sm:text-base">{{ $service->name }}</div>
-                                                        <div class="text-xs sm:text-sm text-white mt-1">{{ $service->description }}</div>
-                                                        <div class="text-xs sm:text-sm text-white mt-1.5 sm:mt-2 flex items-center">
-                                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                            </svg>
-                                                            ~{{ $service->estimated_duration_minutes }} mins
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-shrink-0 ml-3 sm:ml-4 font-bold text-white font-mono text-base sm:text-lg">
-                                                        ₱{{ number_format($service->base_price, 2) }}
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                        
-                                        <!-- Save Button for Category -->
+            <!-- Step 3: Services -->
+            <section class="cp-card p-5 sm:p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="w-9 h-9 rounded-full bg-emerald-400 text-gray-950 font-bold flex items-center justify-center">3</span>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Choose services <span class="text-rose-400">*</span></h2>
+                        <p class="text-sm text-gray-400">Open a category and tap the work you need.</p>
+                    </div>
+                </div>
+
+                @if (session()->has('services-saved'))
+                    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition
+                         class="mb-4 flex items-center gap-3 rounded-xl bg-emerald-400/10 ring-1 ring-emerald-400/30 p-3.5 text-emerald-200">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="font-medium">{{ session('services-saved') }}</span>
+                    </div>
+                @endif
+
+                <div class="space-y-3">
+                    @foreach ($categories as $category)
+                        @php $isOpen = in_array($category->id, $expandedCategories); @endphp
+                        <div @class(['rounded-2xl ring-1 overflow-hidden transition', 'ring-emerald-400/30 bg-white/[0.02]' => $isOpen, 'ring-white/[0.07]' => ! $isOpen])>
+                            <button type="button" wire:click="toggleCategory({{ $category->id }})" class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left hover:bg-white/[0.03] transition" aria-expanded="{{ $isOpen ? 'true' : 'false' }}">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold text-white">{{ $category->name }}</span>
                                         @if ($categoryCounts[$category->id] > 0)
-                                            <div class="pt-2 sm:pt-3 border-t-2 border-garage-neon/20">
-                                                @if (in_array($category->id, $savedCategories))
-                                                    <div class="flex items-center justify-center p-2.5 sm:p-3 bg-garage-emerald/20 border-2 border-garage-emerald rounded-lg">
-                                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-garage-emerald mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                        </svg>
-                                                        <span class="text-garage-emerald font-bold service-tag text-sm sm:text-base">SAVED</span>
-                                                    </div>
-                                                @else
-                                                    <button type="button" 
-                                                            wire:click="saveCategoryServices({{ $category->id }})"
-                                                            class="w-full py-2.5 sm:py-3 bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold rounded-lg transition-all shadow-neon-green flex items-center justify-center service-tag text-sm sm:text-base">
-                                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                                        </svg>
-                                                        SAVE {{ strtoupper($category->name) }} SERVICES
-                                                    </button>
-                                                @endif
-                                            </div>
+                                            <span class="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 rounded-full bg-emerald-400 text-gray-950 text-xs font-bold">{{ $categoryCounts[$category->id] }}</span>
                                         @endif
                                     </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
+                                    <div class="text-sm text-gray-500">{{ $category->services->count() }} services</div>
+                                </div>
+                                <svg @class(['w-5 h-5 text-gray-400 transition-transform flex-shrink-0', 'rotate-180' => $isOpen]) fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
 
-                    <!-- Right: Selected Services Summary (1/3 width) -->
-                    <div class="lg:col-span-1">
-                        <div class="lg:sticky lg:top-4 flex flex-col border-2 {{ $servicesConfirmed ? 'border-garage-emerald/50 bg-garage-forest/20' : 'border-garage-neon/50 bg-garage-darkgreen/30' }} rounded-lg overflow-hidden transition-all duration-500 lg:max-h-[calc(100vh-8rem)] h-auto lg:h-[420px] shadow-garage z-10">
-                            <!-- Fixed Header -->
-                            <div class="flex-shrink-0 {{ $servicesConfirmed ? 'bg-garage-emerald/20' : 'bg-garage-neon/20' }} border-b-2 border-garage-neon/30 p-3 sm:p-5">
-                                <h3 class="font-bold text-lg sm:text-xl text-white service-tag flex items-center">
-                                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                                    </svg>
-                                    WORK ORDER
-                                </h3>
-                                <p class="text-sm text-white mt-1 ml-8">
-                                    {{ count($selectedServices) }} service(s) selected
-                                </p>
-                            </div>
-
-                            <!-- Scrollable Services List -->
-                            <div class="flex-1 overflow-y-auto min-h-0" wire:key="services-list">
-                                @if (count($selectedServices) > 0)
-                                    <div class="p-4 space-y-2">
-                                        @foreach ($allSelectedServices as $index => $service)
-                                            <div wire:key="service-{{ $service->id }}"
-                                                 x-data="{ show: false }"
-                                                 x-init="setTimeout(() => show = true, {{ $index * 50 }})"
-                                                 x-show="show"
-                                                 x-transition:enter="transition ease-out duration-300"
-                                                 x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
-                                                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                                                 class="bg-garage-charcoal/80 rounded-lg p-3 border-2 border-garage-neon/30 relative group hover:border-garage-neon/50 transition-all">
-                                                <button type="button" 
-                                                        wire:click="removeService({{ $service->id }})"
-                                                        class="absolute -top-2 -right-2 w-7 h-7 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-all shadow-lg opacity-0 group-hover:opacity-100 font-bold">
-                                                    ×
-                                                </button>
-                                                <div class="pr-4">
-                                                    <div class="font-semibold text-white text-sm">{{ $service->name }}</div>
-                                                    <div class="text-xs text-white mt-1 flex items-center">
-                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                        </svg>
-                                                        ~{{ $service->estimated_duration_minutes }} mins
-                                                    </div>
-                                                    <div class="font-bold text-white mt-1 font-mono">₱{{ number_format($service->base_price, 2) }}</div>
-                                                </div>
+                            @if ($isOpen)
+                                <div class="px-3 sm:px-4 pb-4 space-y-2">
+                                    @foreach ($category->services as $service)
+                                        @php $isSelected = in_array($service->id, $selectedServices); @endphp
+                                        <div wire:click="toggleService({{ $service->id }})" role="checkbox" aria-checked="{{ $isSelected ? 'true' : 'false' }}" tabindex="0"
+                                             @keydown.enter.prevent="$wire.toggleService({{ $service->id }})" @keydown.space.prevent="$wire.toggleService({{ $service->id }})"
+                                             @class([
+                                                 'flex items-start gap-3 sm:gap-4 p-4 rounded-xl cursor-pointer ring-1 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400',
+                                                 'bg-emerald-400/10 ring-emerald-400/50' => $isSelected,
+                                                 'bg-black/20 ring-white/[0.06] hover:ring-white/20' => ! $isSelected,
+                                             ])>
+                                            <span @class([
+                                                'mt-0.5 w-6 h-6 flex-shrink-0 rounded-md flex items-center justify-center ring-1 transition',
+                                                'bg-emerald-400 ring-emerald-400 text-gray-950' => $isSelected,
+                                                'ring-white/25' => ! $isSelected,
+                                            ])>
+                                                @if ($isSelected)
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                                @endif
+                                            </span>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="font-semibold text-white">{{ $service->name }}</div>
+                                                @if ($service->description)
+                                                    <div class="text-sm text-gray-400 mt-0.5">{{ $service->description }}</div>
+                                                @endif
+                                                <div class="text-xs text-gray-500 mt-1.5">About {{ $service->estimated_duration_minutes }} min</div>
                                             </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="p-4">
-                                        <div class="text-center py-8 text-white">
-                                            <svg class="w-20 h-20 mx-auto mb-3 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                            </svg>
-                                            <p class="text-sm font-semibold">No services selected</p>
-                                            <p class="text-xs mt-1">Click services to add</p>
+                                            <div class="font-bold text-white tabular-nums whitespace-nowrap">₱{{ number_format($service->base_price, 2) }}</div>
                                         </div>
-                                    </div>
-                                @endif
-                            </div>
+                                    @endforeach
 
-                            <!-- Sticky Footer (Subtotal & Action Button) -->
-                            @if (count($selectedServices) > 0)
-                                <div class="flex-shrink-0 p-4 bg-garage-charcoal/90 border-t-2 border-garage-neon/30">
-                                    <div class="flex justify-between items-center mb-4">
-                                        <span class="font-bold text-white service-tag">ESTIMATE:</span>
-                                        <span class="text-2xl font-bold text-white font-mono" 
-                                              x-data="{ amount: {{ $estimatedTotal }} }"
-                                              x-init="$watch('amount', value => { 
-                                                  $el.classList.add('scale-110'); 
-                                                  setTimeout(() => $el.classList.remove('scale-110'), 200);
-                                              })"
-                                              class="transition-transform duration-200">
-                                            ₱{{ number_format($estimatedTotal, 2) }}
-                                        </span>
-                                    </div>
-
-                                    <button type="button" 
-                                            wire:click="confirmServices"
-                                            class="w-full py-3 {{ $servicesConfirmed ? 'bg-garage-emerald hover:bg-garage-neon' : 'bg-garage-neon hover:bg-garage-emerald' }} text-garage-black font-bold rounded-lg transition-all shadow-neon-green flex items-center justify-center service-tag">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        {{ $servicesConfirmed ? 'UPDATE SERVICES' : 'CONFIRM & CONTINUE' }}
-                                    </button>
-
-                                    @if ($servicesConfirmed)
-                                        <p class="text-xs text-center text-white mt-2">Services can be modified anytime</p>
+                                    @if ($categoryCounts[$category->id] > 0)
+                                        <div class="pt-2">
+                                            @if (in_array($category->id, $savedCategories))
+                                                <div class="flex items-center justify-center gap-2 h-11 rounded-xl bg-emerald-400/10 ring-1 ring-emerald-400/30 text-emerald-300 font-semibold">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    Saved
+                                                </div>
+                                            @else
+                                                <button type="button" wire:click="saveCategoryServices({{ $category->id }})" class="cp-btn-ghost w-full !h-11">
+                                                    <svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    Save {{ $category->name }} choices
+                                                </button>
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                             @endif
                         </div>
-                        @error('selectedServices') 
-                            <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> 
-                        @enderror
+                    @endforeach
+                </div>
+                @error('selectedServices') <span class="cp-error">{{ $message }}</span> @enderror
+            </section>
+
+            <!-- Step 4: Date & time -->
+            <section class="cp-card p-5 sm:p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="w-9 h-9 rounded-full bg-emerald-400 text-gray-950 font-bold flex items-center justify-center">4</span>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Date &amp; time</h2>
+                        <p class="text-sm text-gray-400">Open Mon–Sat, 8 AM – 6 PM. Lunch break 12 – 1 PM.</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Date and Time -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8 mt-6 sm:mt-8">
-                <div>
-                    <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        BOOKING DATE *
-                    </label>
-                    <input type="date" wire:model="bookingDate" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono [color-scheme:dark]">
-                    @error('bookingDate') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label for="bookingDate" class="cp-label">Booking date <span class="text-rose-400">*</span></label>
+                        <input id="bookingDate" type="date" wire:model="bookingDate" class="cp-input">
+                        @error('bookingDate') <span class="cp-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="bookingTime" class="cp-label">Preferred time <span class="text-rose-400">*</span></label>
+                        <input id="bookingTime" type="time" wire:model="bookingTime" class="cp-input">
+                        @error('bookingTime') <span class="cp-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="notes" class="cp-label">Notes for the mechanic <span class="text-gray-500">(optional)</span></label>
+                        <textarea id="notes" wire:model="notes" rows="3" class="cp-input" placeholder="e.g. Strange noise when braking, aircon not cold"></textarea>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        PREFERRED TIME *
-                    </label>
-                    <input type="time" wire:model="bookingTime" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon font-mono [color-scheme:dark]">
-                    @error('bookingTime') <span class="text-red-400 text-sm mt-2 block">{{ $message }}</span> @enderror
+            </section>
+
+            <!-- Step 5: Review & submit -->
+            <section class="cp-card p-5 sm:p-7">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="w-9 h-9 rounded-full bg-emerald-400 text-gray-950 font-bold flex items-center justify-center">5</span>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Review &amp; submit</h2>
+                        <p class="text-sm text-gray-400">The final price may change if extra parts or work are needed.</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Notes -->
-            <div class="mb-6 sm:mb-8">
-                <label class="block text-xs sm:text-sm font-bold text-white mb-2 sm:mb-3 service-tag flex items-center">
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                    </svg>
-                    ADDITIONAL NOTES (Optional)
-                </label>
-                <textarea wire:model="notes" rows="3" class="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-garage-charcoal border-2 border-garage-neon/30 text-garage-offwhite rounded-lg focus:ring-2 focus:ring-garage-neon focus:border-garage-neon placeholder-garage-steel/50" placeholder="Any specific requirements or concerns..."></textarea>
-            </div>
-
-            <!-- Estimated Total -->
-            <div class="bg-gradient-to-r from-garage-charcoal to-garage-forest p-4 sm:p-6 rounded-lg mb-6 sm:mb-8 border-2 border-garage-neon/40 shadow-neon-green">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0">
-                    <span class="text-base sm:text-xl font-bold text-white service-tag">ESTIMATED TOTAL:</span>
-                    <span class="text-2xl sm:text-4xl font-bold text-white font-mono">₱{{ number_format($estimatedTotal, 2) }}</span>
+                <div class="flex items-center justify-between rounded-2xl bg-emerald-400/[0.07] ring-1 ring-emerald-400/20 p-4 sm:p-5 mb-5">
+                    <span class="font-medium text-emerald-200">Estimated total</span>
+                    <span class="text-3xl font-bold text-white tabular-nums">₱{{ number_format($estimatedTotal, 2) }}</span>
                 </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/50 to-transparent my-2 sm:my-3"></div>
-                <p class="text-xs sm:text-sm text-white">* Final price may vary based on parts and additional services required</p>
-            </div>
 
-            <div class="mb-6 rounded-lg border border-garage-neon/30 bg-garage-charcoal/40 p-4">
-                <label for="customer-policy-consent" class="flex items-start gap-3 text-sm text-white">
+                <label for="customer-policy-consent" class="flex items-start gap-3 cp-panel p-4 cursor-pointer">
                     <input id="customer-policy-consent" type="checkbox" wire:model="policyConsent"
-                           class="mt-1 h-5 w-5 rounded border-garage-neon/50 bg-garage-charcoal text-garage-neon focus:ring-garage-neon">
-                    <span>
+                           class="mt-0.5 h-5 w-5 rounded border-white/30 bg-transparent text-emerald-400 focus:ring-emerald-400/40 focus:ring-offset-0">
+                    <span class="text-sm text-gray-300">
                         I have read and agree to the
-                        <a href="{{ route('privacy.policy') }}" target="_blank" rel="noopener" class="underline">Privacy Policy</a>,
-                        <a href="{{ route('terms.conditions') }}" target="_blank" rel="noopener" class="underline">Terms and Conditions</a>, and
-                        <a href="{{ route('refund.policy') }}" target="_blank" rel="noopener" class="underline">Refund Policy</a>.
+                        <a href="{{ route('privacy.policy') }}" target="_blank" rel="noopener" class="text-emerald-300 underline underline-offset-2">Privacy Policy</a>,
+                        <a href="{{ route('terms.conditions') }}" target="_blank" rel="noopener" class="text-emerald-300 underline underline-offset-2">Terms and Conditions</a>, and
+                        <a href="{{ route('refund.policy') }}" target="_blank" rel="noopener" class="text-emerald-300 underline underline-offset-2">Refund Policy</a>.
                     </span>
                 </label>
-                @error('policyConsent') <span class="mt-2 block text-sm text-red-400">{{ $message }}</span> @enderror
-            </div>
+                @error('policyConsent') <span class="cp-error">{{ $message }}</span> @enderror
 
-            <!-- Submit Button -->
-            <button type="submit" 
-                    wire:loading.attr="disabled"
-                    class="w-full bg-garage-neon hover:bg-garage-emerald text-garage-black px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold hover:shadow-neon-green transition-all text-base sm:text-lg service-tag flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" wire:loading.remove wire:target="submitBooking">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <svg class="animate-spin h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" wire:loading wire:target="submitBooking">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span wire:loading.remove wire:target="submitBooking">SUBMIT SERVICE REQUEST</span>
-                <span wire:loading wire:target="submitBooking">PROCESSING...</span>
-            </button>
-        </form>
-    </div>
+                <button type="submit" wire:loading.attr="disabled" class="cp-btn-primary w-full mt-5 !h-14 text-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" wire:loading.remove wire:target="submitBooking"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" wire:loading wire:target="submitBooking">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span wire:loading.remove wire:target="submitBooking">Submit booking request</span>
+                    <span wire:loading wire:target="submitBooking">Sending...</span>
+                </button>
+            </section>
+        </div>
+
+        <!-- Work order summary -->
+        <aside class="lg:sticky lg:top-6">
+            <div @class(['cp-card overflow-hidden flex flex-col lg:max-h-[calc(100vh-3rem)]', '!ring-emerald-400/40' => $servicesConfirmed])>
+                <div class="p-5 border-b border-white/[0.06]">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-white">Work order</h2>
+                        @if ($servicesConfirmed)
+                            <span class="cp-badge bg-emerald-400/10 text-emerald-300 ring-emerald-400/30">Confirmed</span>
+                        @endif
+                    </div>
+                    <p class="text-sm text-gray-400">{{ count($selectedServices) }} {{ \Illuminate\Support\Str::plural('service', count($selectedServices)) }} selected</p>
+                </div>
+
+                <div class="flex-1 overflow-y-auto min-h-0" wire:key="services-list">
+                    @if (count($selectedServices) > 0)
+                        <ul class="p-3 space-y-2">
+                            @foreach ($allSelectedServices as $service)
+                                <li wire:key="service-{{ $service->id }}" class="group flex items-start justify-between gap-3 rounded-xl bg-black/20 ring-1 ring-white/[0.06] p-3">
+                                    <div class="min-w-0">
+                                        <div class="font-medium text-white text-sm">{{ $service->name }}</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">About {{ $service->estimated_duration_minutes }} min</div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold text-white text-sm tabular-nums">₱{{ number_format($service->base_price, 2) }}</span>
+                                        <button type="button" wire:click="removeService({{ $service->id }})" class="w-7 h-7 rounded-lg text-gray-500 hover:text-rose-300 hover:bg-rose-500/10 flex items-center justify-center" aria-label="Remove {{ $service->name }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="px-5 py-10 text-center">
+                            <span class="mx-auto w-12 h-12 rounded-xl bg-white/[0.05] flex items-center justify-center text-gray-500">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            </span>
+                            <p class="mt-3 font-medium text-gray-300">No services yet</p>
+                            <p class="text-sm text-gray-500">Pick services in step 3.</p>
+                        </div>
+                    @endif
+                </div>
+
+                @if (count($selectedServices) > 0)
+                    <div class="p-5 border-t border-white/[0.06] bg-black/20">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-gray-400">Estimate</span>
+                            <span class="text-2xl font-bold text-white tabular-nums">₱{{ number_format($estimatedTotal, 2) }}</span>
+                        </div>
+                        <button type="button" wire:click="confirmServices" @class(['w-full', 'cp-btn-ghost' => $servicesConfirmed, 'cp-btn-primary' => ! $servicesConfirmed])>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            {{ $servicesConfirmed ? 'Update services' : 'Confirm services' }}
+                        </button>
+                        @if ($servicesConfirmed)
+                            <p class="mt-2 text-xs text-center text-gray-500">You can still change services before submitting.</p>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        </aside>
+    </form>
 
     <!-- Error Modal -->
     @if($showErrorModal)
-        <div x-data="{ show: true }" 
-             x-show="show"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 bg-black bg-opacity-75 overflow-y-auto h-full w-full z-[9999] flex items-center justify-center">
-            <div x-transition:enter="transition ease-out duration-400 delay-100"
-                 x-transition:enter-start="opacity-0 transform scale-75 -translate-y-10"
-                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 transform scale-100"
-                 x-transition:leave-end="opacity-0 transform scale-75"
-                 class="relative mx-auto p-8 border-2 border-red-500 w-96 shadow-2xl rounded-lg bg-gradient-to-br from-garage-charcoal to-black">
-                <div class="text-center">
-                    <!-- Error Icon -->
-                    <div x-transition:enter="transition ease-out duration-500 delay-200"
-                         x-transition:enter-start="opacity-0 transform scale-50 rotate-180"
-                         x-transition:enter-end="opacity-100 transform scale-100 rotate-0"
-                         class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-500/20 border-2 border-red-500 mb-4">
-                        <svg class="h-8 w-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                    </div>
-                    
-                    <!-- Error Message -->
-                    <h3 x-transition:enter="transition ease-out duration-400 delay-300"
-                        x-transition:enter-start="opacity-0 transform translate-y-4"
-                        x-transition:enter-end="opacity-100 transform translate-y-0"
-                        class="text-xl font-bold text-red-500 mb-3 service-tag">ATTENTION</h3>
-                    <p x-transition:enter="transition ease-out duration-400 delay-400"
-                       x-transition:enter-start="opacity-0 transform translate-y-4"
-                       x-transition:enter-end="opacity-100 transform translate-y-0"
-                       class="text-garage-offwhite mb-6">{{ $errorMessage }}</p>
-                    
-                    <!-- OK Button -->
-                    <button x-transition:enter="transition ease-out duration-400 delay-500"
-                            x-transition:enter-start="opacity-0 transform scale-90"
-                            x-transition:enter-end="opacity-100 transform scale-100"
-                            wire:click="closeErrorModal" 
-                            class="w-full px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors duration-200 service-tag shadow-lg">
-                        OK
-                    </button>
-                </div>
+        <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div x-data x-transition class="w-full max-w-sm rounded-3xl bg-[#111614] ring-1 ring-rose-500/30 shadow-2xl p-7 text-center">
+                <span class="mx-auto w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </span>
+                <h3 class="mt-4 text-xl font-bold text-white">Please check this</h3>
+                <p class="mt-2 text-gray-300">{{ $errorMessage }}</p>
+                <button wire:click="closeErrorModal" class="cp-btn-ghost w-full mt-6">OK</button>
             </div>
         </div>
     @endif
 
     <!-- Success Modal -->
     @if($showSuccessModal)
-        <div x-data="{ show: true }" 
-             x-show="show"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-            <div x-transition:enter="transition ease-out duration-400 delay-100"
-                 x-transition:enter-start="opacity-0 transform scale-75 -translate-y-10"
-                 x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
-                 x-transition:leave="transition ease-in duration-200"
-                 x-transition:leave-start="opacity-100 transform scale-100"
-                 x-transition:leave-end="opacity-0 transform scale-75"
-                 class="relative mx-auto p-8 border-2 border-garage-neon w-96 shadow-2xl rounded-lg bg-gradient-to-br from-garage-charcoal to-garage-darkgreen">
-                <div class="text-center">
-                    <!-- Success Icon -->
-                    <div x-transition:enter="transition ease-out duration-500 delay-200"
-                         x-transition:enter-start="opacity-0 transform scale-50 rotate-180"
-                         x-transition:enter-end="opacity-100 transform scale-100 rotate-0"
-                         class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-garage-neon/20 border-2 border-garage-neon mb-4 animate-pulse">
-                        <svg class="h-10 w-10 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    
-                    <!-- Success Message -->
-                    <h3 x-transition:enter="transition ease-out duration-400 delay-300"
-                        x-transition:enter-start="opacity-0 transform translate-y-4"
-                        x-transition:enter-end="opacity-100 transform translate-y-0"
-                        class="text-2xl font-bold text-garage-neon mb-3 service-tag">SUCCESSFULLY BOOKED!</h3>
-                    <p x-transition:enter="transition ease-out duration-400 delay-400"
-                       x-transition:enter-start="opacity-0 transform translate-y-4"
-                       x-transition:enter-end="opacity-100 transform translate-y-0"
-                       class="text-garage-offwhite mb-6 font-medium">Your booking has been submitted successfully. We will confirm your appointment shortly.</p>
-                    
-                    <!-- OK Button -->
-                    <button x-transition:enter="transition ease-out duration-400 delay-500"
-                            x-transition:enter-start="opacity-0 transform scale-90"
-                            x-transition:enter-end="opacity-100 transform scale-100"
-                            wire:click="closeSuccessModal" 
-                            class="w-full px-6 py-3 bg-garage-neon text-garage-black font-bold rounded-lg hover:bg-garage-emerald transition-all duration-200 service-tag shadow-neon-green">
-                        OK
-                    </button>
-                </div>
+        <div class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div class="w-full max-w-sm rounded-3xl bg-[#111614] ring-1 ring-emerald-400/30 shadow-2xl p-7 text-center">
+                <span class="mx-auto w-16 h-16 rounded-full bg-emerald-400 text-gray-950 flex items-center justify-center shadow-lg shadow-emerald-900/50">
+                    <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </span>
+                <h3 class="mt-5 text-2xl font-bold text-white">Booking sent!</h3>
+                <p class="mt-2 text-gray-300">We received your request and will confirm your appointment shortly.</p>
+                <button wire:click="closeSuccessModal" class="cp-btn-primary w-full mt-6">Done</button>
             </div>
         </div>
     @endif

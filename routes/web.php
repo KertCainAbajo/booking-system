@@ -8,12 +8,12 @@ use App\Livewire\Customer\BookingTracker;
 use App\Livewire\Customer\ServiceHistory;
 use App\Livewire\Customer\Profile as CustomerProfile;
 use App\Livewire\Customer\TwoFactorSetup;
-use App\Livewire\Staff\Dashboard as StaffDashboard;
+// Former staff tools, now used by the business owner
+use App\Livewire\Staff\Dashboard as TodayBoard;
 use App\Livewire\Staff\BookingCalendar;
 use App\Livewire\Staff\BookingDetail;
 use App\Livewire\Staff\InvoiceGenerator;
-use App\Livewire\Staff\Profile as StaffProfile;
-use App\Livewire\Staff\BookingManagement as StaffBookingManagement;
+use App\Livewire\Staff\BookingManagement as OwnerBookingManagement;
 use App\Livewire\Staff\BookingHistory;
 use App\Livewire\BusinessOwner\Dashboard as OwnerDashboard;
 use App\Livewire\BusinessOwner\RevenueReport;
@@ -52,7 +52,7 @@ Route::get('/booking/confirmation/{reference}', BookingConfirmation::class)->nam
 Route::get('/booking/track', GuestBookingTracker::class)->name('guest.booking.track');
 
 // Redirect authenticated users to their dashboard
-// Note: Supports staff, business_owner, it_admin, and customer accounts
+// Note: Supports customer, business_owner and super_admin accounts
 Route::get('/dashboard', function () {
     if (Auth::check()) {
         /** @var \App\Models\User $user */
@@ -71,14 +71,10 @@ Route::get('/dashboard', function () {
             return redirect()->route('customer.dashboard');
         }
         
-        // Get role name with fallback
-        $roleName = $user->role?->name ?? 'staff';
-        
-        $dashboardRoute = match($roleName) {
-            'it_admin' => 'admin.dashboard',
+        $dashboardRoute = match($user->role?->name) {
+            'super_admin' => 'admin.dashboard',
             'business_owner' => 'owner.dashboard',
-            'staff' => 'staff.dashboard',
-            default => 'staff.dashboard',
+            default => 'customer.dashboard',
         };
         
         return redirect()->route($dashboardRoute);
@@ -100,26 +96,24 @@ Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(functi
     Route::get('/2fa/setup', TwoFactorSetup::class)->name('2fa.setup');
 });
 
-// Staff Routes
-Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
-    Route::get('/dashboard', StaffDashboard::class)->name('dashboard');
+// Business Owner Routes (runs the shop: daily bookings, invoices and reports)
+Route::middleware(['auth', 'role:business_owner'])->prefix('owner')->name('owner.')->group(function () {
+    Route::get('/dashboard', OwnerDashboard::class)->name('dashboard');
+    Route::get('/today', TodayBoard::class)->name('today');
     Route::get('/calendar', BookingCalendar::class)->name('calendar');
-    Route::get('/bookings', StaffBookingManagement::class)->name('bookings');
+    Route::get('/bookings', OwnerBookingManagement::class)->name('bookings');
     Route::get('/history', BookingHistory::class)->name('history');
     Route::get('/booking/{id}', BookingDetail::class)->name('booking.detail');
     Route::get('/invoice/{id}', InvoiceGenerator::class)->name('invoice');
-    Route::get('/profile', StaffProfile::class)->name('profile');
-});
-
-// Business Owner Routes
-Route::middleware(['auth', 'role:business_owner'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', OwnerDashboard::class)->name('dashboard');
     Route::get('/reports', RevenueReport::class)->name('reports');
     Route::get('/profile', OwnerProfile::class)->name('profile');
 });
 
-// IT Admin Routes
-Route::middleware(['auth', 'role:it_admin'])->prefix('admin')->name('admin.')->group(function () {
+// Old staff links now point to the owner area
+Route::redirect('/staff/{any?}', '/owner/dashboard')->where('any', '.*');
+
+// Super Admin Routes
+Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboard::class)->name('dashboard');
     Route::get('/users', UserManagement::class)->name('users');
     Route::get('/services', ServiceManagement::class)->name('services');

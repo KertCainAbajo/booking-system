@@ -144,7 +144,7 @@ class BookingTracker extends Component
         
         $activeBookings = Booking::where('customer_id', $customer->id)
             ->whereIn('status', ['pending', 'approved'])
-            ->with(['vehicle', 'services', 'assignedStaff'])
+            ->with(['vehicle', 'services'])
             ->latest()
             ->get();
 

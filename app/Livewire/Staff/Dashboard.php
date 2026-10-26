@@ -9,7 +9,7 @@ use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-#[Layout('layouts.staff')]
+#[Layout('layouts.owner')]
 class Dashboard extends Component
 {
     public $currentDate;

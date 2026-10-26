@@ -4,13 +4,16 @@ namespace App\Livewire\Staff;
 
 use Livewire\Component;
 use Livewire\Attributes\Layout;
+use App\Livewire\Concerns\ManagesMechanic;
 use App\Models\Booking;
 use App\Models\BookingStatusLog;
 use Illuminate\Support\Facades\Auth;
 
-#[Layout('layouts.staff')]
+#[Layout('layouts.owner')]
 class BookingDetail extends Component
 {
+    use ManagesMechanic;
+
     /**
      * @var \App\Models\Booking
      */
@@ -22,6 +25,7 @@ class BookingDetail extends Component
     {
         $this->bookingId = $id;
         $this->loadBooking();
+        $this->fillMechanic();
     }
 
     public function loadBooking()
@@ -30,7 +34,6 @@ class BookingDetail extends Component
             'customer.user',
             'vehicle',
             'services',
-            'assignedStaff',
             'payment',
             'statusLogs.user'
         ])->findOrFail($this->bookingId);
@@ -58,15 +61,6 @@ class BookingDetail extends Component
         $this->notes = '';
         $this->loadBooking();
         session()->flash('success', 'Booking status updated successfully!');
-    }
-
-    public function assignToMe()
-    {
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        $this->booking->update(['assigned_staff_id' => $user->id]);
-        $this->loadBooking();
-        session()->flash('success', 'Booking assigned to you!');
     }
 
     public function render()

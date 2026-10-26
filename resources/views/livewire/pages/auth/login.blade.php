@@ -37,14 +37,11 @@ new #[Layout('layouts.guest')] class extends Component
             return;
         }
 
-        // Staff/Admin/Business Owner redirect
-        $roleName = $user->role?->name ?? 'staff';
-
-        $dashboardRoute = match($roleName) {
-            'it_admin' => 'admin.dashboard',
+        // Super Admin / Business Owner redirect
+        $dashboardRoute = match($user->role?->name) {
+            'super_admin' => 'admin.dashboard',
             'business_owner' => 'owner.dashboard',
-            'staff' => 'staff.dashboard',
-            default => 'staff.dashboard',
+            default => 'customer.dashboard',
         };
 
         $this->redirect(route($dashboardRoute, absolute: false), navigate: true);

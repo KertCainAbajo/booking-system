@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/shop.png') }}">
 
-    <title>{{ config('app.name', 'Auto Service Booking') }} - Admin</title>
+    <title>{{ config('app.name', 'Auto Service Booking') }} - Super Admin</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
@@ -91,7 +91,7 @@
                         </div>
                         <div class="ml-3 text-left overflow-hidden">
                             <p class="text-sm font-bold text-white truncate service-tag">{{ strtoupper(auth()->user()->name) }}</p>
-                            <p class="text-xs text-white/70 truncate">Admin</p>
+                            <p class="text-xs text-white/70 truncate">Super Admin</p>
                         </div>
                         <svg class="w-4 h-4 ml-auto" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>

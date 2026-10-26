@@ -7,7 +7,7 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-#[Layout('layouts.staff')]
+#[Layout('layouts.owner')]
 class InvoiceGenerator extends Component
 {
     public $booking;
@@ -19,7 +19,6 @@ class InvoiceGenerator extends Component
             'vehicle',
             'services',
             'payment',
-            'assignedStaff'
         ])->findOrFail($id);
     }
 

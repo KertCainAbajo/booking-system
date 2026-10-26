@@ -1,163 +1,120 @@
-<div>
-    <!-- Header with Back Button -->
-    <div class="mb-6 flex justify-between items-start">
+<div class="space-y-6">
+    <!-- Page header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-garage-offwhite service-tag mb-2">MAINTENANCE LOG</h2>
-            <p class="text-garage-steel">Complete history of your vehicle service records</p>
+            <p class="text-sm font-medium text-emerald-300">Service History</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">Past services</h1>
+            <p class="mt-1 text-gray-400">Every visit, what was done, and what you paid.</p>
         </div>
-        <a href="{{ route('customer.dashboard') }}" wire:navigate 
-           class="inline-flex items-center px-5 py-2.5 bg-garage-forest hover:bg-garage-darkgreen text-garage-offwhite font-semibold rounded-lg transition-all border border-garage-neon/20 hover:border-garage-neon/40">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            <span class="service-tag">BACK</span>
+        <a href="{{ route('customer.book') }}" wire:navigate class="cp-btn-primary">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Book a service
         </a>
     </div>
 
     @forelse($historyBookings as $booking)
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage mb-6 overflow-hidden border border-garage-steel/30 hover:border-garage-neon/40 transition-all">
-            <!-- Header - Maintenance Record Style -->
-            <div class="bg-gradient-to-r {{ $booking->status === 'completed' ? 'from-garage-emerald/20 to-garage-forest' : 'from-garage-steel/20 to-garage-darkgreen' }} border-b border-garage-steel/30 px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="flex items-center space-x-3 mb-1">
-                            <svg class="w-6 h-6 {{ $booking->status === 'completed' ? 'text-garage-emerald' : 'text-garage-steel' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                            <h3 class="text-xl font-bold text-garage-offwhite service-tag">SERVICE #{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</h3>
-                        </div>
-                        <p class="text-garage-steel text-sm font-mono ml-9">
-                            Completed: {{ $booking->booking_date->format('M d, Y') }} at {{ $booking->booking_time->format('h:i A') }}
-                        </p>
+        <article class="cp-card overflow-hidden" x-data="{ open: {{ $loop->first ? 'true' : 'false' }} }">
+            <!-- Summary row (click to expand) -->
+            <button type="button" @click="open = !open" class="w-full text-left p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-white/[0.02] transition" :aria-expanded="open.toString()">
+                <div class="flex items-center gap-4 flex-1 min-w-0">
+                    <div class="w-16 flex-shrink-0 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-center py-2">
+                        <div class="text-[11px] font-semibold uppercase text-gray-400">{{ $booking->booking_date->format('M Y') }}</div>
+                        <div class="text-2xl font-bold text-white leading-none">{{ $booking->booking_date->format('d') }}</div>
                     </div>
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-lg font-semibold text-white">Service #{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</span>
+                            <x-status-badge :status="$booking->status" />
+                        </div>
+                        <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-400">
+                            <span>{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</span>
+                            <span class="plate-number text-xs">{{ $booking->vehicle->plate_number }}</span>
+                            <span>· {{ $booking->booking_time->format('g:i A') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between sm:justify-end gap-4">
                     <div class="text-right">
-                        <span class="service-tag px-4 py-2 text-sm rounded-lg font-bold
-                            {{ $booking->status === 'completed' ? 'bg-garage-emerald/20 text-garage-emerald border border-garage-emerald/50' : 'bg-garage-steel/20 text-garage-steel border border-garage-steel/50' }}
-                        ">
-                            {{ strtoupper(str_replace('_', ' ', $booking->status)) }}
-                        </span>
+                        <div class="text-xs text-gray-500">{{ $booking->status === 'completed' ? 'Total paid' : 'Total' }}</div>
+                        <div class="text-xl font-bold text-white">₱{{ number_format($booking->total_amount, 2) }}</div>
                     </div>
+                    <svg class="w-5 h-5 text-gray-500 transition-transform" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </div>
-            </div>
+            </button>
 
-            <!-- Content -->
-            <div class="p-6">
-                <!-- Vehicle Info with License Plate -->
-                <div class="mb-5">
-                    <h4 class="font-semibold text-garage-steel text-xs mb-3 service-tag flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                        </svg>
-                        VEHICLE
-                    </h4>
-                    <div class="flex items-center justify-between bg-garage-charcoal/50 rounded-lg p-4 border border-garage-neon/20">
-                        <div class="flex items-center flex-1">
-                            <svg class="w-10 h-10 text-garage-steel mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
-                            <div>
-                                <div class="font-bold text-garage-offwhite text-lg">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</div>
-                                <div class="text-sm text-garage-steel">{{ $booking->vehicle->year }} Model</div>
-                            </div>
-                        </div>
-                        <div class="plate-number text-sm ml-4">{{ $booking->vehicle->plate_number }}</div>
-                    </div>
-                </div>
-
-                <!-- Services Performed - Maintenance Record Cards -->
-                <div class="mb-5">
-                    <h4 class="font-semibold text-garage-steel text-xs mb-3 service-tag flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        SERVICES PERFORMED
-                    </h4>
-                    <div class="space-y-2">
-                        @foreach($booking->services as $service)
-                            <div class="group flex items-center justify-between bg-garage-charcoal/50 border border-garage-steel/20 rounded-lg p-3 hover:border-garage-emerald/30 transition-colors">
-                                <div class="flex items-center flex-1">
-                                    <div class="w-1.5 h-1.5 bg-garage-emerald rounded-full mr-3 group-hover:shadow-[0_0_8px_rgba(45,212,191,0.6)]"></div>
-                                    <div>
-                                        <div class="font-semibold text-garage-offwhite">{{ $service->name }}</div>
-                                        <div class="text-xs text-garage-steel flex items-center mt-0.5">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            {{ $service->estimated_duration }} minutes
+            <!-- Details -->
+            <div x-show="open" x-collapse class="border-t border-white/[0.06]">
+                <div class="p-5 sm:p-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+                    <!-- Services performed -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-300 mb-3">Work performed</h3>
+                        <ul class="cp-panel divide-y divide-white/[0.06]">
+                            @foreach($booking->services as $service)
+                                <li class="flex items-center justify-between gap-4 px-4 py-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <span class="w-8 h-8 flex-shrink-0 rounded-lg bg-emerald-400/10 text-emerald-300 flex items-center justify-center">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        </span>
+                                        <div class="min-w-0">
+                                            <div class="font-medium text-white truncate">{{ $service->name }}</div>
+                                            @if($service->estimated_duration)
+                                                <div class="text-xs text-gray-500">About {{ $service->estimated_duration }} min</div>
+                                            @endif
                                         </div>
                                     </div>
-                                </div>
-                                <div class="font-bold text-white group-hover:text-white font-mono transition-colors">₱{{ number_format($service->pivot->price, 2) }}</div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+                                    <div class="font-semibold text-gray-200 tabular-nums">₱{{ number_format($service->pivot->price, 2) }}</div>
+                                </li>
+                            @endforeach
+                        </ul>
 
-                <!-- Payment Status -->
-                @if($booking->payment)
-                    <div class="mb-5 bg-garage-emerald/10 rounded-lg p-4 border border-garage-emerald/30">
-                        <h4 class="font-semibold text-garage-steel text-xs mb-3 service-tag flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-garage-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            PAYMENT
-                        </h4>
-                        <div class="flex items-center justify-between">
-                            <div class="space-y-1">
-                                <div class="text-sm text-garage-steel">
-                                    <span class="text-garage-offwhite font-semibold">Method:</span> 
-                                    <span class="font-mono">{{ strtoupper($booking->payment->payment_method) }}</span>
-                                </div>
-                                <div class="text-sm text-garage-steel">
-                                    <span class="text-garage-offwhite font-semibold">Date:</span> 
-                                    <span class="font-mono">{{ $booking->payment->payment_date->format('M d, Y') }}</span>
-                                </div>
+                        @if($booking->notes)
+                            <div class="mt-5">
+                                <h3 class="text-sm font-semibold text-gray-300 mb-2">Notes</h3>
+                                <p class="cp-panel p-4 text-gray-300">{{ $booking->notes }}</p>
                             </div>
-                            <span class="service-tag px-3 py-1.5 text-xs rounded-lg font-bold bg-garage-emerald/20 text-garage-emerald border border-garage-emerald/40">
-                                {{ strtoupper($booking->payment->payment_status) }}
-                            </span>
+                        @endif
+                    </div>
+
+                    <!-- Side: vehicle + payment -->
+                    <div class="space-y-4">
+                        <div class="cp-panel p-4">
+                            <h3 class="text-sm font-semibold text-gray-300 mb-3">Vehicle</h3>
+                            <p class="text-lg font-semibold text-white">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</p>
+                            <p class="text-sm text-gray-400">{{ $booking->vehicle->year }} model</p>
+                            <span class="plate-number text-sm inline-block mt-3">{{ $booking->vehicle->plate_number }}</span>
                         </div>
-                    </div>
-                @endif
 
-                <!-- Notes -->
-                @if($booking->notes)
-                    <div class="mb-5">
-                        <h4 class="font-semibold text-garage-steel text-xs mb-2 service-tag flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                            </svg>
-                            TECHNICIAN NOTES
-                        </h4>
-                        <p class="text-garage-offwhite bg-garage-charcoal/50 rounded-lg p-3 border border-garage-neon/20 text-sm italic">{{ $booking->notes }}</p>
-                    </div>
-                @endif
+                        @if($booking->payment)
+                            <div class="cp-panel p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-sm font-semibold text-gray-300">Payment</h3>
+                                    <span class="cp-badge bg-emerald-400/10 text-emerald-300 ring-emerald-400/30">{{ ucfirst($booking->payment->payment_status) }}</span>
+                                </div>
+                                <dl class="space-y-1.5 text-sm">
+                                    <div class="flex justify-between"><dt class="text-gray-400">Method</dt><dd class="text-white font-medium">{{ ucwords(str_replace('_', ' ', $booking->payment->payment_method)) }}</dd></div>
+                                    <div class="flex justify-between"><dt class="text-gray-400">Date</dt><dd class="text-white font-medium">{{ $booking->payment->payment_date->format('M d, Y') }}</dd></div>
+                                </dl>
+                            </div>
+                        @endif
 
-                <!-- Total - Receipt Footer Style -->
-                <div class="border-t-2 border-garage-steel/30 pt-4">
-                    <div class="flex items-center justify-between bg-garage-charcoal/70 rounded-lg p-4 border border-{{ $booking->status === 'completed' ? 'garage-emerald' : 'garage-steel' }}/40">
-                        <span class="font-bold text-garage-offwhite text-lg service-tag">TOTAL PAID</span>
-                        <span class="font-bold {{ $booking->status === 'completed' ? 'text-garage-emerald' : 'text-garage-steel' }} text-2xl font-mono">₱{{ number_format($booking->total_amount, 2) }}</span>
+                        <div class="rounded-2xl bg-emerald-400/[0.07] ring-1 ring-emerald-400/20 p-4 flex items-center justify-between">
+                            <span class="font-medium text-emerald-200">{{ $booking->status === 'completed' ? 'Total paid' : 'Total' }}</span>
+                            <span class="text-2xl font-bold text-white">₱{{ number_format($booking->total_amount, 2) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Archive Indicator -->
-            <div class="h-1 bg-gradient-to-r from-transparent via-{{ $booking->status === 'completed' ? 'garage-emerald' : 'garage-steel' }}/30 to-transparent"></div>
-        </div>
+        </article>
     @empty
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen shadow-garage rounded-lg p-16 text-center border border-garage-neon/20">
-            <svg class="w-32 h-32 mx-auto text-garage-steel/30 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <h3 class="text-2xl font-bold text-garage-offwhite mb-3 service-tag">NO SERVICE HISTORY</h3>
-            <p class="text-garage-steel text-lg mb-8">Your maintenance log is empty. Start building your service history today.</p>
-            <a href="{{ route('customer.book') }}" wire:navigate
-                class="inline-flex items-center bg-garage-neon hover:bg-garage-emerald text-garage-black font-bold px-8 py-4 rounded-lg transition-all shadow-neon-green service-tag">
-                <span>BOOK FIRST SERVICE</span>
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
+        <div class="cp-card text-center px-6 py-16">
+            <span class="mx-auto w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-300">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </span>
+            <h2 class="mt-5 text-xl font-bold text-white">No past services yet</h2>
+            <p class="mt-2 text-gray-400">Once a service is finished, it will appear here with all the details.</p>
+            <a href="{{ route('customer.book') }}" wire:navigate class="cp-btn-primary mt-6">
+                Book your first service
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
         </div>
     @endforelse

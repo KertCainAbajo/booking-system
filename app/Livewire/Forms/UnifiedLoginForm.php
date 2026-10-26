@@ -67,7 +67,7 @@ class UnifiedLoginForm extends Form
         if ($user->customer) {
             $this->user_type = 'customer';
         } else {
-            $this->user_type = 'staff';
+            $this->user_type = $user->role?->name;
         }
 
         // Check whether this account has 2FA enabled, regardless of role.

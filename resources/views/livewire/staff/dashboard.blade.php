@@ -12,7 +12,7 @@
                         <svg class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">STAFF PANEL</h1>
+                        <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">TODAY'S WORK</h1>
                     </div>
                     <!-- Live Update Indicator -->
                     <div class="flex items-center gap-2">
@@ -43,7 +43,7 @@
         <!-- Quick Actions -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <!-- View Calendar Card -->
-            <a href="{{ route('staff.calendar') }}" 
+            <a href="{{ route('owner.calendar') }}" 
                class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 
@@ -69,7 +69,7 @@
             </a>
 
             <!-- My Profile Card -->
-            <a href="{{ route('staff.profile') }}" 
+            <a href="{{ route('owner.profile') }}" 
                class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 
@@ -420,7 +420,7 @@
                         </div>
                         <div class="flex items-center justify-between lg:flex-col lg:text-right lg:ml-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-garage-neon/10">
                             <div class="text-xl sm:text-2xl font-bold text-white font-mono">₱{{ number_format($booking->total_amount, 2) }}</div>
-                            <a href="{{ route('staff.booking.detail', $booking->id) }}" 
+                            <a href="{{ route('owner.booking.detail', $booking->id) }}" 
                                 class="inline-flex items-center text-xs sm:text-sm text-white hover:text-white font-semibold transition-colors service-tag lg:mt-2">
                                 <span>DETAILS</span>
                                 <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -454,7 +454,7 @@
                             <span class="text-garage-steel text-xs sm:text-sm ml-2">(Next 7 Days)</span>
                         </div>
                     </div>
-                    <a href="{{ route('staff.calendar') }}" class="text-white hover:text-white text-xs sm:text-sm font-semibold transition-colors service-tag flex items-center flex-shrink-0">
+                    <a href="{{ route('owner.calendar') }}" class="text-white hover:text-white text-xs sm:text-sm font-semibold transition-colors service-tag flex items-center flex-shrink-0">
                         <span>VIEW IN CALENDAR</span>
                         <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
@@ -502,7 +502,7 @@
                             </div>
                             <div class="flex items-center justify-between lg:flex-col lg:text-right lg:ml-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-garage-neon/10">
                                 <div class="text-xl sm:text-2xl font-bold text-white font-mono">₱{{ number_format($booking->total_amount, 2) }}</div>
-                                <a href="{{ route('staff.booking.detail', $booking->id) }}" 
+                                <a href="{{ route('owner.booking.detail', $booking->id) }}" 
                                     class="inline-flex items-center text-xs sm:text-sm text-white hover:text-white font-semibold transition-colors service-tag lg:mt-2">
                                     <span>DETAILS</span>
                                     <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
