@@ -15,136 +15,109 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-gradient-to-br from-black to-green-900">
-        <div class="min-h-screen flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8">
-            <!-- Floating Card Container -->
-            <div class="w-full max-w-6xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border-2 border-green-800 border-r-2 border-r-black overflow-hidden flex min-h-[500px] sm:min-h-[600px] md:min-h-[650px]">
-                <!-- Left Side - Visual/Branding Panel -->
-                <div class="hidden lg:flex lg:w-[45%] xl:w-1/2 relative overflow-hidden bg-black">
-                <!-- Content -->
-                <div class="relative z-10 flex flex-col justify-center items-center px-12 xl:px-16 text-white w-full">
-                    <!-- Slideshow -->
-                    <div class="w-full mb-6 relative slideshow-container">
-                        <div class="slideshow-wrapper relative w-full h-64 overflow-hidden rounded-lg">
-                            <img src="{{ asset('images/lc.png') }}" alt="Car 1" class="slideshow-image absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-                            <img src="{{ asset('images/fortuner.png') }}" alt="Car 2" class="slideshow-image absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-                            <img src="{{ asset('images/hilux.png') }}" alt="Car 3" class="slideshow-image absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000">
-                        </div>
-                    </div>
-                    
-                    <!-- Main Headline -->
-                    <div class="space-y-2 text-center mb-8">
-                        <h1 class="text-3xl xl:text-4xl font-bold leading-tight tracking-tight text-white">
-                            Book <span class="text-green-700">Auto Service</span>
-                        </h1>
-                    </div>
-                    
-                    <!-- Features - Horizontal Layout -->
-                    <div class="grid grid-cols-3 gap-6 w-full">
-                        <div class="flex flex-col items-center text-center">
-                            <div class="flex-shrink-0 w-12 h-12 bg-green-700 rounded-full flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-white mb-1">Easy Scheduling</h3>
-                                <p class="text-xs text-gray-400">Book your service in minutes</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col items-center text-center">
-                            <div class="flex-shrink-0 w-12 h-12 bg-green-700 rounded-full flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-white mb-1">Service Requests</h3>
-                                <p class="text-xs text-gray-400">Submit and track your booking request</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col items-center text-center">
-                            <div class="flex-shrink-0 w-12 h-12 bg-green-700 rounded-full flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-white mb-1">Price Estimates</h3>
-                                <p class="text-xs text-gray-400">Review estimated service prices</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-                <!-- Right Side - Login Form -->
-                <div class="flex-1 flex items-center justify-center px-4 sm:px-6 py-6 sm:py-8 md:py-12 bg-white">
-                    <div class="w-full max-w-md">
-                        {{ $slot }}
-                        <div class="mt-6 text-center text-sm">
-                            <a href="{{ route('privacy.policy') }}" class="underline hover:no-underline">Privacy Policy</a>
-                            <span class="mx-2" aria-hidden="true">|</span>
-                            <a href="{{ route('terms.conditions') }}" class="underline hover:no-underline">Terms and Conditions</a>
-                            <span class="mx-2" aria-hidden="true">|</span>
-                            <a href="{{ route('cookie.policy') }}" class="underline hover:no-underline">Cookie Policy</a>
-                            <span class="mx-2" aria-hidden="true">|</span>
-                            <a href="{{ route('refund.policy') }}" class="underline hover:no-underline">Refund Policy</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <body class="antialiased bg-gray-950 text-gray-900" style="font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif;">
+        <!-- Blurred workshop backdrop behind the card -->
+        <div class="fixed inset-0 -z-0 overflow-hidden" aria-hidden="true">
+            <img src="{{ asset('images/7.jpg') }}" alt="" class="w-full h-full object-cover scale-110 blur-2xl opacity-40">
+            <div class="absolute inset-0 bg-gradient-to-br from-gray-950/80 via-gray-950/70 to-emerald-950/80"></div>
+            <div class="absolute -top-40 -left-40 w-[36rem] h-[36rem] rounded-full bg-emerald-500/20 blur-3xl"></div>
+            <div class="absolute -bottom-48 -right-32 w-[32rem] h-[32rem] rounded-full bg-emerald-400/10 blur-3xl"></div>
         </div>
 
-        <script>
-            // Slideshow functionality with persistent state
-            let slideshowState = {
-                currentIndex: 0,
-                interval: null,
-                images: null
-            };
-            
-            function updateImageReferences() {
-                slideshowState.images = document.querySelectorAll('.slideshow-image');
-                if (slideshowState.images.length > 0) {
-                    // Show current image without resetting index
-                    slideshowState.images.forEach((img, index) => {
-                        img.style.opacity = index === slideshowState.currentIndex ? '1' : '0';
-                    });
-                }
-            }
-            
-            function showNextImage() {
-                if (!slideshowState.images || slideshowState.images.length === 0) return;
-                
-                // Hide current image with smooth transition
-                slideshowState.images[slideshowState.currentIndex].style.opacity = '0';
-                
-                // Move to next image (loop back to start)
-                slideshowState.currentIndex = (slideshowState.currentIndex + 1) % slideshowState.images.length;
-                
-                // Show next image with smooth transition
-                slideshowState.images[slideshowState.currentIndex].style.opacity = '1';
-            }
-            
-            function startSlideshow() {
-                if (!slideshowState.interval) {
-                    slideshowState.interval = setInterval(showNextImage, 3000);
-                }
-            }
-            
-            // Initialize on page load
-            document.addEventListener('DOMContentLoaded', function() {
-                updateImageReferences();
-                startSlideshow();
-            });
-            
-            // Update references after navigation but keep slideshow running
-            document.addEventListener('livewire:navigated', function() {
-                updateImageReferences();
-            });
-        </script>
+        <div class="relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-10">
+        <!-- Login card -->
+        <div class="w-full max-w-6xl overflow-hidden rounded-[28px] bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.85)] ring-1 ring-white/10 lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:min-h-[660px]">
+            <!-- Hero: workshop photo -->
+            <section class="relative h-52 sm:h-64 lg:h-auto overflow-hidden bg-gray-950 text-white">
+                <img src="{{ asset('images/7.jpg') }}" alt="" class="auth-hero-img absolute inset-0 w-full h-full object-cover" aria-hidden="true">
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-gray-950/30" aria-hidden="true"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-900/50 via-transparent to-transparent" aria-hidden="true"></div>
+
+                <div class="relative h-full flex flex-col justify-between gap-8 p-6 sm:p-8 xl:p-10">
+                    <!-- Brand -->
+                    <div class="flex items-center justify-between gap-4">
+                        <a href="{{ url('/') }}" class="flex items-center gap-3">
+                            <span class="w-12 h-12 rounded-2xl bg-white/95 p-1 shadow-lg ring-1 ring-white/20">
+                                <img src="{{ asset('images/shop.png') }}" alt="Dexter Auto Services logo" class="w-full h-full object-contain">
+                            </span>
+                            <span class="leading-tight">
+                                <span class="block text-lg font-bold tracking-tight">Dexter Auto Services</span>
+                                <span class="block text-sm text-white/70">Auto repair &amp; maintenance</span>
+                            </span>
+                        </a>
+                        <span class="hidden sm:inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 px-3.5 py-1.5 text-sm font-medium">
+                            <span class="relative flex w-2 h-2">
+                                <span class="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                                <span class="relative inline-flex w-2 h-2 rounded-full bg-emerald-400"></span>
+                            </span>
+                            Mon–Sat · 8AM–6PM
+                        </span>
+                    </div>
+
+                    <!-- Pitch -->
+                    <div class="hidden lg:block max-w-xl">
+                        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-400">Online Service Booking</p>
+                        <h1 class="mt-3 text-4xl xl:text-5xl font-extrabold leading-[1.05] tracking-tight">
+                            Your car,<br>in <span class="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">expert hands.</span>
+                        </h1>
+                        <p class="mt-4 text-lg text-white/75 max-w-md">
+                            Book a service, follow your repair step by step, and see the price before any work begins.
+                        </p>
+
+                        <div class="mt-7 grid grid-cols-3 gap-3">
+                            <div class="rounded-2xl bg-white/[0.07] backdrop-blur-md ring-1 ring-white/10 p-4">
+                                <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <p class="mt-3 font-semibold">Book online</p>
+                                <p class="text-sm text-white/60">Pick your time</p>
+                            </div>
+                            <div class="rounded-2xl bg-white/[0.07] backdrop-blur-md ring-1 ring-white/10 p-4">
+                                <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                <p class="mt-3 font-semibold">Live tracking</p>
+                                <p class="text-sm text-white/60">Follow every step</p>
+                            </div>
+                            <div class="rounded-2xl bg-white/[0.07] backdrop-blur-md ring-1 ring-white/10 p-4">
+                                <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                                <p class="mt-3 font-semibold">Upfront prices</p>
+                                <p class="text-sm text-white/60">No bill surprises</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-7 flex items-center gap-4 border-t border-white/10 pt-6">
+                            <span class="w-11 h-11 rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/30 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            </span>
+                            <div>
+                                <p class="text-sm text-white/60">Prefer to talk? Call the shop</p>
+                                <a href="tel:+639270071538" class="text-lg font-semibold hover:text-emerald-300 transition-colors">+63 927 007 1538</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compact pitch on small screens -->
+                    <h1 class="lg:hidden text-2xl sm:text-3xl font-extrabold tracking-tight">
+                        Your car, in <span class="text-emerald-400">expert hands.</span>
+                    </h1>
+                </div>
+            </section>
+
+            <!-- Form -->
+            <main class="relative flex items-center justify-center px-5 sm:px-10 xl:px-14 py-10 lg:py-12">
+                <div class="w-full max-w-[420px]">
+                    {{ $slot }}
+
+                    <p class="lg:hidden mt-8 text-center text-[15px] text-gray-600">
+                        Need help? Call <a href="tel:+639270071538" class="font-semibold text-emerald-700">+63 927 007 1538</a>
+                    </p>
+
+                    <nav class="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500" aria-label="Policies">
+                        <a href="{{ route('privacy.policy') }}" class="hover:text-gray-900 hover:underline underline-offset-4">Privacy</a>
+                        <a href="{{ route('terms.conditions') }}" class="hover:text-gray-900 hover:underline underline-offset-4">Terms</a>
+                        <a href="{{ route('cookie.policy') }}" class="hover:text-gray-900 hover:underline underline-offset-4">Cookies</a>
+                        <a href="{{ route('refund.policy') }}" class="hover:text-gray-900 hover:underline underline-offset-4">Refunds</a>
+                    </nav>
+                </div>
+            </main>
+        </div>
+        </div>
     </body>
 </html>
