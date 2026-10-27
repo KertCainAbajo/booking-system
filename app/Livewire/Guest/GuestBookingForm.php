@@ -359,6 +359,7 @@ class GuestBookingForm extends Component
             'vehicleYear' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'vehiclePlateNumber' => 'required|string|max:255|unique:vehicles,plate_number',
             'selectedServices' => 'required|array|min:1',
+            'selectedServices.*' => 'exists:services,id,is_active,1',
             'bookingDate' => 'required|date|after_or_equal:today',
             'bookingTime' => 'required',
             'policyConsent' => 'accepted',
@@ -366,6 +367,7 @@ class GuestBookingForm extends Component
             'customerName.regex' => 'Full name must contain only letters and spaces.',
             'customerPhone.regex' => 'Phone number must contain only numbers.',
             'policyConsent.accepted' => 'You must agree to the Privacy Policy and Terms and Conditions before submitting.',
+            'selectedServices.*.exists' => 'One of the services you picked is no longer offered. Please remove it and try again.',
         ]);
 
         // Check if there's already a booking for this date
@@ -460,7 +462,7 @@ class GuestBookingForm extends Component
 
     public function render()
     {
-        $categories = ServiceCategory::with('services')->get();
+        $categories = ServiceCategory::with(['services' => fn ($q) => $q->where('is_active', true)])->get();
         
         // Get all selected services (for summary sidebar)
         $allSelectedServices = !empty($this->selectedServices) 

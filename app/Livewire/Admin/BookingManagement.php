@@ -25,8 +25,33 @@ class BookingManagement extends Component
         $this->resetPage();
     }
 
+    public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateFrom()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateTo()
+    {
+        $this->resetPage();
+    }
+
+    public function clearFilters()
+    {
+        $this->reset(['search', 'statusFilter', 'dateFrom', 'dateTo']);
+        $this->resetPage();
+    }
+
     public function sortByColumn($column)
     {
+        if (! in_array($column, ['id', 'booking_date', 'created_at', 'total_amount'], true)) {
+            return;
+        }
+
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -52,10 +77,17 @@ class BookingManagement extends Component
                         ->orWhere('email', 'like', '%' . $this->search . '%')
                         ->orWhere('phone', 'like', '%' . $this->search . '%');
                 })
+                ->orWhereHas('customer', function($customerQuery) {
+                    // Guest bookings keep the contact details on the customer record
+                    $customerQuery->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                })
                 ->orWhereHas('vehicle', function($vehicleQuery) {
-                    $vehicleQuery->where('license_plate', 'like', '%' . $this->search . '%')
+                    $vehicleQuery->where('plate_number', 'like', '%' . $this->search . '%')
+                        ->orWhere('make', 'like', '%' . $this->search . '%')
                         ->orWhere('model', 'like', '%' . $this->search . '%');
                 })
+                ->orWhere('booking_reference', 'like', '%' . $this->search . '%')
                 ->orWhere('id', 'like', '%' . $this->search . '%');
             });
         }
@@ -85,6 +117,7 @@ class BookingManagement extends Component
             'approved' => Booking::where('status', 'approved')->count(),
             'completed' => Booking::where('status', 'completed')->count(),
             'cancelled' => Booking::where('status', 'cancelled')->count(),
+            'archived' => Booking::where('is_archived', true)->count(),
         ];
 
         return view('livewire.admin.booking-management', [

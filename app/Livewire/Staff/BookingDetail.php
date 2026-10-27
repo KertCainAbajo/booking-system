@@ -41,6 +41,11 @@ class BookingDetail extends Component
 
     public function updateStatus($status)
     {
+        // Only real statuses, and only when it actually changes
+        if (! in_array($status, ['pending', 'approved', 'completed', 'cancelled', 'no_show', 'not_available'], true) || $status === $this->booking->status) {
+            return;
+        }
+
         $oldStatus = $this->booking->status;
         $this->booking->update(['status' => $status]);
 

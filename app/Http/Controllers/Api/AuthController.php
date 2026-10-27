@@ -56,9 +56,6 @@ class AuthController extends Controller
                 'role_id' => $customerRole->id,
             ]);
 
-            // Assign customer role using Spatie
-            $user->assignRole('customer');
-
             // Create customer record
             Customer::create([
                 'user_id' => $user->id,

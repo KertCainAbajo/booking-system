@@ -1,371 +1,215 @@
-<div>
-    <div class="space-y-4 sm:space-y-6">
-        <!-- Welcome Header -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border-l-4 border-garage-neon relative overflow-hidden">
-            <!-- Carbon Fiber Pattern Overlay -->
-            <div class="absolute inset-0 bg-carbon-fiber opacity-50"></div>
-            
-            <div class="relative z-10">
-                <div class="flex items-center space-x-2 sm:space-x-4 mb-3">
-                    <!-- Admin Icon -->
-                    <svg class="w-8 h-8 sm:w-12 sm:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">SUPER ADMIN DASHBOARD</h1>
-                </div>
-                <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-0 sm:ml-16">System administration and monitoring</p>
-            </div>
-            
-            <!-- Garage Floor Marking -->
-            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-30"></div>
+@php
+    $hour = now()->hour;
+    $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+    $firstName = \Illuminate\Support\Str::of(auth()->user()->name)->explode(' ')->first();
+    $trend = function (?float $change) {
+        if ($change === null) return ['text' => 'No data last month', 'class' => 'text-gray-500'];
+        if ($change == 0) return ['text' => 'Same as last month', 'class' => 'text-gray-500'];
+        return ['text' => ($change > 0 ? '▲ ' : '▼ ') . abs($change) . '% vs last month', 'class' => $change > 0 ? 'text-emerald-300' : 'text-rose-300'];
+    };
+    $statusTotal = max(1, $bookingsByStatus->sum());
+    $statusBars = [
+        'pending' => ['Pending', 'bg-amber-400'],
+        'approved' => ['Approved', 'bg-sky-400'],
+        'completed' => ['Completed', 'bg-emerald-400'],
+        'cancelled' => ['Cancelled', 'bg-rose-400'],
+        'no_show' => ['No show', 'bg-orange-400'],
+        'not_available' => ['Not available', 'bg-gray-400'],
+    ];
+    $roleRows = [
+        'customer' => ['Customers', 'bg-emerald-400'],
+        'business_owner' => ['Owners', 'bg-violet-400'],
+        'super_admin' => ['Super Admins', 'bg-sky-400'],
+    ];
+    $roleLabel = fn ($n) => ['super_admin' => 'Super Admin', 'business_owner' => 'Owner', 'customer' => 'Customer'][$n] ?? $n;
+@endphp
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-medium text-sky-300">{{ now()->format('l, F j, Y') }}</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">{{ $greeting }}, {{ $firstName }}</h1>
+            <p class="mt-1 text-gray-400">System overview for Dexter Auto Services.</p>
         </div>
-
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
-            <!-- Total Users -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-blue-500/20 hover:border-blue-500/40 transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Users</div>
-                        <div class="text-3xl font-bold text-blue-400 font-mono">{{ $stats['total_users'] }}</div>
-                        <div class="mt-2 flex items-center text-xs">
-                            @if($stats['users_growth'] >= 0)
-                                <svg class="w-3 h-3 text-garage-neon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                </svg>
-                                <span class="text-garage-neon font-bold">+{{ number_format($stats['users_growth'], 1) }}%</span>
-                            @else
-                                <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
-                                </svg>
-                                <span class="text-red-400 font-bold">{{ number_format($stats['users_growth'], 1) }}%</span>
-                            @endif
-                            <span class="text-garage-steel ml-1">vs last month</span>
-                        </div>
-                    </div>
-                    <svg class="w-12 h-12 text-blue-400/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent mb-2"></div>
-                <div class="text-xs text-garage-steel">
-                    <span class="font-bold text-blue-400">{{ $stats['new_users_this_month'] }}</span> new this month
-                </div>
-            </div>
-
-            <!-- Total Bookings -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20 hover:border-garage-neon/40 transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Bookings</div>
-                        <div class="text-3xl font-bold text-garage-neon font-mono">{{ $stats['total_bookings'] }}</div>
-                        <div class="mt-2 flex items-center text-xs">
-                            @if($stats['bookings_growth'] >= 0)
-                                <svg class="w-3 h-3 text-garage-neon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                </svg>
-                                <span class="text-garage-neon font-bold">+{{ number_format($stats['bookings_growth'], 1) }}%</span>
-                            @else
-                                <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
-                                </svg>
-                                <span class="text-red-400 font-bold">{{ number_format($stats['bookings_growth'], 1) }}%</span>
-                            @endif
-                            <span class="text-garage-steel ml-1">vs last month</span>
-                        </div>
-                    </div>
-                    <svg class="w-12 h-12 text-garage-neon/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-2"></div>
-                <div class="text-xs text-garage-steel">
-                    <span class="font-bold text-garage-neon">{{ $stats['current_month_bookings'] }}</span> this month
-                </div>
-            </div>
-
-            <!-- Total Revenue -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20 hover:border-garage-neon/40 transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Total Revenue</div>
-                        <div class="text-2xl font-bold text-garage-neon font-mono">₱{{ number_format($stats['total_revenue'], 2) }}</div>
-                        <div class="mt-2 flex items-center text-xs">
-                            @if($stats['revenue_growth'] >= 0)
-                                <svg class="w-3 h-3 text-garage-neon mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                </svg>
-                                <span class="text-garage-neon font-bold">+{{ number_format($stats['revenue_growth'], 1) }}%</span>
-                            @else
-                                <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"></path>
-                                </svg>
-                                <span class="text-red-400 font-bold">{{ number_format($stats['revenue_growth'], 1) }}%</span>
-                            @endif
-                            <span class="text-garage-steel ml-1">vs last month</span>
-                        </div>
-                    </div>
-                    <svg class="w-12 h-12 text-garage-neon/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-2"></div>
-                <div class="text-xs text-garage-steel">
-                    Avg: <span class="font-bold text-garage-neon">₱{{ number_format($stats['average_booking_value'], 2) }}</span> per booking
-                </div>
-            </div>
-
-            <!-- Services Available -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-purple-500/20 hover:border-purple-500/40 transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Services Available</div>
-                        <div class="text-3xl font-bold text-purple-400 font-mono">{{ $stats['total_services'] }}</div>
-                    </div>
-                    <svg class="w-12 h-12 text-purple-400/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
-            </div>
-
-            <!-- Inventory Items -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-orange-500/20 hover:border-orange-500/40 transition-all">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <div class="text-xs text-garage-steel uppercase tracking-wider mb-2">Inventory Items</div>
-                        <div class="text-3xl font-bold text-orange-400 font-mono">{{ $stats['total_inventory'] }}</div>
-                    </div>
-                    <svg class="w-12 h-12 text-orange-400/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                    </svg>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent mb-2"></div>
-                @if($stats['low_inventory_count'] > 0)
-                    <div class="text-xs flex items-center">
-                        <svg class="w-3 h-3 text-red-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                        <span class="text-red-400 font-bold">{{ $stats['low_inventory_count'] }}</span>
-                        <span class="text-garage-steel ml-1">low stock</span>
-                    </div>
-                @else
-                    <div class="text-xs text-garage-steel">All items stocked</div>
-                @endif
-            </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.users') }}" wire:navigate class="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-sky-400 text-gray-950 text-sm font-semibold hover:bg-sky-300 transition">Manage users</a>
+            <a href="{{ route('admin.monitoring') }}" wire:navigate class="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-sm font-semibold text-gray-200 hover:bg-white/10 transition">System health</a>
         </div>
+    </div>
 
-        <!-- Bookings by Status & Weekly Comparison -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <!-- Bookings by Status -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">BOOKINGS BY STATUS</h3>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
-                
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                            <span class="text-garage-offwhite font-semibold">Pending</span>
-                        </div>
-                        <span class="text-yellow-400 font-bold font-mono text-xl">{{ $bookingsByStatus['pending'] }}</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
-                            <span class="text-garage-offwhite font-semibold">Approved</span>
-                        </div>
-                        <span class="text-blue-400 font-bold font-mono text-xl">{{ $bookingsByStatus['approved'] }}</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-garage-neon rounded-full"></div>
-                            <span class="text-garage-offwhite font-semibold">Completed</span>
-                        </div>
-                        <span class="text-garage-neon font-bold font-mono text-xl">{{ $bookingsByStatus['completed'] }}</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-red-400 rounded-full"></div>
-                            <span class="text-garage-offwhite font-semibold">Cancelled</span>
-                        </div>
-                        <span class="text-red-400 font-bold font-mono text-xl">{{ $bookingsByStatus['cancelled'] }}</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-orange-400 rounded-full"></div>
-                            <span class="text-garage-offwhite font-semibold">No Show</span>
-                        </div>
-                        <span class="text-orange-400 font-bold font-mono text-xl">{{ $bookingsByStatus['no_show'] }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Top Services -->
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
-                    <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">TOP SERVICES</h3>
-                </div>
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
-                
-                <div class="space-y-3">
-                    @forelse($topServices as $index => $service)
-                        <div class="flex items-center justify-between p-3 bg-garage-forest/30 rounded-lg hover:bg-garage-forest/50 transition-all">
-                            <div class="flex items-center space-x-3 flex-1 min-w-0">
-                                <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-garage-neon to-blue-400 rounded-full flex items-center justify-center">
-                                    <span class="text-garage-charcoal font-bold text-sm">{{ $index + 1 }}</span>
-                                </div>
-                                <span class="text-garage-offwhite font-semibold truncate">{{ $service->name }}</span>
-                            </div>
-                            <div class="flex items-center space-x-2 flex-shrink-0 ml-3">
-                                <svg class="w-4 h-4 text-garage-steel" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <span class="text-garage-neon font-bold font-mono text-lg">{{ $service->booking_count }}</span>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center text-garage-steel py-8">
-                            <svg class="w-12 h-12 mx-auto mb-3 text-garage-steel/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                            </svg>
-                            <p>No service bookings yet</p>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-            <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-                <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag">QUICK ACTIONS</h3>
-            </div>
-
-            <!-- Garage Floor Divider -->
-            <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                <!-- Manage Users -->
-                <a href="{{ route('admin.users') }}" 
-                   class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                    
-                    <div class="relative z-10 text-center">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white/40 group-hover:text-white transition-colors mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <div class="font-bold text-sm sm:text-base text-garage-offwhite service-tag">MANAGE USERS</div>
-                    </div>
+    <!-- Attention -->
+    @if ($stats['pending_bookings'] > 0 || $lowStock->isNotEmpty())
+        <div class="flex flex-wrap gap-3">
+            @if ($stats['pending_bookings'] > 0)
+                <a href="{{ route('admin.bookings') }}" wire:navigate class="flex items-center gap-3 rounded-2xl bg-amber-400/10 ring-1 ring-amber-400/40 px-4 py-3 hover:ring-amber-400/70 transition">
+                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    <span class="text-sm text-amber-100"><span class="font-bold">{{ $stats['pending_bookings'] }}</span> {{ \Illuminate\Support\Str::plural('booking', $stats['pending_bookings']) }} waiting for approval</span>
                 </a>
-
-                <!-- Manage Services -->
-                <a href="{{ route('admin.services') }}" 
-                   class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                    
-                    <div class="relative z-10 text-center">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white/40 group-hover:text-white transition-colors mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        <div class="font-bold text-sm sm:text-base text-garage-offwhite service-tag">MANAGE SERVICES</div>
-                    </div>
-                </a>
-
-                <!-- System Monitoring -->
-                <a href="{{ route('admin.monitoring') }}" 
-                   class="group bg-gradient-to-br from-garage-forest to-garage-darkgreen hover:from-garage-neon/20 hover:to-garage-forest rounded-lg p-4 sm:p-6 transition-all duration-300 shadow-garage hover:shadow-neon-green border border-garage-neon/20 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-garage-neon/5 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
-                    
-                    <div class="relative z-10 text-center">
-                        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-white/40 group-hover:text-white transition-colors mx-auto mb-3 sm:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <div class="font-bold text-sm sm:text-base text-garage-offwhite service-tag">SYSTEM MONITORING</div>
-                    </div>
-                </a>
-            </div>
+            @endif
+            @if ($lowStock->isNotEmpty())
+                <span class="flex items-center gap-3 rounded-2xl bg-rose-400/10 ring-1 ring-rose-400/40 px-4 py-3">
+                    <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                    <span class="text-sm text-rose-100"><span class="font-bold">{{ $lowStock->count() }}</span> inventory {{ \Illuminate\Support\Str::plural('item', $lowStock->count()) }} at or below reorder level</span>
+                </span>
+            @endif
         </div>
+    @endif
 
-        <!-- Upcoming Bookings -->
-        @if($upcomingBookings->count() > 0)
-            <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                        </svg>
-                        <div>
-                            <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite service-tag inline">UPCOMING BOOKINGS</h3>
-                            <span class="text-garage-steel text-xs sm:text-sm ml-2">(Next 7 Days)</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('admin.bookings') }}" class="text-white hover:text-white text-xs sm:text-sm font-semibold transition-colors service-tag flex items-center flex-shrink-0">
-                        <span>VIEW ALL BOOKINGS</span>
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                        </svg>
-                    </a>
-                </div>
+    <!-- KPIs -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        @php $rt = $trend($stats['month_revenue_change']); $bt = $trend($stats['month_bookings_change']); $ut = $trend($stats['new_users_change']); @endphp
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Revenue this month</p>
+            <p class="mt-2 text-3xl font-bold text-white">₱{{ number_format($stats['month_revenue']) }}</p>
+            <p class="mt-1 text-xs sm:text-sm {{ $rt['class'] }}">{{ $rt['text'] }}</p>
+        </div>
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Bookings this month</p>
+            <p class="mt-2 text-3xl font-bold text-white">{{ $stats['month_bookings'] }}</p>
+            <p class="mt-1 text-xs sm:text-sm {{ $bt['class'] }}">{{ $bt['text'] }}</p>
+        </div>
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">New users this month</p>
+            <p class="mt-2 text-3xl font-bold text-white">{{ $stats['new_users'] }}</p>
+            <p class="mt-1 text-xs sm:text-sm {{ $ut['class'] }}">{{ $ut['text'] }}</p>
+        </div>
+        <div class="cp-card p-4 sm:p-5">
+            <p class="text-sm font-medium text-gray-400">Services offered</p>
+            <p class="mt-2 text-3xl font-bold text-white">{{ $stats['active_services'] }}<span class="text-lg text-gray-500">/{{ $stats['total_services'] }}</span></p>
+            <p class="mt-1 text-xs sm:text-sm text-gray-500">{{ $stats['total_services'] - $stats['active_services'] }} hidden · {{ $stats['total_inventory'] }} stock items</p>
+        </div>
+    </section>
 
-                <!-- Garage Floor Divider -->
-                <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
+    <div class="grid gap-6 lg:grid-cols-3 items-start">
+        <!-- Accounts -->
+        <section class="cp-card p-5 sm:p-6">
+            <div class="flex items-baseline justify-between">
+                <h2 class="text-base font-bold text-white">Accounts</h2>
+                <span class="text-2xl font-bold text-white">{{ $stats['total_users'] }}</span>
+            </div>
+            <ul class="mt-4 space-y-3">
+                @foreach ($roleRows as $name => [$label, $color])
+                    @php $count = $roles[$name]->users_count ?? 0; @endphp
+                    <li>
+                        <div class="flex justify-between text-sm"><span class="flex items-center gap-2 text-gray-300"><span class="w-2.5 h-2.5 rounded-full {{ $color }}"></span>{{ $label }}</span><span class="font-semibold text-white tabular-nums">{{ $count }}</span></div>
+                        <div class="mt-1.5 h-1.5 rounded-full bg-white/[0.06] overflow-hidden"><div class="h-full rounded-full {{ $color }}" style="width: {{ $stats['total_users'] ? $count / $stats['total_users'] * 100 : 0 }}%"></div></div>
+                    </li>
+                @endforeach
+            </ul>
+        </section>
 
-                @foreach($upcomingBookings as $booking)
-                    <div class="border-l-4 {{ $booking->status === 'pending' ? 'border-yellow-400' : 'border-blue-400' }} bg-garage-charcoal/50 rounded-r-lg p-3 sm:p-4 md:p-5 mb-3 sm:mb-4 hover:bg-garage-forest/30 transition-all duration-200">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                                    <span class="text-xs sm:text-sm font-bold text-garage-steel font-mono bg-garage-forest/50 px-2 sm:px-3 py-1 rounded flex-shrink-0">
-                                        {{ \Carbon\Carbon::parse($booking->booking_date)->format('M d, Y') }}
-                                    </span>
-                                    <span class="text-xs sm:text-sm font-mono text-garage-steel flex-shrink-0">{{ $booking->booking_time }}</span>
-                                    <h4 class="font-bold text-garage-offwhite service-tag text-sm sm:text-base break-words">{{ strtoupper($booking->customer->getDisplayName()) }}</h4>
-                                    <span class="service-tag px-2 sm:px-3 py-1 text-[10px] sm:text-xs rounded font-bold flex-shrink-0
-                                        {{ $booking->status === 'pending' ? 'bg-yellow-400/20 text-yellow-400 border border-yellow-400/30' : '' }}
-                                        {{ $booking->status === 'approved' ? 'bg-blue-400/20 text-blue-400 border border-blue-400/30' : '' }}
-                                        {{ $booking->status === 'no_show' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : '' }}">
-                                        {{ $booking->status === 'no_show' ? 'NOT ARRIVING' : strtoupper($booking->status) }}
-                                    </span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs sm:text-sm">
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 text-garage-steel flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                    <span class="text-garage-offwhite font-semibold break-words">{{ $booking->vehicle->make }} {{ $booking->vehicle->model }}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center justify-between lg:flex-col lg:text-right lg:ml-6 pt-3 lg:pt-0 border-t lg:border-t-0 border-garage-neon/10">
-                                <div class="text-xl sm:text-2xl font-bold text-white font-mono">₱{{ number_format($booking->total_amount, 2) }}</div>
-                                <a href="{{ route('admin.booking.detail', $booking->id) }}" 
-                                    class="inline-flex items-center text-xs sm:text-sm text-white hover:text-white font-semibold transition-colors service-tag lg:mt-2">
-                                    <span>DETAILS</span>
-                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Bookings by status -->
+        <section class="cp-card p-5 sm:p-6">
+            <div class="flex items-baseline justify-between">
+                <h2 class="text-base font-bold text-white">All bookings by status</h2>
+                <span class="text-2xl font-bold text-white">{{ $bookingsByStatus->sum() }}</span>
+            </div>
+            <div class="mt-4 flex h-3 w-full overflow-hidden rounded-full bg-white/[0.06] gap-[2px]">
+                @foreach ($statusBars as $key => [$label, $color])
+                    @if (($bookingsByStatus[$key] ?? 0) > 0)
+                        <span class="{{ $color }} h-full" style="width: {{ $bookingsByStatus[$key] / $statusTotal * 100 }}%" title="{{ $label }}: {{ $bookingsByStatus[$key] }}"></span>
+                    @endif
                 @endforeach
             </div>
-        @endif
+            <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                @foreach ($statusBars as $key => [$label, $color])
+                    <li class="flex items-center justify-between"><span class="flex items-center gap-2 text-gray-300"><span class="w-2.5 h-2.5 rounded-full {{ $color }}"></span>{{ $label }}</span><span class="font-semibold text-white tabular-nums">{{ $bookingsByStatus[$key] ?? 0 }}</span></li>
+                @endforeach
+            </ul>
+        </section>
+
+        <!-- Low stock -->
+        <section class="cp-card p-5 sm:p-6">
+            <h2 class="text-base font-bold text-white">Low stock</h2>
+            <p class="text-sm text-gray-400">Items at or below their reorder level</p>
+            <ul class="mt-4 space-y-2">
+                @forelse ($lowStock as $item)
+                    <li class="flex items-center justify-between rounded-xl bg-black/20 ring-1 ring-white/[0.06] px-3 py-2.5 text-sm">
+                        <span class="min-w-0"><span class="block text-white truncate">{{ $item->name }}</span><span class="block text-xs text-gray-500">{{ $item->sku }}</span></span>
+                        <span class="text-right"><span class="block font-semibold text-rose-300 tabular-nums">{{ $item->quantity_in_stock }} left</span><span class="block text-xs text-gray-500">reorder at {{ $item->reorder_level }}</span></span>
+                    </li>
+                @empty
+                    <li class="flex items-center gap-2 py-6 justify-center text-sm text-emerald-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        All stock levels are fine
+                    </li>
+                @endforelse
+            </ul>
+        </section>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-2 items-start">
+        <!-- Activity -->
+        <section class="cp-card p-5 sm:p-6">
+            <h2 class="text-base font-bold text-white">Recent activity</h2>
+            <p class="text-sm text-gray-400">Booking status changes by owners and admins</p>
+            <ul class="mt-4 space-y-3">
+                @forelse ($recentActivity as $log)
+                    <li class="flex items-start gap-3 text-sm">
+                        <span class="mt-1.5 w-2 h-2 rounded-full bg-sky-400 flex-shrink-0"></span>
+                        <span class="min-w-0 flex-1">
+                            <span class="text-gray-200"><span class="font-semibold text-white">{{ $log->user?->name ?? 'System' }}</span> set
+                                @if ($log->booking)
+                                    <a href="{{ route('admin.booking.detail', $log->booking_id) }}" wire:navigate class="text-sky-300 hover:text-sky-200">#{{ str_pad($log->booking_id, 4, '0', STR_PAD_LEFT) }}</a>
+                                    ({{ $log->booking->customer?->getDisplayName() }})
+                                @else
+                                    a deleted booking
+                                @endif
+                                to <span class="font-semibold text-white">{{ ucwords(str_replace('_', ' ', $log->new_status)) }}</span></span>
+                            <span class="block text-xs text-gray-500">{{ $log->created_at->diffForHumans() }}</span>
+                        </span>
+                    </li>
+                @empty
+                    <li class="py-6 text-center text-sm text-gray-500">No activity yet.</li>
+                @endforelse
+            </ul>
+        </section>
+
+        <div class="space-y-6">
+            <!-- New users -->
+            <section class="cp-card p-5 sm:p-6">
+                <div class="flex items-baseline justify-between">
+                    <h2 class="text-base font-bold text-white">Newest accounts</h2>
+                    <a href="{{ route('admin.users') }}" wire:navigate class="text-xs font-semibold text-sky-300 hover:text-sky-200">All users →</a>
+                </div>
+                <ul class="mt-4 divide-y divide-white/[0.05]">
+                    @foreach ($recentUsers as $user)
+                        <li class="flex items-center gap-3 py-2.5">
+                            <span class="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-sm font-bold text-gray-300">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                            <span class="min-w-0 flex-1"><span class="block text-sm font-medium text-white truncate">{{ $user->name }}</span><span class="block text-xs text-gray-500 truncate">{{ $user->email }}</span></span>
+                            <span class="text-right text-xs"><span class="block text-gray-300">{{ $roleLabel($user->role?->name) }}</span><span class="block text-gray-500">{{ $user->created_at->diffForHumans() }}</span></span>
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
+
+            <!-- Upcoming -->
+            <section class="cp-card p-5 sm:p-6">
+                <div class="flex items-baseline justify-between">
+                    <h2 class="text-base font-bold text-white">Coming up (next 7 days)</h2>
+                    <a href="{{ route('admin.bookings') }}" wire:navigate class="text-xs font-semibold text-sky-300 hover:text-sky-200">All bookings →</a>
+                </div>
+                <ul class="mt-4 space-y-1">
+                    @forelse ($upcomingBookings as $booking)
+                        <li>
+                            <a href="{{ route('admin.booking.detail', $booking->id) }}" wire:navigate class="flex items-center gap-3 rounded-xl p-2.5 -mx-2.5 hover:bg-white/[0.04] transition">
+                                <span class="w-11 flex-shrink-0 rounded-lg bg-white/[0.05] ring-1 ring-white/10 text-center py-1">
+                                    <span class="block text-[10px] font-semibold uppercase text-gray-400">{{ $booking->booking_date->format('M') }}</span>
+                                    <span class="block text-base font-bold text-white leading-none">{{ $booking->booking_date->format('d') }}</span>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-sm font-medium text-white truncate">{{ $booking->customer->getDisplayName() }}</span>
+                                    <span class="block text-xs text-gray-400 truncate">{{ $booking->booking_time->format('g:i A') }} · {{ $booking->vehicle?->make }} {{ $booking->vehicle?->model }}</span>
+                                </span>
+                                <x-status-badge :status="$booking->status" class="!px-2 !py-0.5" />
+                            </a>
+                        </li>
+                    @empty
+                        <li class="py-6 text-center text-sm text-gray-500">Nothing booked for the coming week.</li>
+                    @endforelse
+                </ul>
+            </section>
+        </div>
     </div>
 </div>

@@ -24,13 +24,27 @@ class ServiceManagement extends Component
     public $estimated_duration_minutes;
     public $is_active = true;
 
+    /** Inline notice shown above the list: ['type' => 'message'|'error', 'text' => ...] */
+    public $notice = null;
+
+    protected function notify(string $type, string $text): void
+    {
+        $this->notice = ['type' => $type, 'text' => $text];
+    }
+
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingCategoryFilter()
     {
         $this->resetPage();
     }
 
     public function createService()
     {
+        $this->resetValidation();
         $this->reset(['serviceId', 'name', 'description', 'service_category_id', 'base_price', 'estimated_duration_minutes', 'is_active']);
         $this->is_active = true;
         $this->showModal = true;
@@ -38,6 +52,7 @@ class ServiceManagement extends Component
 
     public function editService($id)
     {
+        $this->resetValidation();
         $service = Service::findOrFail($id);
         $this->serviceId = $service->id;
         $this->name = $service->name;
@@ -62,10 +77,10 @@ class ServiceManagement extends Component
 
         if ($this->serviceId) {
             Service::find($this->serviceId)->update($validated);
-            session()->flash('message', 'Service updated successfully.');
+            $this->notify('message', 'Service updated successfully.');
         } else {
             Service::create($validated);
-            session()->flash('message', 'Service created successfully.');
+            $this->notify('message', 'Service created successfully.');
         }
 
         $this->showModal = false;
@@ -74,20 +89,28 @@ class ServiceManagement extends Component
 
     public function deleteService($id)
     {
-        Service::find($id)->delete();
-        session()->flash('message', 'Service deleted successfully.');
+        $service = Service::withCount('bookings')->findOrFail($id);
+
+        // Removing a booked service would also strip it from past bookings and invoices
+        if ($service->bookings_count > 0) {
+            $this->notify('error', "{$service->name} is on {$service->bookings_count} " . str('booking')->plural($service->bookings_count) . '. Deactivate it instead so old bookings stay intact.');
+            return;
+        }
+
+        $service->delete();
+        $this->notify('message', 'Service deleted.');
     }
 
     public function toggleActive($id)
     {
         $service = Service::find($id);
         $service->update(['is_active' => !$service->is_active]);
-        session()->flash('message', 'Service status updated.');
+        $this->notify('message', $service->name . ($service->is_active ? ' is now active.' : ' is now hidden from customers.'));
     }
 
     public function render()
     {
-        $query = Service::with('category');
+        $query = Service::with('category')->withCount('bookings');
 
         if ($this->search) {
             $query->where('name', 'like', '%' . $this->search . '%');
@@ -97,8 +120,8 @@ class ServiceManagement extends Component
             $query->where('service_category_id', $this->categoryFilter);
         }
 
-        $services = $query->paginate(10);
-        $categories = ServiceCategory::all();
+        $services = $query->orderBy('service_category_id')->orderBy('name')->paginate(10);
+        $categories = ServiceCategory::withCount('services')->get();
 
         return view('livewire.admin.service-management', [
             'services' => $services,

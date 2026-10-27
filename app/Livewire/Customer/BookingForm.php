@@ -310,6 +310,7 @@ class BookingForm extends Component
             'customerPhone' => 'required|string|max:20',
             'customerAddress' => 'required|string|max:500',
             'selectedServices' => 'required|array|min:1',
+            'selectedServices.*' => 'exists:services,id,is_active,1',
             'bookingDate' => 'required|date|after_or_equal:today',
             'bookingTime' => 'required',
             'policyConsent' => 'accepted',
@@ -319,7 +320,10 @@ class BookingForm extends Component
             : ['selectedVehicle' => 'required|exists:vehicles,id'];
 
         try {
-            $this->validate($rules, $this->vehicleMessages() + ['selectedVehicle.required' => 'Please choose which car this booking is for.']);
+            $this->validate($rules, $this->vehicleMessages() + [
+                'selectedVehicle.required' => 'Please choose which car this booking is for.',
+                'selectedServices.*.exists' => 'One of the services you picked is no longer offered. Please remove it and try again.',
+            ]);
         } catch (ValidationException $e) {
             $this->setErrorBag($e->validator->errors());
             $this->showErrorModal = true;
@@ -402,7 +406,7 @@ class BookingForm extends Component
 
     public function render()
     {
-        $categories = ServiceCategory::with('services')->get();
+        $categories = ServiceCategory::with(['services' => fn ($q) => $q->where('is_active', true)])->get();
 
         // Get all selected services (for summary sidebar)
         $allSelectedServices = !empty($this->selectedServices)

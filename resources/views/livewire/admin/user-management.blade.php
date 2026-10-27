@@ -1,180 +1,161 @@
-<div>
-    <!-- Page Header -->
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 md:p-8 border-l-4 border-garage-neon relative overflow-hidden mb-4 sm:mb-6">
-        <!-- Carbon Fiber Pattern Overlay -->
-        <div class="absolute inset-0 bg-carbon-fiber opacity-50"></div>
-        
-        <div class="relative z-10">
-            <div class="flex items-center space-x-2 sm:space-x-4 mb-2 sm:mb-3">
-                <!-- User Management Icon -->
-                <svg class="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-garage-neon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                <h1 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-garage-offwhite service-tag tracking-wider">USER MANAGEMENT</h1>
-            </div>
-            <p class="text-garage-steel text-sm sm:text-base md:text-lg ml-0 sm:ml-16">Manage system users and their roles</p>
+@php
+    $roleLabel = fn ($name) => match ($name) {
+        'super_admin' => 'Super Admin',
+        'business_owner' => 'Owner',
+        'customer' => 'Customer',
+        default => ucwords(str_replace('_', ' ', (string) $name)),
+    };
+    $roleStyle = fn ($name) => match ($name) {
+        'super_admin' => 'bg-sky-400/10 text-sky-300 ring-sky-400/30',
+        'business_owner' => 'bg-violet-400/10 text-violet-300 ring-violet-400/30',
+        default => 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/30',
+    };
+@endphp
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="text-sm font-medium text-sky-300">Users</p>
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-white">User accounts</h1>
+            <p class="mt-1 text-gray-400">Customers, owners and super admins who can sign in.</p>
         </div>
-        
-        <!-- Garage Floor Marking -->
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-30"></div>
+        <button wire:click="createUser" class="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-sky-400 text-gray-950 font-semibold hover:bg-sky-300 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add user
+        </button>
     </div>
 
-    @if (session()->has('message'))
-        <div class="mb-4 bg-gradient-to-r from-garage-neon/20 to-garage-forest border border-garage-neon text-garage-offwhite px-4 py-3 rounded-lg">
-            {{ session('message') }}
-        </div>
-    @endif
+    <x-cp-notice :notice="$notice" />
 
-    <div class="bg-gradient-to-br from-garage-charcoal to-garage-darkgreen rounded-lg shadow-garage p-4 sm:p-6 border border-garage-neon/20">
-        <!-- Search and Filter -->
-        <div class="mb-4 sm:mb-6 flex flex-col gap-3 sm:gap-4">
-            <div class="flex flex-col sm:flex-row gap-2 sm:gap-2">
-                <input wire:model.live="search" type="text" placeholder="Search users..." 
-                    class="flex-1 rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite placeholder-garage-steel shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm">
-                <select wire:model.live="roleFilter" class="rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm sm:w-auto">
-                    <option value="">All Roles</option>
-                    @foreach($roles as $role)
-                        <option value="{{ $role->id }}">{{ ucfirst(str_replace('_', ' ', $role->name)) }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <button wire:click="createUser" class="bg-gradient-to-r from-garage-neon to-garage-forest hover:from-garage-neon/80 hover:to-garage-forest/80 text-garage-charcoal font-bold px-4 sm:px-6 py-2 rounded-lg service-tag transition-all shadow-neon-green text-sm sm:text-base w-full sm:w-auto">
-                + ADD USER
+    <!-- Role tiles (also filters) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <button wire:click="$set('roleFilter', '')" @class(['rounded-2xl p-4 text-left ring-1 transition', 'bg-sky-400/10 ring-sky-400/50' => $roleFilter === '' || $roleFilter === null, 'bg-white/[0.03] ring-white/[0.07] hover:ring-white/20' => $roleFilter !== '' && $roleFilter !== null])>
+            <p class="text-sm text-gray-400">All users</p>
+            <p class="mt-1 text-2xl font-bold text-white">{{ $roles->sum('users_count') }}</p>
+        </button>
+        @foreach ($roles as $role)
+            <button wire:click="$set('roleFilter', '{{ $role->id }}')" @class(['rounded-2xl p-4 text-left ring-1 transition', 'bg-sky-400/10 ring-sky-400/50' => (string) $roleFilter === (string) $role->id, 'bg-white/[0.03] ring-white/[0.07] hover:ring-white/20' => (string) $roleFilter !== (string) $role->id])>
+                <p class="text-sm text-gray-400">{{ \Illuminate\Support\Str::plural($roleLabel($role->name)) }}</p>
+                <p class="mt-1 text-2xl font-bold text-white">{{ $role->users_count }}</p>
             </button>
-        </div>
-        
-        <!-- Garage Floor Divider -->
-        <div class="h-px bg-gradient-to-r from-transparent via-garage-neon/30 to-transparent mb-4 sm:mb-6"></div>
+        @endforeach
+    </section>
 
-        <!-- Users Table - Desktop View -->
-        <div class="hidden lg:block overflow-x-auto">
-            <table class="min-w-full divide-y divide-garage-neon/20">
-                <thead class="bg-garage-charcoal/70">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Email</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Phone</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Role</th>
-                        <th class="px-6 py-3 text-left text-xs font-bold text-garage-neon uppercase service-tag tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-garage-charcoal/30 divide-y divide-garage-neon/10">
-                    @foreach($users as $user)
-                        <tr class="hover:bg-garage-forest/30 transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap text-garage-offwhite">{{ $user->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-garage-steel">{{ $user->email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-garage-steel">{{ $user->phone }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 text-xs rounded-full bg-garage-neon/20 text-garage-neon border border-garage-neon/30 font-semibold">
-                                    {{ ucfirst(str_replace('_', ' ', $user->role->name)) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <button wire:click="editUser({{ $user->id }})" class="text-garage-neon hover:text-white mr-3 font-semibold transition-colors">Edit</button>
-                                <button wire:click="deleteUser({{ $user->id }})" 
-                                    onclick="return confirm('Are you sure?')" 
-                                    class="text-red-400 hover:text-red-300 font-semibold transition-colors">Delete</button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+    <section class="cp-card">
+        <div class="p-4 sm:p-5 border-b border-white/[0.06] flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/></svg>
+                <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search name, email or phone" class="cp-input !pl-12">
+            </div>
+            <x-cp-select model="roleFilter" live class="sm:w-56" label="Role" placeholder="All roles" :searchable="false"
+                :options="['' => 'All roles'] + $roles->mapWithKeys(fn ($r) => [$r->id => $roleLabel($r->name)])->all()" />
         </div>
 
-        <!-- Users Cards - Mobile/Tablet View -->
-        <div class="lg:hidden space-y-3 sm:space-y-4">
-            @foreach($users as $user)
-                <div class="bg-garage-charcoal/50 border border-garage-neon/20 rounded-lg p-4 hover:bg-garage-forest/30 transition-colors">
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-base sm:text-lg font-bold text-garage-offwhite truncate">{{ $user->name }}</h3>
-                            <p class="text-xs sm:text-sm text-garage-steel break-all">{{ $user->email }}</p>
+        <ul class="divide-y divide-white/[0.05]">
+            @forelse ($users as $user)
+                @php
+                    $bookings = (int) ($bookingCounts[$user->id] ?? 0);
+                    $isMe = $user->id === auth()->id();
+                @endphp
+                <li wire:key="u-{{ $user->id }}" class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 hover:bg-white/[0.02]">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <span class="w-10 h-10 flex-shrink-0 rounded-full bg-white/[0.06] flex items-center justify-center font-bold text-gray-200">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-semibold text-white truncate">{{ $user->name }}</span>
+                                <span class="cp-badge {{ $roleStyle($user->role?->name) }}">{{ $roleLabel($user->role?->name ?? 'none') }}</span>
+                                @if ($isMe)
+                                    <span class="cp-badge bg-white/10 text-gray-200 ring-white/20">You</span>
+                                @endif
+                                @if ($user->google_id)
+                                    <span class="text-xs text-gray-500">Google sign-in</span>
+                                @endif
+                            </div>
+                            <p class="text-sm text-gray-400 truncate">{{ $user->email }} · {{ $user->phone ?: 'no phone' }}</p>
                         </div>
-                        <span class="ml-2 px-2 sm:px-3 py-1 text-xs rounded-full bg-garage-neon/20 text-garage-neon border border-garage-neon/30 font-semibold whitespace-nowrap flex-shrink-0">
-                            {{ ucfirst(str_replace('_', ' ', $user->role->name)) }}
+                    </div>
+                    <div class="flex items-center justify-between sm:justify-end gap-4">
+                        <span class="text-xs text-gray-500 text-right">
+                            @if ($user->role?->name === 'customer')
+                                {{ $bookings }} {{ \Illuminate\Support\Str::plural('booking', $bookings) }} ·
+                            @endif
+                            joined {{ $user->created_at->format('M j, Y') }}
                         </span>
-                    </div>
-                    
-                    <div class="mb-3 space-y-1">
-                        <div class="flex items-center text-xs sm:text-sm text-garage-steel">
-                            <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                            <span class="truncate">{{ $user->phone }}</span>
+                        <div class="flex gap-2">
+                            <button wire:click="editUser({{ $user->id }})" class="h-9 px-3.5 rounded-lg text-sm font-semibold bg-white/[0.06] text-white ring-1 ring-white/10 hover:bg-white/10">Edit</button>
+                            @unless ($isMe)
+                                <button wire:click="deleteUser({{ $user->id }})"
+                                        wire:confirm="Delete {{ $user->name }}? This can't be undone."
+                                        @disabled($bookings > 0)
+                                        title="{{ $bookings > 0 ? 'Has bookings, so it can\'t be deleted' : 'Delete user' }}"
+                                        class="h-9 px-3.5 rounded-lg text-sm font-semibold text-rose-300 ring-1 ring-rose-500/30 hover:bg-rose-500/10 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent">
+                                    Delete
+                                </button>
+                            @endunless
                         </div>
                     </div>
-                    
-                    <div class="flex gap-2 pt-3 border-t border-garage-neon/10">
-                        <button wire:click="editUser({{ $user->id }})" 
-                                class="flex-1 bg-garage-neon/20 hover:bg-garage-neon/30 text-garage-neon font-semibold px-3 py-2 rounded-lg transition-colors text-xs sm:text-sm">
-                            Edit
+                </li>
+            @empty
+                <li class="px-5 py-16 text-center">
+                    <p class="text-lg font-semibold text-white">No users found</p>
+                    <p class="mt-1 text-sm text-gray-400">Try a different search or role.</p>
+                </li>
+            @endforelse
+        </ul>
+
+        @if ($users->hasPages())
+            <div class="p-4 sm:p-5 border-t border-white/[0.06]">{{ $users->links('livewire.cp-pagination') }}</div>
+        @endif
+    </section>
+
+    <!-- Add / edit user -->
+    @if ($showModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" wire:click.self="$set('showModal', false)">
+            <div class="w-full max-w-lg rounded-3xl bg-[#111417] ring-1 ring-white/10 shadow-2xl" x-data x-trap.noscroll="true" @keydown.escape.window="$wire.set('showModal', false)">
+                <div class="flex items-center justify-between p-6 pb-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">{{ $userId ? 'Edit user' : 'Add user' }}</h2>
+                        <p class="text-sm text-gray-400">{{ $userId ? 'Leave the password empty to keep the current one.' : 'They can sign in right away with this email and password.' }}</p>
+                    </div>
+                    <button wire:click="$set('showModal', false)" class="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5" aria-label="Close">✕</button>
+                </div>
+                <form wire:submit="saveUser" class="p-6 pt-4 space-y-4">
+                    <div>
+                        <label for="u-name" class="cp-label">Full name</label>
+                        <input id="u-name" wire:model="name" type="text" class="cp-input" autofocus>
+                        @error('name') <span class="cp-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="u-email" class="cp-label">Email</label>
+                            <input id="u-email" wire:model="email" type="email" class="cp-input">
+                            @error('email') <span class="cp-error">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label for="u-phone" class="cp-label">Phone</label>
+                            <input id="u-phone" wire:model="phone" type="text" class="cp-input">
+                            @error('phone') <span class="cp-error">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="cp-label">Role</label>
+                        <x-cp-select model="role_id" label="Role" placeholder="Choose a role" :searchable="false"
+                            :options="$roles->mapWithKeys(fn ($r) => [$r->id => $roleLabel($r->name)])->all()" />
+                        @error('role_id') <span class="cp-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="u-password" class="cp-label">Password {{ $userId ? '(optional)' : '' }}</label>
+                        <input id="u-password" wire:model="password" type="password" class="cp-input" autocomplete="new-password" placeholder="At least 8 characters">
+                        @error('password') <span class="cp-error">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button type="button" wire:click="$set('showModal', false)" class="cp-btn-ghost">Cancel</button>
+                        <button type="submit" class="inline-flex items-center justify-center h-12 px-6 rounded-xl font-semibold text-gray-950 bg-sky-400 hover:bg-sky-300" wire:loading.attr="disabled" wire:target="saveUser">
+                            {{ $userId ? 'Save changes' : 'Create user' }}
                         </button>
-                        <button wire:click="deleteUser({{ $user->id }})" 
-                                onclick="return confirm('Are you sure?')" 
-                                class="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 font-semibold px-3 py-2 rounded-lg transition-colors text-xs sm:text-sm">
-                            Delete
-                        </button>
                     </div>
-                </div>
-            @endforeach
-        </div>
-
-        <div class="mt-4">
-            {{ $users->links() }}
-        </div>
-    </div>
-
-    <!-- Modal -->
-    @if($showModal)
-        <div class="fixed inset-0 bg-garage-charcoal/80 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4">
-            <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-6 border-2 border-garage-neon w-full max-w-md shadow-neon-green rounded-lg bg-gradient-to-br from-garage-charcoal to-garage-darkgreen">
-                <h3 class="text-lg sm:text-xl font-bold text-garage-offwhite mb-4 service-tag">{{ $userId ? 'EDIT USER' : 'CREATE USER' }}</h3>
-                
-                <div class="space-y-3 sm:space-y-4">
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-garage-neon mb-1">Name</label>
-                        <input wire:model="name" type="text" class="mt-1 block w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm">
-                        @error('name') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-garage-neon mb-1">Email</label>
-                        <input wire:model="email" type="email" class="mt-1 block w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm">
-                        @error('email') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-garage-neon mb-1">Phone</label>
-                        <input wire:model="phone" type="text" class="mt-1 block w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm">
-                        @error('phone') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-garage-neon mb-1">Role</label>
-                        <select wire:model="role_id" class="mt-1 block w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm">
-                            <option value="">Select Role</option>
-                            @foreach($roles as $role)
-                                <option value="{{ $role->id }}">{{ ucfirst(str_replace('_', ' ', $role->name)) }}</option>
-                            @endforeach
-                        </select>
-                        @error('role_id') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-garage-neon mb-1">Password {{ $userId ? '(leave blank to keep current)' : '' }}</label>
-                        <input wire:model="password" type="password" class="mt-1 block w-full rounded-lg bg-garage-forest border-garage-neon/30 text-garage-offwhite shadow-sm focus:border-garage-neon focus:ring-garage-neon text-sm">
-                        @error('password') <span class="text-red-400 text-xs">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4 sm:mt-6">
-                    <button wire:click="$set('showModal', false)" class="px-4 py-2 bg-garage-steel/30 text-garage-offwhite rounded-lg hover:bg-garage-steel/50 transition-colors text-sm">
-                        Cancel
-                    </button>
-                    <button wire:click="saveUser" class="px-4 py-2 bg-gradient-to-r from-garage-neon to-garage-forest text-garage-charcoal font-bold rounded-lg hover:from-garage-neon/80 hover:to-garage-forest/80 service-tag transition-all text-sm">
-                        SAVE
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
     @endif

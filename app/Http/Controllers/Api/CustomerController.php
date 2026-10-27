@@ -99,8 +99,6 @@ class CustomerController extends Controller
                 'role_id' => $customerRole->id,
             ]);
 
-            $user->assignRole('customer');
-
             // Create customer record
             $customer = Customer::create([
                 'user_id' => $user->id,
