@@ -11,17 +11,41 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    /** Every role has its own profile page. */
+    public function test_each_role_can_open_its_profile_page(): void
     {
-        $user = User::factory()->create();
+        $this->seed(\Database\Seeders\RoleSeeder::class);
 
-        $response = $this->actingAs($user)->get('/profile');
+        foreach (['customer' => '/customer/profile', 'business_owner' => '/owner/profile', 'super_admin' => '/admin/profile'] as $role => $path) {
+            $user = User::factory()->create(['role_id' => \App\Models\Role::where('name', $role)->value('id')]);
+            if ($role === 'customer') {
+                \App\Models\Customer::create(['user_id' => $user->id]);
+            }
 
-        $response
-            ->assertOk()
-            ->assertSeeVolt('profile.update-profile-information-form')
-            ->assertSeeVolt('profile.update-password-form')
-            ->assertSeeVolt('profile.delete-user-form');
+            $this->actingAs($user)->get($path)->assertOk()->assertSee($user->email);
+        }
+    }
+
+    public function test_customer_can_update_their_profile_and_password(): void
+    {
+        $this->seed(\Database\Seeders\RoleSeeder::class);
+        $user = User::factory()->create(['role_id' => \App\Models\Role::where('name', 'customer')->value('id')]);
+        \App\Models\Customer::create(['user_id' => $user->id]);
+
+        \Livewire\Livewire::actingAs($user)->test(\App\Livewire\Customer\Profile::class)
+            ->set('name', 'New Name')
+            ->set('phone', '09170001111')
+            ->call('updateProfile')
+            ->assertHasNoErrors()
+            ->set('current_password', 'password')
+            ->set('password', 'new-secret-123')
+            ->set('password_confirmation', 'new-secret-123')
+            ->call('updatePassword')
+            ->assertHasNoErrors();
+
+        $user->refresh();
+        $this->assertSame('New Name', $user->name);
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('new-secret-123', $user->password));
     }
 
     public function test_profile_information_can_be_updated(): void

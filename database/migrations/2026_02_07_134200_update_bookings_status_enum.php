@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Support\BookingStatusColumn;
 
 return new class extends Migration
 {
@@ -18,7 +19,7 @@ return new class extends Migration
             ->update(['status' => 'pending']); // Temporarily set to pending
 
         // Alter the enum column
-        DB::statement("ALTER TABLE bookings MODIFY COLUMN status ENUM('pending', 'approved', 'completed', 'cancelled') NOT NULL DEFAULT 'pending'");
+        BookingStatusColumn::set(['pending', 'approved', 'completed', 'cancelled']);
 
         // Update the temporarily set records to 'approved'
         DB::table('bookings')
@@ -38,7 +39,7 @@ return new class extends Migration
             ->update(['status' => 'pending']); // Temporarily set to pending
 
         // Restore the original enum
-        DB::statement("ALTER TABLE bookings MODIFY COLUMN status ENUM('pending', 'confirmed', 'in_progress', 'completed', 'cancelled') NOT NULL DEFAULT 'pending'");
+        BookingStatusColumn::set(['pending', 'confirmed', 'in_progress', 'completed', 'cancelled']);
 
         // Update back to confirmed
         DB::table('bookings')

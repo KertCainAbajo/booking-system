@@ -22,13 +22,17 @@ return new class extends Migration
         });
 
         // Keep existing assignments by copying the assigned user's name and phone
+        // (a plain loop rather than UPDATE ... JOIN so it also runs on SQLite)
         DB::table('bookings')
             ->join('users', 'users.id', '=', 'bookings.assigned_staff_id')
-            ->whereNotNull('bookings.assigned_staff_id')
-            ->update([
-                'bookings.mechanic_name' => DB::raw('users.name'),
-                'bookings.mechanic_phone' => DB::raw('users.phone'),
-            ]);
+            ->select('bookings.id', 'users.name', 'users.phone')
+            ->orderBy('bookings.id')
+            ->each(function ($row) {
+                DB::table('bookings')->where('id', $row->id)->update([
+                    'mechanic_name' => $row->name,
+                    'mechanic_phone' => $row->phone,
+                ]);
+            });
 
         DB::table('roles')->where('name', 'it_admin')->update(['name' => 'super_admin', 'updated_at' => now()]);
 

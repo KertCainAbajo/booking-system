@@ -35,10 +35,10 @@ class BookingProcessTest extends TestCase
         $this->seed(\Database\Seeders\RoleSeeder::class);
         
         // Create test users
+        // The system has three roles; the owner also does the day-to-day booking work
         $customerRole = Role::where('name', 'customer')->first();
-        $staffRole = Role::where('name', 'staff')->first();
         $ownerRole = Role::where('name', 'business_owner')->first();
-        $adminRole = Role::where('name', 'it_admin')->first();
+        $adminRole = Role::where('name', 'super_admin')->first();
 
         // Create customer user
         $this->customer = User::create([
@@ -65,13 +65,13 @@ class BookingProcessTest extends TestCase
             'vin_number' => 'TEST12345',
         ]);
 
-        // Create staff user
+        // Second owner account that handles daily bookings (formerly a "staff" user)
         $this->staff = User::create([
-            'name' => 'Test Staff',
+            'name' => 'Test Shop Owner',
             'email' => 'teststaff@test.com',
             'phone' => '09222222222',
             'password' => bcrypt('password'),
-            'role_id' => $staffRole->id,
+            'role_id' => $ownerRole->id,
         ]);
 
         // Create owner user
@@ -113,13 +113,18 @@ class BookingProcessTest extends TestCase
     {
         $this->actingAs($this->customer);
 
+        // A successful booking shows a confirmation, then goes to the tracker
         Livewire::test(BookingForm::class)
             ->set('selectedVehicle', $this->vehicle->id)
             ->set('selectedServices', [$this->service->id])
             ->set('bookingDate', now()->addDay()->format('Y-m-d'))
             ->set('bookingTime', '10:00')
             ->set('notes', 'Test booking')
+            ->set('policyConsent', true)
             ->call('submitBooking')
+            ->assertSet('showErrorModal', false)
+            ->assertSet('showSuccessModal', true)
+            ->call('closeSuccessModal')
             ->assertRedirect(route('customer.tracker'));
 
         $this->assertDatabaseHas('bookings', [
@@ -139,8 +144,12 @@ class BookingProcessTest extends TestCase
             ->set('selectedServices', [])
             ->set('bookingDate', now()->addDay()->format('Y-m-d'))
             ->set('bookingTime', '10:00')
+            ->set('policyConsent', true)
             ->call('submitBooking')
-            ->assertHasErrors(['selectedServices']);
+            ->assertSet('showErrorModal', true)
+            ->assertSet('errorMessage', 'Please select at least one service.');
+
+        $this->assertDatabaseCount('bookings', 0);
     }
 
     /** @test */
@@ -148,34 +157,63 @@ class BookingProcessTest extends TestCase
     {
         $this->actingAs($this->customer);
 
+        // The customer's only car is preselected, so clear it to test the rule
         Livewire::test(BookingForm::class)
+            ->set('selectedVehicle', '')
             ->set('selectedServices', [$this->service->id])
             ->set('bookingDate', now()->addDay()->format('Y-m-d'))
             ->set('bookingTime', '10:00')
+            ->set('policyConsent', true)
             ->call('submitBooking')
             ->assertHasErrors(['selectedVehicle']);
     }
 
     /** @test */
-    public function customer_can_add_new_vehicle()
+    public function customer_can_add_new_vehicle_while_booking()
     {
         $this->actingAs($this->customer);
 
+        // The new car is entered inline and saved together with the booking
         Livewire::test(BookingForm::class)
-            ->set('newVehicle.make', 'Honda')
-            ->set('newVehicle.model', 'Civic')
+            ->call('startNewVehicle')
+            ->set('carName', 'Honda Civic')
             ->set('newVehicle.year', 2021)
-            ->set('newVehicle.plate_number', 'XYZ789')
+            ->set('newVehicle.plate_number', 'xyz 789')
             ->set('newVehicle.vin_number', 'HONDA12345')
-            ->call('addNewVehicle')
-            ->assertHasNoErrors();
+            ->set('selectedServices', [$this->service->id])
+            ->set('bookingDate', now()->addDay()->format('Y-m-d'))
+            ->set('bookingTime', '10:00')
+            ->set('policyConsent', true)
+            ->call('submitBooking')
+            ->assertHasNoErrors()
+            ->assertSet('showSuccessModal', true);
 
         $this->assertDatabaseHas('vehicles', [
             'customer_id' => $this->customer->customer->id,
             'make' => 'Honda',
             'model' => 'Civic',
-            'plate_number' => 'XYZ789',
+            'plate_number' => 'XYZ 789',
         ]);
+    }
+
+    /** @test */
+    public function new_vehicle_needs_a_model_not_just_a_brand()
+    {
+        $this->actingAs($this->customer);
+
+        Livewire::test(BookingForm::class)
+            ->call('startNewVehicle')
+            ->set('carName', 'Toyota')
+            ->set('newVehicle.year', 2021)
+            ->set('newVehicle.plate_number', 'NEW 1')
+            ->set('selectedServices', [$this->service->id])
+            ->set('bookingDate', now()->addDay()->format('Y-m-d'))
+            ->set('bookingTime', '10:00')
+            ->set('policyConsent', true)
+            ->call('submitBooking')
+            ->assertHasErrors(['carName']);
+
+        $this->assertDatabaseMissing('vehicles', ['plate_number' => 'NEW 1']);
     }
 
     /** @test */
@@ -241,7 +279,7 @@ class BookingProcessTest extends TestCase
     }
 
     /** @test */
-    public function staff_can_assign_booking_to_themselves()
+    public function owner_can_set_the_mechanic()
     {
         // Create a booking
         $booking = Booking::create([
@@ -253,16 +291,19 @@ class BookingProcessTest extends TestCase
             'total_amount' => 1500.00,
         ]);
 
-        // Staff assigns to themselves
+        // Mechanics don't have accounts; the owner types their name and phone
         $this->actingAs($this->staff);
 
         Livewire::test(BookingDetail::class, ['id' => $booking->id])
-            ->call('assignToMe')
+            ->set('mechanicName', 'Mang Jun')
+            ->set('mechanicPhone', '09175551234')
+            ->call('saveMechanic')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('bookings', [
             'id' => $booking->id,
-            'assigned_staff_id' => $this->staff->id,
+            'mechanic_name' => 'Mang Jun',
+            'mechanic_phone' => '09175551234',
         ]);
     }
 
@@ -344,12 +385,14 @@ class BookingProcessTest extends TestCase
     }
 
     /** @test */
-    public function staff_can_access_staff_routes()
+    public function owner_can_access_daily_work_routes()
     {
         $this->actingAs($this->staff);
 
-        $this->get(route('staff.dashboard'))->assertOk();
-        $this->get(route('staff.calendar'))->assertOk();
+        $this->get(route('owner.today'))->assertOk();
+        $this->get(route('owner.calendar'))->assertOk();
+        $this->get(route('owner.bookings'))->assertOk();
+        $this->get(route('owner.history'))->assertOk();
     }
 
     /** @test */
@@ -372,23 +415,29 @@ class BookingProcessTest extends TestCase
     }
 
     /** @test */
-    public function customer_cannot_access_staff_routes()
+    public function customer_cannot_access_owner_routes()
     {
         $this->actingAs($this->customer);
 
-        $this->get(route('staff.dashboard'))
+        $this->get(route('owner.dashboard'))
             ->assertRedirect(route('customer.dashboard'))
             ->assertSessionHas('error');
     }
 
     /** @test */
-    public function staff_cannot_access_admin_routes()
+    public function owner_cannot_access_admin_routes()
     {
         $this->actingAs($this->staff);
 
         $this->get(route('admin.dashboard'))
-            ->assertRedirect(route('staff.dashboard'))
+            ->assertRedirect(route('owner.dashboard'))
             ->assertSessionHas('error');
+    }
+
+    /** @test */
+    public function old_staff_links_redirect_to_the_owner_area()
+    {
+        $this->get('/staff/dashboard')->assertRedirect('/owner/dashboard');
     }
 
     /** @test */

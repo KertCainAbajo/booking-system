@@ -58,10 +58,17 @@ class Booking extends Model
      */
     public static function generateBookingReference(): string
     {
+        // Random, not time-based: the reference alone lets a guest view and cancel a
+        // booking, so it must not be guessable. No 0/O/1/I to keep it easy to read out.
+        $alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
         do {
-            $reference = 'BK' . strtoupper(substr(uniqid(), -8));
+            $reference = 'BK';
+            for ($i = 0; $i < 10; $i++) {
+                $reference .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+            }
         } while (self::where('booking_reference', $reference)->exists());
-        
+
         return $reference;
     }
 

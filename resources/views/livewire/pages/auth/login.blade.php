@@ -166,10 +166,9 @@ new #[Layout('layouts.guest')] class extends Component
                     type="text"
                     name="otp_code"
                     placeholder="000000"
-                    inputmode="numeric"
-                    class="auth-input !pl-4 !h-14 text-center !text-2xl tracking-[0.5em] font-mono"
-                    maxlength="6"
-                    pattern="[0-9]{6}"
+                    class="auth-input !pl-4 !h-14 text-center !text-2xl tracking-[0.3em] font-mono"
+                    minlength="6"
+                    maxlength="10"
                     required
                     autofocus
                     autocomplete="one-time-code"

@@ -16,13 +16,13 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->input('per_page', 20);
+        $perPage = min(100, max(1, (int) $request->input('per_page', 20)));
         $categoryId = $request->input('category_id');
 
         $query = Service::with('category')->where('is_active', true);
 
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            $query->where('service_category_id', $categoryId);
         }
 
         $services = $query->orderBy('name')->paginate($perPage);

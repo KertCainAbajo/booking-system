@@ -19,16 +19,20 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = $request->input('per_page', 15);
+        $perPage = min(100, max(1, (int) $request->input('per_page', 15)));
         $search = $request->input('search');
 
         $query = Customer::with('user');
 
         if ($search) {
             $query->where(function($q) use ($search) {
+                // Guests keep contact details on the customer; registered customers on their user account
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhere('phone', 'like', "%{$search}%"));
             });
         }
 

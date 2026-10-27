@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Customer;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Volt\Volt;
@@ -10,6 +12,23 @@ use Tests\TestCase;
 class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(\Database\Seeders\RoleSeeder::class);
+    }
+
+    protected function userWithRole(string $role): User
+    {
+        $user = User::factory()->create(['role_id' => Role::where('name', $role)->value('id')]);
+
+        if ($role === 'customer') {
+            Customer::create(['user_id' => $user->id]);
+        }
+
+        return $user;
+    }
 
     public function test_login_screen_can_be_rendered(): void
     {
@@ -20,26 +39,27 @@ class AuthenticationTest extends TestCase
             ->assertSeeVolt('pages.auth.login');
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    /** Each role lands on its own dashboard after signing in. */
+    public function test_users_are_sent_to_their_own_dashboard_after_login(): void
     {
-        $user = User::factory()->create();
+        foreach (['customer' => 'customer.dashboard', 'business_owner' => 'owner.dashboard', 'super_admin' => 'admin.dashboard'] as $role => $route) {
+            $user = $this->userWithRole($role);
 
-        $component = Volt::test('pages.auth.login')
-            ->set('form.email', $user->email)
-            ->set('form.password', 'password');
+            Volt::test('pages.auth.login')
+                ->set('form.email', $user->email)
+                ->set('form.password', 'password')
+                ->call('login')
+                ->assertHasNoErrors()
+                ->assertRedirect(route($route, absolute: false));
 
-        $component->call('login');
-
-        $component
-            ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
-
-        $this->assertAuthenticated();
+            $this->assertAuthenticatedAs($user);
+            auth()->logout();
+        }
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create();
+        $user = $this->userWithRole('customer');
 
         $component = Volt::test('pages.auth.login')
             ->set('form.email', $user->email)
@@ -54,32 +74,18 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_navigation_menu_can_be_rendered(): void
+    public function test_dashboard_link_redirects_to_the_users_own_dashboard(): void
     {
-        $user = User::factory()->create();
-
-        $this->actingAs($user);
-
-        $response = $this->get('/dashboard');
-
-        $response
-            ->assertOk()
-            ->assertSeeVolt('layout.navigation');
+        $this->actingAs($this->userWithRole('business_owner'))
+            ->get('/dashboard')
+            ->assertRedirect(route('owner.dashboard'));
     }
 
     public function test_users_can_logout(): void
     {
-        $user = User::factory()->create();
-
-        $this->actingAs($user);
-
-        $component = Volt::test('layout.navigation');
-
-        $component->call('logout');
-
-        $component
-            ->assertHasNoErrors()
-            ->assertRedirect('/');
+        $this->actingAs($this->userWithRole('customer'))
+            ->post(route('logout'))
+            ->assertRedirect();
 
         $this->assertGuest();
     }

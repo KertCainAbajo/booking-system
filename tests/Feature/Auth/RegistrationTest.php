@@ -29,8 +29,12 @@ class RegistrationTest extends TestCase
 
         $component->call('register');
 
-        $component->assertRedirect(route('dashboard', absolute: false));
+        // New sign-ups are customers and land on the customer dashboard
+        $component->assertRedirect(route('customer.dashboard', absolute: false));
 
         $this->assertAuthenticated();
+        $user = \App\Models\User::where('email', 'test@example.com')->first();
+        $this->assertSame('customer', $user->role->name);
+        $this->assertNotNull($user->customer);
     }
 }

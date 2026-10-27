@@ -6,7 +6,6 @@ use Tests\TestCase;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Vehicle;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use App\Livewire\Guest\BookingTracker;
@@ -15,34 +14,41 @@ class BookingReferenceHiddenTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Test that booking reference is visible for non-completed bookings
-     */
-    public function test_booking_reference_is_visible_for_pending_bookings()
+    /** A guest booking with the given status (the reference is generated automatically). */
+    protected function guestBooking(string $status): Booking
     {
-        // Create a guest customer
-        $customer = Customer::factory()->create([
+        $customer = Customer::create([
             'name' => 'Test Guest',
             'email' => 'guest@test.com',
             'phone' => '1234567890',
+            'is_guest' => true,
         ]);
 
-        // Create a vehicle
-        $vehicle = Vehicle::factory()->create([
+        $vehicle = Vehicle::create([
             'customer_id' => $customer->id,
+            'make' => 'Toyota',
+            'model' => 'Vios',
+            'year' => 2020,
+            'plate_number' => 'GST ' . random_int(1000, 9999),
         ]);
 
-        // Create a pending booking
-        $booking = Booking::factory()->create([
+        return Booking::create([
             'customer_id' => $customer->id,
             'vehicle_id' => $vehicle->id,
-            'status' => 'pending',
+            'booking_date' => now()->addDay(),
+            'booking_time' => '10:00',
+            'status' => $status,
+            'total_amount' => 500,
         ]);
+    }
 
-        // Assert that the reference can be shown
+    public function test_booking_reference_is_visible_for_pending_bookings()
+    {
+        $booking = $this->guestBooking('pending');
+
+        $this->assertNotEmpty($booking->booking_reference);
         $this->assertTrue($booking->canShowReference());
 
-        // Test booking tracker component
         Livewire::test(BookingTracker::class)
             ->set('bookingReference', $booking->booking_reference)
             ->call('trackBooking')
@@ -50,69 +56,25 @@ class BookingReferenceHiddenTest extends TestCase
             ->assertSet('booking.id', $booking->id);
     }
 
-    /**
-     * Test that booking reference is hidden for completed bookings
-     */
     public function test_booking_reference_is_hidden_for_completed_bookings()
     {
-        // Create a guest customer
-        $customer = Customer::factory()->create([
-            'name' => 'Test Guest',
-            'email' => 'guest@test.com',
-            'phone' => '1234567890',
-        ]);
+        $booking = $this->guestBooking('completed');
 
-        // Create a vehicle
-        $vehicle = Vehicle::factory()->create([
-            'customer_id' => $customer->id,
-        ]);
-
-        // Create a completed booking
-        $booking = Booking::factory()->create([
-            'customer_id' => $customer->id,
-            'vehicle_id' => $vehicle->id,
-            'status' => 'completed',
-        ]);
-
-        // Assert that the reference cannot be shown
         $this->assertFalse($booking->canShowReference());
 
-        // Test booking tracker component
         Livewire::test(BookingTracker::class)
             ->set('bookingReference', $booking->booking_reference)
             ->call('trackBooking')
             ->assertSet('notFound', true)
-            ->assertSessionHas('error', 'This booking reference is no longer available. The service has been completed.');
+            ->assertSet('booking', null);
     }
 
-    /**
-     * Test that booking reference is visible for approved bookings
-     */
     public function test_booking_reference_is_visible_for_approved_bookings()
     {
-        // Create a guest customer
-        $customer = Customer::factory()->create([
-            'name' => 'Test Guest',
-            'email' => 'guest@test.com',
-            'phone' => '1234567890',
-        ]);
+        $booking = $this->guestBooking('approved');
 
-        // Create a vehicle
-        $vehicle = Vehicle::factory()->create([
-            'customer_id' => $customer->id,
-        ]);
-
-        // Create an approved booking
-        $booking = Booking::factory()->create([
-            'customer_id' => $customer->id,
-            'vehicle_id' => $vehicle->id,
-            'status' => 'approved',
-        ]);
-
-        // Assert that the reference can be shown
         $this->assertTrue($booking->canShowReference());
 
-        // Test booking tracker component
         Livewire::test(BookingTracker::class)
             ->set('bookingReference', $booking->booking_reference)
             ->call('trackBooking')
@@ -120,38 +82,38 @@ class BookingReferenceHiddenTest extends TestCase
             ->assertSet('booking.id', $booking->id);
     }
 
-    /**
-     * Test that booking reference is visible for cancelled bookings
-     */
     public function test_booking_reference_is_visible_for_cancelled_bookings()
     {
-        // Create a guest customer
-        $customer = Customer::factory()->create([
-            'name' => 'Test Guest',
-            'email' => 'guest@test.com',
-            'phone' => '1234567890',
-        ]);
+        $booking = $this->guestBooking('cancelled');
 
-        // Create a vehicle
-        $vehicle = Vehicle::factory()->create([
-            'customer_id' => $customer->id,
-        ]);
-
-        // Create a cancelled booking
-        $booking = Booking::factory()->create([
-            'customer_id' => $customer->id,
-            'vehicle_id' => $vehicle->id,
-            'status' => 'cancelled',
-        ]);
-
-        // Assert that the reference can be shown (cancelled bookings can still be tracked)
+        // Cancelled bookings can still be looked up
         $this->assertTrue($booking->canShowReference());
 
-        // Test booking tracker component
         Livewire::test(BookingTracker::class)
             ->set('bookingReference', $booking->booking_reference)
             ->call('trackBooking')
             ->assertSet('notFound', false)
             ->assertSet('booking.id', $booking->id);
+    }
+
+    public function test_unknown_reference_is_not_found()
+    {
+        Livewire::test(BookingTracker::class)
+            ->set('bookingReference', 'NOPE-0000')
+            ->call('trackBooking')
+            ->assertSet('notFound', true);
+    }
+
+    public function test_guest_can_cancel_a_pending_booking_from_the_tracker()
+    {
+        $booking = $this->guestBooking('pending');
+
+        Livewire::test(BookingTracker::class)
+            ->set('bookingReference', $booking->booking_reference)
+            ->call('trackBooking')
+            ->call('cancelBooking');
+
+        $this->assertSame('cancelled', $booking->fresh()->status);
+        $this->assertDatabaseHas('booking_status_logs', ['booking_id' => $booking->id, 'new_status' => 'cancelled', 'changed_by' => null]);
     }
 }

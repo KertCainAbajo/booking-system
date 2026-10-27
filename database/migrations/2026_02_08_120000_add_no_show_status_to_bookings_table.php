@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Support\BookingStatusColumn;
 
 return new class extends Migration
 {
@@ -12,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Update the enum to include 'no_show' status
-        DB::statement("ALTER TABLE bookings MODIFY COLUMN status ENUM('pending', 'approved', 'completed', 'cancelled', 'no_show') NOT NULL DEFAULT 'pending'");
+        BookingStatusColumn::set(['pending', 'approved', 'completed', 'cancelled', 'no_show']);
     }
 
     /**
@@ -26,6 +27,6 @@ return new class extends Migration
             ->update(['status' => 'cancelled']);
 
         // Revert the enum to exclude 'no_show'
-        DB::statement("ALTER TABLE bookings MODIFY COLUMN status ENUM('pending', 'approved', 'completed', 'cancelled') NOT NULL DEFAULT 'pending'");
+        BookingStatusColumn::set(['pending', 'approved', 'completed', 'cancelled']);
     }
 };

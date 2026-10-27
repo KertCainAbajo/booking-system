@@ -22,7 +22,8 @@ class UnifiedLoginForm extends Form
     #[Validate('boolean')]
     public bool $remember = false;
 
-    #[Validate('nullable|string|size:6')]
+    // A 6-digit authenticator code, or a 10-character recovery code
+    #[Validate('nullable|string|min:6|max:10')]
     public string $otp_code = '';
 
     public bool $requires_2fa = false;

@@ -20,8 +20,9 @@ class TwoFactorSetup extends Component
         /** @var \App\Models\User $user */
         $user = Auth::user();
         
+        // Setup is open to every role, so go to the role-aware dashboard redirect
         if ($user->google2fa_enabled) {
-            return redirect()->route('customer.dashboard');
+            return redirect()->route('dashboard');
         }
 
         $this->generateSecret();
@@ -85,7 +86,7 @@ class TwoFactorSetup extends Component
 
     public function finishSetup()
     {
-        return redirect()->route('customer.dashboard');
+        return redirect()->route('dashboard');
     }
 
     public function render()

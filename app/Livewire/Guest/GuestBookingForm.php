@@ -9,6 +9,7 @@ use App\Models\Service;
 use App\Models\Vehicle;
 use App\Models\Booking;
 use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 #[Layout('layouts.app')]
@@ -381,19 +382,22 @@ class GuestBookingForm extends Component
             return;
         }
 
-        try {
-            // Create guest customer
-            $customer = Customer::create([
-                'user_id' => null,
-                'name' => $this->customerName,
-                'email' => $this->customerEmail,
-                'phone' => $this->customerPhone,
-                'address' => $this->customerAddress,
-                'is_guest' => true,
-            ]);
+        // Never trust the total sent from the browser: price the booking from the database
+        $this->selectedServices = array_values(array_unique(array_map('intval', $this->selectedServices)));
+        $this->calculateTotal();
 
-            // Create vehicle with error handling
-            try {
+        try {
+            // Customer, vehicle, booking and its services are saved together, or not at all
+            [$customer, $booking] = DB::transaction(function () {
+                $customer = Customer::create([
+                    'user_id' => null,
+                    'name' => $this->customerName,
+                    'email' => $this->customerEmail,
+                    'phone' => $this->customerPhone,
+                    'address' => $this->customerAddress,
+                    'is_guest' => true,
+                ]);
+
                 $vehicle = Vehicle::create([
                     'customer_id' => $customer->id,
                     'make' => $this->vehicleMake,
@@ -402,40 +406,26 @@ class GuestBookingForm extends Component
                     'plate_number' => $this->vehiclePlateNumber,
                     'vin_number' => $this->vehicleVinNumber,
                 ]);
-            } catch (\Illuminate\Database\QueryException $e) {
-                // Delete the customer if vehicle creation fails
-                $customer->delete();
-                
-                if ($e->getCode() == 23000) {
-                    $this->showErrorModal = true;
-                    $this->errorMessage = 'This plate number is already registered in our system. Please check the plate number and try again.';
-                    return;
-                }
-                
-                throw $e;
-            }
 
-            // Create booking
-            $booking = Booking::create([
-                'customer_id' => $customer->id,
-                'vehicle_id' => $vehicle->id,
-                'booking_date' => $this->bookingDate,
-                'booking_time' => $this->bookingTime,
-                'status' => 'pending',
-                'total_amount' => $this->estimatedTotal,
-                'notes' => $this->notes,
-            ]);
+                $booking = Booking::create([
+                    'customer_id' => $customer->id,
+                    'vehicle_id' => $vehicle->id,
+                    'booking_date' => $this->bookingDate,
+                    'booking_time' => $this->bookingTime,
+                    'status' => 'pending',
+                    'total_amount' => $this->estimatedTotal,
+                    'notes' => $this->notes,
+                ]);
 
-            // Attach services
-            foreach ($this->selectedServices as $serviceId) {
-                $service = Service::find($serviceId);
-                if ($service) {
-                    $booking->services()->attach($serviceId, [
+                foreach (Service::whereIn('id', $this->selectedServices)->get() as $service) {
+                    $booking->services()->attach($service->id, [
                         'quantity' => 1,
                         'price' => $service->base_price,
                     ]);
                 }
-            }
+
+                return [$customer, $booking];
+            });
 
             // Broadcast event to update staff dashboard in real-time
             $this->dispatch('booking-created')->to(\App\Livewire\Staff\Dashboard::class);
@@ -450,6 +440,11 @@ class GuestBookingForm extends Component
             
             return redirect()->route('guest.booking.confirmation', ['reference' => $booking->booking_reference]);
             
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            // Someone registered the same plate between validation and saving
+            $this->showErrorModal = true;
+            $this->errorMessage = 'This plate number is already registered in our system. Please check the plate number and try again.';
+            return;
         } catch (\Exception $e) {
             // Log the error for debugging
             Log::error('Guest booking submission failed: ' . $e->getMessage());

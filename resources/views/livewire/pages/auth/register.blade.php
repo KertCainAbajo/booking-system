@@ -5,6 +5,7 @@ use App\Models\Role;
 use App\Models\Customer;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
@@ -30,16 +31,18 @@ new #[Layout('layouts.guest')] class extends Component
 
         $validated['password'] = Hash::make($validated['password']);
 
-        // Assign customer role by default
-        $customerRole = Role::where('name', 'customer')->first();
-        $validated['role_id'] = $customerRole->id;
+        // Assign customer role by default (created if a fresh database hasn't been seeded yet)
+        $validated['role_id'] = Role::firstOrCreate(['name' => 'customer'])->id;
 
-        event(new Registered($user = User::create($validated)));
+        // Account and customer profile are created together, or not at all
+        $user = DB::transaction(function () use ($validated) {
+            $user = User::create($validated);
+            Customer::create(['user_id' => $user->id]);
 
-        // Create customer profile
-        Customer::create([
-            'user_id' => $user->id,
-        ]);
+            return $user;
+        });
+
+        event(new Registered($user));
 
         Auth::login($user);
 

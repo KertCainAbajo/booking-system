@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
@@ -21,17 +23,17 @@ class BookingController extends Controller
         if (!in_array($user->role?->name, ['customer', 'business_owner', 'super_admin'], true)) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
-        $perPage = $request->input('per_page', 15);
+        $perPage = min(100, max(1, (int) $request->input('per_page', 15)));
 
         // Customers see only their bookings
         if ($user->role && $user->role->name === 'customer') {
             $bookings = Booking::where('customer_id', $user->customer->id ?? null)
-                ->with(['service', 'vehicle'])
+                ->with(['services', 'vehicle'])
                 ->orderBy('booking_date', 'desc')
                 ->paginate($perPage);
         } else {
             // Owners and admins see all bookings
-            $bookings = Booking::with(['customer', 'service', 'vehicle'])
+            $bookings = Booking::with(['customer', 'services', 'vehicle'])
                 ->orderBy('booking_date', 'desc')
                 ->paginate($perPage);
         }
@@ -50,12 +52,18 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
+        // Accept a list of services; a single service_id is still supported for older clients
+        if (! $request->has('service_ids') && $request->filled('service_id')) {
+            $request->merge(['service_ids' => [$request->input('service_id')]]);
+        }
+
         $validator = Validator::make($request->all(), [
-            'service_id' => 'required|exists:services,id',
-            'vehicle_id' => 'nullable|exists:vehicles,id',
+            'service_ids' => 'required|array|min:1',
+            'service_ids.*' => 'integer|distinct|exists:services,id,is_active,1',
+            'vehicle_id' => 'required|exists:vehicles,id',
             'booking_date' => 'required|date|after:today',
             'booking_time' => 'required|date_format:H:i',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -77,24 +85,35 @@ class BookingController extends Controller
                 ], 403);
             }
 
-            if ($request->filled('vehicle_id') && !$customer->vehicles()->whereKey($request->vehicle_id)->exists()) {
+            if (!$customer->vehicles()->whereKey($request->vehicle_id)->exists()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'The selected vehicle does not belong to this customer.',
                 ], 403);
             }
 
-            $booking = Booking::create([
-                'customer_id' => $customer->id,
-                'service_id' => $request->service_id,
-                'vehicle_id' => $request->vehicle_id,
-                'booking_date' => $request->booking_date,
-                'booking_time' => $request->booking_time,
-                'status' => 'pending',
-                'notes' => $request->notes,
-            ]);
+            // Services are linked through booking_services and priced from the database
+            $services = Service::whereIn('id', $request->input('service_ids'))->where('is_active', true)->get();
 
-            $booking->load(['service', 'vehicle']);
+            $booking = DB::transaction(function () use ($request, $customer, $services) {
+                $booking = Booking::create([
+                    'customer_id' => $customer->id,
+                    'vehicle_id' => $request->vehicle_id,
+                    'booking_date' => $request->booking_date,
+                    'booking_time' => $request->booking_time,
+                    'status' => 'pending',
+                    'total_amount' => $services->sum('base_price'),
+                    'notes' => $request->notes,
+                ]);
+
+                foreach ($services as $service) {
+                    $booking->services()->attach($service->id, ['quantity' => 1, 'price' => $service->base_price]);
+                }
+
+                return $booking;
+            });
+
+            $booking->load(['services', 'vehicle']);
 
             return response()->json([
                 'success' => true,
@@ -124,7 +143,7 @@ class BookingController extends Controller
             if (!in_array($user->role?->name, ['customer', 'business_owner', 'super_admin'], true)) {
                 return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
             }
-            $booking = Booking::with(['customer', 'service', 'vehicle'])->findOrFail($id);
+            $booking = Booking::with(['customer', 'services', 'vehicle'])->findOrFail($id);
 
             // Check authorization - customers can only see their own bookings
             if ($user->role && $user->role->name === 'customer') {
@@ -161,7 +180,7 @@ class BookingController extends Controller
         $validator = Validator::make($request->all(), [
             'booking_date' => 'sometimes|date',
             'booking_time' => 'sometimes|date_format:H:i',
-            'status' => 'sometimes|in:pending,confirmed,in_progress,completed,cancelled',
+            'status' => 'sometimes|in:pending,approved,completed,cancelled,no_show,not_available',
             'notes' => 'nullable|string',
         ]);
 
@@ -190,15 +209,14 @@ class BookingController extends Controller
                 }
             }
 
-            $updateData = $request->only(['booking_date', 'booking_time', 'notes']);
+            $booking->update($request->only(['booking_date', 'booking_time', 'notes']));
 
-            // Only staff, owners, and IT admins may change booking status.
-            if (in_array($user->role?->name, ['business_owner', 'super_admin'], true)) {
-                $updateData['status'] = $request->input('status', $booking->status);
+            // Only owners and super admins may change booking status; the change is logged like on the website
+            if ($request->filled('status') && in_array($user->role?->name, ['business_owner', 'super_admin'], true)
+                && $request->input('status') !== $booking->status) {
+                $booking->updateStatus($request->input('status'), $user->id, 'Changed through API');
             }
-
-            $booking->update($updateData);
-            $booking->load(['service', 'vehicle']);
+            $booking->load(['services', 'vehicle']);
 
             return response()->json([
                 'success' => true,
@@ -274,7 +292,7 @@ class BookingController extends Controller
     public function myBookings(Request $request)
     {
         $user = $request->user();
-        $perPage = $request->input('per_page', 15);
+        $perPage = min(100, max(1, (int) $request->input('per_page', 15)));
 
         if (!$user->customer) {
             return response()->json([
@@ -285,7 +303,7 @@ class BookingController extends Controller
 
         $bookings = Booking::where('customer_id', $user->customer->id)
             ->where('status', '!=', 'cancelled')
-            ->with(['service', 'vehicle'])
+            ->with(['services', 'vehicle'])
             ->orderBy('booking_date', 'desc')
             ->paginate($perPage);
 
@@ -304,7 +322,7 @@ class BookingController extends Controller
     public function history(Request $request)
     {
         $user = $request->user();
-        $perPage = $request->input('per_page', 15);
+        $perPage = min(100, max(1, (int) $request->input('per_page', 15)));
 
         if (!$user->customer) {
             return response()->json([
@@ -315,7 +333,7 @@ class BookingController extends Controller
 
         $bookings = Booking::where('customer_id', $user->customer->id)
             ->whereIn('status', ['completed', 'cancelled'])
-            ->with(['service', 'vehicle'])
+            ->with(['services', 'vehicle'])
             ->orderBy('booking_date', 'desc')
             ->paginate($perPage);
 
@@ -337,10 +355,10 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $perPage = $request->input('per_page', 15);
+        $perPage = min(100, max(1, (int) $request->input('per_page', 15)));
         $status = $request->input('status');
 
-        $query = Booking::with(['customer', 'service', 'vehicle']);
+        $query = Booking::with(['customer', 'services', 'vehicle']);
 
         if ($status) {
             $query->where('status', $status);

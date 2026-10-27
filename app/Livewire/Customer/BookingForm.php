@@ -315,9 +315,11 @@ class BookingForm extends Component
             'bookingTime' => 'required',
             'policyConsent' => 'accepted',
         ];
+        // A saved car must belong to this customer, not just exist
+        $ownCustomerId = Customer::where('user_id', Auth::id())->value('id');
         $rules += $addingVehicle
             ? $this->vehicleRules()
-            : ['selectedVehicle' => 'required|exists:vehicles,id'];
+            : ['selectedVehicle' => ['required', \Illuminate\Validation\Rule::exists('vehicles', 'id')->where('customer_id', $ownCustomerId)]];
 
         try {
             $this->validate($rules, $this->vehicleMessages() + [
@@ -342,6 +344,10 @@ class BookingForm extends Component
             $this->errorMessage = 'Sorry, this date has already been booked by another customer. The booking must be completed before accepting new bookings. Please choose a different date.';
             return;
         }
+
+        // Never trust the total sent from the browser: price the booking from the database
+        $this->selectedServices = array_values(array_unique(array_map('intval', $this->selectedServices)));
+        $this->calculateTotal();
 
         try {
             $customer = Customer::where('user_id', Auth::id())->first();
