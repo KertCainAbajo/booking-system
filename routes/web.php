@@ -86,6 +86,12 @@ Route::get('/dashboard', function () {
 // Two-factor setup is available to every authenticated role.
 Route::middleware('auth')->get('/two-factor/setup', TwoFactorSetup::class)->name('two-factor.setup');
 
+// Phone / desktop booking alerts for this device
+Route::middleware(['auth', 'throttle:20,1'])->group(function () {
+    Route::post('/push/subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    Route::post('/push/unsubscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
+});
+
 // Customer Routes (for registered customers with accounts)
 Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', CustomerDashboard::class)->name('dashboard');

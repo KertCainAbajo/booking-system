@@ -27,7 +27,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     // Roles come from the role_id column (see role()), not a permissions package
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, \NotificationChannels\WebPush\HasPushSubscriptions;
 
     /**
      * The attributes that are mass assignable.
@@ -69,6 +69,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'google2fa_enabled' => 'boolean',
+            // Encrypted with APP_KEY, so a leaked database copy can't be used to pass 2FA
+            'google2fa_secret' => 'encrypted',
+            'recovery_codes' => 'encrypted',
         ];
     }
 

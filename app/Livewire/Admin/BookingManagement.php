@@ -73,22 +73,23 @@ class BookingManagement extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->whereHas('customer.user', function($userQuery) {
-                    $userQuery->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%')
-                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    $userQuery->whereLike('name','%' . $this->search . '%')
+                        ->orWhereLike('email','%' . $this->search . '%')
+                        ->orWhereLike('phone','%' . $this->search . '%');
                 })
                 ->orWhereHas('customer', function($customerQuery) {
                     // Guest bookings keep the contact details on the customer record
-                    $customerQuery->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    $customerQuery->whereLike('name','%' . $this->search . '%')
+                        ->orWhereLike('phone','%' . $this->search . '%');
                 })
                 ->orWhereHas('vehicle', function($vehicleQuery) {
-                    $vehicleQuery->where('plate_number', 'like', '%' . $this->search . '%')
-                        ->orWhere('make', 'like', '%' . $this->search . '%')
-                        ->orWhere('model', 'like', '%' . $this->search . '%');
+                    $vehicleQuery->whereLike('plate_number','%' . $this->search . '%')
+                        ->orWhereLike('make','%' . $this->search . '%')
+                        ->orWhereLike('model','%' . $this->search . '%');
                 })
-                ->orWhere('booking_reference', 'like', '%' . $this->search . '%')
-                ->orWhere('id', 'like', '%' . $this->search . '%');
+                ->orWhereLike('booking_reference','%' . $this->search . '%')
+                // Booking number: exact match (a number column can't be text-searched on PostgreSQL)
+                ->when(ctype_digit((string) $this->search), fn ($q) => $q->orWhere('id', (int) $this->search));
             });
         }
 

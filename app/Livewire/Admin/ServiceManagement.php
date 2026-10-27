@@ -114,7 +114,7 @@ class ServiceManagement extends Component
         $query = Service::with('category')->withCount('bookings');
 
         if ($this->search) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+            $query->whereLike('name', '%' . $this->search . '%');
         }
 
         if ($this->categoryFilter) {

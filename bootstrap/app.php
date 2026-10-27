@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        // Render (and similar hosts) end HTTPS at their proxy and forward plain HTTP to the app.
+        // Trusting the proxy's X-Forwarded-* headers lets Laravel know the visitor is on HTTPS.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

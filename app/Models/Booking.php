@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\BookingNotifier;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -82,6 +83,21 @@ class Booking extends Model
         static::creating(function ($booking) {
             if (empty($booking->booking_reference)) {
                 $booking->booking_reference = self::generateBookingReference();
+            }
+        });
+
+        // Tell the customer and the owner about each step (email, bell and phone/desktop push)
+        static::created(fn (Booking $booking) => BookingNotifier::created($booking));
+
+        static::updated(function (Booking $booking) {
+            if ($booking->wasChanged('status')) {
+                BookingNotifier::statusChanged($booking, $booking->status);
+            }
+            if ($booking->wasChanged('mechanic_name') && filled($booking->mechanic_name)) {
+                BookingNotifier::mechanicAssigned($booking);
+            }
+            if ($booking->wasChanged('marked_as_late') && $booking->marked_as_late) {
+                BookingNotifier::markedLate($booking);
             }
         });
     }

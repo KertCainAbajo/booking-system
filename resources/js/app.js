@@ -1,4 +1,5 @@
 import './bootstrap';
+import './push';
 import Lenis from 'lenis';
 
 // Initialize Lenis smooth scroll

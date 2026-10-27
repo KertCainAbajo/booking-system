@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="vapid-public-key" content="{{ config('webpush.vapid.public_key') }}" data-signed-in>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#090c0b">
+    <link rel="apple-touch-icon" href="{{ asset('images/shop.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="icon" type="image/png" href="{{ asset('images/shop.png') }}">
 
     <title>{{ config('app.name', 'Auto Service Booking') }} - Owner</title>
@@ -122,15 +127,17 @@
              class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" style="display: none;"></div>
 
         <div class="lg:pl-72">
+            <!-- Notifications bell: in the mobile header on phones, top-right of the page on desktop -->
+            <div class="fixed top-3 right-4 z-40 lg:relative lg:top-0 lg:right-0 lg:flex lg:justify-end lg:max-w-7xl lg:mx-auto lg:px-10 lg:pt-6 lg:-mb-6">
+                <livewire:notification-bell />
+            </div>
             <!-- Mobile Header -->
             <div class="lg:hidden sticky top-0 z-30 flex items-center justify-between h-16 px-4 bg-[#090c0b]/80 backdrop-blur-xl border-b border-white/[0.06]">
                 <button @click="sidebarOpen = true" class="p-2 -ml-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/5" aria-label="Open menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <span class="font-bold text-white">Dexter Auto · Owner</span>
-                <span class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-sm font-bold text-gray-950">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </span>
+                <span class="w-10 h-10" aria-hidden="true"></span><!-- space for the notifications bell -->
             </div>
 
             <!-- Flash Messages -->

@@ -1,0 +1,81 @@
+# Render blueprint for Dexter Auto Services.
+# In Render: New → Blueprint → pick this GitHub repo. Settings marked "sync: false"
+# are secrets that Render asks you to type in (they are never stored in git).
+services:
+  - type: web
+    name: dexter-auto
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /up
+    autoDeploy: true
+    envVars:
+      # App
+      - key: APP_NAME
+        value: Dexter Auto Services
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false            # copy APP_KEY from your local .env (needed to read encrypted 2FA data)
+      - key: APP_URL
+        sync: false            # e.g. https://dexter-auto.onrender.com
+      - key: APP_TIMEZONE
+        value: Asia/Manila
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: warning
+
+      # Database: Supabase (use the "Session pooler" connection details)
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false            # e.g. aws-0-ap-southeast-1.pooler.supabase.com
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        sync: false            # e.g. postgres.abcdefghijklmnop
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSLMODE
+        value: require
+
+      # Sessions, cache and queue live in the database (the container's disk is wiped on each deploy)
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_ENCRYPT
+        value: "true"
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+      # Email through Brevo's API
+      - key: MAIL_MAILER
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false            # a sender verified in Brevo
+      - key: MAIL_FROM_NAME
+        value: Dexter Auto Services
+
+      # Google sign-in
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false            # https://<your-render-address>/auth/google/callback
+
+      # Phone / desktop alerts (copy both from your local .env so existing devices keep working)
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false

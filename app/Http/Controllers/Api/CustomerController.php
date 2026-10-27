@@ -27,12 +27,12 @@ class CustomerController extends Controller
         if ($search) {
             $query->where(function($q) use ($search) {
                 // Guests keep contact details on the customer; registered customers on their user account
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%"));
+                $q->whereLike('name',"%{$search}%")
+                  ->orWhereLike('email',"%{$search}%")
+                  ->orWhereLike('phone',"%{$search}%")
+                  ->orWhereHas('user', fn ($u) => $u->whereLike('name',"%{$search}%")
+                      ->orWhereLike('email',"%{$search}%")
+                      ->orWhereLike('phone',"%{$search}%"));
             });
         }
 

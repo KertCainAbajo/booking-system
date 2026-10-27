@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
         // Super Admin
         User::create([
             'name' => 'Super Admin',
-            'email' => 'admin@autoservice.com',
+            'email' => 'azdead28@gmail.com',
             'phone' => '09123456789',
             'password' => Hash::make($adminPassword),
             'role_id' => $adminRole->id,
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
         // Business Owner
         User::create([
             'name' => 'Business Owner',
-            'email' => 'owner@autoservice.com',
+            'email' => 'slayerdead917@gmail.com',
             'phone' => '09123456788',
             'password' => Hash::make($ownerPassword),
             'role_id' => $ownerRole->id,

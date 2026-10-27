@@ -27,6 +27,8 @@ class SystemMonitoring extends Component
                 $sizeMb = round((float) DB::table('information_schema.tables')
                     ->where('table_schema', DB::getDatabaseName())
                     ->sum(DB::raw('data_length + index_length')) / 1048576, 2);
+            } elseif (DB::getDriverName() === 'pgsql') {
+                $sizeMb = round((float) DB::selectOne('select pg_database_size(current_database()) as size')->size / 1048576, 2);
             }
 
             return ['ok' => true, 'ms' => $ms, 'size_mb' => $sizeMb, 'name' => DB::getDatabaseName(), 'driver' => DB::getDriverName()];

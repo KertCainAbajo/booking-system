@@ -83,21 +83,21 @@ class BookingHistory extends Component
         if ($this->search) {
             $query->where(function($q) {
                 $q->whereHas('customer.user', function($userQuery) {
-                    $userQuery->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%')
-                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    $userQuery->whereLike('name','%' . $this->search . '%')
+                        ->orWhereLike('email','%' . $this->search . '%')
+                        ->orWhereLike('phone','%' . $this->search . '%');
                 })
                 ->orWhereHas('customer', function($customerQuery) {
                     // Guest bookings keep the contact details on the customer record
-                    $customerQuery->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    $customerQuery->whereLike('name','%' . $this->search . '%')
+                        ->orWhereLike('phone','%' . $this->search . '%');
                 })
                 ->orWhereHas('vehicle', function($vehicleQuery) {
-                    $vehicleQuery->where('plate_number', 'like', '%' . $this->search . '%')
-                        ->orWhere('make', 'like', '%' . $this->search . '%')
-                        ->orWhere('model', 'like', '%' . $this->search . '%');
+                    $vehicleQuery->whereLike('plate_number','%' . $this->search . '%')
+                        ->orWhereLike('make','%' . $this->search . '%')
+                        ->orWhereLike('model','%' . $this->search . '%');
                 })
-                ->orWhere('booking_reference', 'like', '%' . $this->search . '%');
+                ->orWhereLike('booking_reference','%' . $this->search . '%');
             });
         }
 

@@ -1,0 +1,13 @@
+{
+    "name": "Dexter Auto Services",
+    "short_name": "Dexter Auto",
+    "description": "Book a service and get updates about your car.",
+    "start_url": "/dashboard",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#090c0b",
+    "theme_color": "#090c0b",
+    "icons": [
+        { "src": "/images/shop.png", "sizes": "500x500", "type": "image/png", "purpose": "any" }
+    ]
+}
