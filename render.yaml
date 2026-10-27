@@ -43,6 +43,8 @@ services:
         sync: false
       - key: DB_SSLMODE
         value: require
+      - key: DB_SCHEMA
+        value: dexter          # own section inside the shared Supabase project
 
       # Sessions, cache and queue live in the database (the container's disk is wiped on each deploy)
       - key: SESSION_DRIVER

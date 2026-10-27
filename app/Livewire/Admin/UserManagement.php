@@ -165,7 +165,8 @@ class UserManagement extends Component
             ->join('customers', 'customers.id', '=', 'bookings.customer_id')
             ->whereIn('customers.user_id', $users->pluck('id'))
             ->groupBy('customers.user_id')
-            ->pluck(DB::raw('COUNT(*)'), 'customers.user_id');
+            ->selectRaw('customers.user_id, COUNT(*) as total') // named, so MySQL and PostgreSQL return the same key
+            ->pluck('total', 'user_id');
 
         return view('livewire.admin.user-management', [
             'users' => $users,

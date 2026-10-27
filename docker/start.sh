@@ -24,6 +24,7 @@ php artisan view:cache
 php artisan event:cache
 
 # Bring the database up to date (safe to run on every start)
+php artisan db:ensure-schema
 php artisan migrate --force
 
 chown -R www-data:www-data storage bootstrap/cache

@@ -66,9 +66,10 @@ class CopyDatabase extends Command
         // PostgreSQL keeps its own id counters; move them past the copied ids
         if ($target->getDriverName() === 'pgsql') {
             foreach ($tables as $table) {
-                if (in_array('id', Schema::connection($target->getName())->getColumnListing($table), true)) {
-                    $target->statement("SELECT setval(pg_get_serial_sequence('\"{$table}\"', 'id'), COALESCE((SELECT MAX(id) FROM \"{$table}\"), 0) + 1, false)
-                        WHERE pg_get_serial_sequence('\"{$table}\"', 'id') IS NOT NULL");
+                // Only tables with an auto-numbered id (e.g. not notifications, which use UUIDs)
+                $sequence = $target->selectOne("SELECT pg_get_serial_sequence(?, 'id') AS seq", ["\"{$table}\""])?->seq ?? null;
+                if ($sequence) {
+                    $target->statement("SELECT setval(?, COALESCE((SELECT MAX(id) FROM \"{$table}\"), 0) + 1, false)", [$sequence]);
                 }
             }
         }
@@ -82,7 +83,15 @@ class CopyDatabase extends Command
     protected function tablesInDependencyOrder(string $connection): array
     {
         $schema = Schema::connection($connection);
-        $tables = array_map(fn ($t) => $t['name'], $schema->getTables());
+        $db = DB::connection($connection);
+        $all = $schema->getTables();
+
+        // A shared PostgreSQL database holds other systems' tables too: only look at this app's schema
+        if ($db->getDriverName() === 'pgsql') {
+            $own = (string) $db->getConfig('search_path');
+            $all = array_filter($all, fn ($t) => ($t['schema'] ?? $own) === $own);
+        }
+        $tables = array_values(array_map(fn ($t) => $t['name'], $all));
         $deps = [];
         foreach ($tables as $table) {
             $deps[$table] = array_values(array_filter(
