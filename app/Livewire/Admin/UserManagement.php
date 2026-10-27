@@ -20,6 +20,7 @@ class UserManagement extends Component
     public $search = '';
     public $roleFilter = '';
     public $showModal = false;
+    #[\Livewire\Attributes\Locked]
     public $userId;
     public $name;
     public $email;

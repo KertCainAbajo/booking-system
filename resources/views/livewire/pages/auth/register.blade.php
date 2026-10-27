@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -23,6 +24,14 @@ new #[Layout('layouts.guest')] class extends Component
      */
     public function register(): void
     {
+        // Stop bots creating accounts in bulk: 5 sign-ups an hour per visitor
+        $key = 'register:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $this->addError('email', 'Too many sign-ups from this connection. Please try again later.');
+
+            return;
+        }
+
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -42,9 +51,12 @@ new #[Layout('layouts.guest')] class extends Component
             return $user;
         });
 
+        RateLimiter::hit($key, 3600);
+
         event(new Registered($user));
 
         Auth::login($user);
+        session()->regenerate();
 
         $this->redirect(route('customer.dashboard', absolute: false), navigate: true);
     }

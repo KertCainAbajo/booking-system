@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use App\Models\Booking;
 use App\Models\BookingStatusLog;
+use Illuminate\Support\Facades\RateLimiter;
 
 #[Layout('layouts.app')]
 class BookingTracker extends Component
@@ -26,13 +27,22 @@ class BookingTracker extends Component
     {
         $this->notFound = false;
         
-        if (empty($this->bookingReference)) {
+        if (empty($this->bookingReference) || ! is_string($this->bookingReference)) {
             $this->notFound = true;
             return;
         }
 
+        // Stop anyone guessing references: 10 lookups a minute per visitor
+        $key = 'guest-track:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            $this->booking = null;
+            session()->flash('error', 'Too many lookups. Please wait ' . RateLimiter::availableIn($key) . ' seconds and try again.');
+            return;
+        }
+        RateLimiter::hit($key, 60);
+
         $this->booking = Booking::with(['customer', 'vehicle', 'services', 'statusLogs'])
-            ->where('booking_reference', $this->bookingReference)
+            ->where('booking_reference', strtoupper(trim(substr($this->bookingReference, 0, 20))))
             ->first();
 
         if (!$this->booking) {

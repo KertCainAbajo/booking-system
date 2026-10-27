@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\CustomerController;
 */
 
 // Public API routes (no authentication required)
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Authentication routes
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
 });
 
 // Protected API routes (authentication required)
-Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     
     // Auth management
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -77,4 +77,4 @@ Route::get('/health', function () {
         'time' => now()->toIso8601String(),
         'version' => '1.0.0',
     ]);
-});
+})->middleware('throttle:api');

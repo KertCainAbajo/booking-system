@@ -25,7 +25,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:20',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
         ]);
 
         if ($validator->fails()) {
@@ -47,22 +47,25 @@ class AuthController extends Controller
                 ], 500);
             }
 
-            // Create user
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'password' => Hash::make($request->password),
-                'role_id' => $customerRole->id,
-            ]);
+            // User and customer record are created together, or not at all
+            $user = \Illuminate\Support\Facades\DB::transaction(function () use ($request, $customerRole) {
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'password' => Hash::make($request->password),
+                    'role_id' => $customerRole->id,
+                ]);
 
-            // Create customer record
-            Customer::create([
-                'user_id' => $user->id,
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-            ]);
+                Customer::create([
+                    'user_id' => $user->id,
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                ]);
+
+                return $user;
+            });
 
             // Create API token
             $token = $user->createToken('api-token')->plainTextToken;
@@ -103,6 +106,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
             'device_name' => 'nullable|string|max:255',
+            'otp_code' => 'nullable|string|max:10',
         ]);
 
         if ($validator->fails()) {
@@ -120,6 +124,18 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => 'Invalid credentials',
             ], 401);
+        }
+
+        // Accounts with two-factor on must also send their current authenticator code
+        if ($user->google2fa_enabled && $user->google2fa_secret) {
+            $code = (string) $request->input('otp_code', '');
+            if ($code === '' || ! (new \PragmaRX\Google2FA\Google2FA())->verifyKey($user->google2fa_secret, $code)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $code === '' ? 'Two-factor code required' : 'Invalid two-factor code',
+                    'requires_2fa' => true,
+                ], 401);
+            }
         }
 
         // Create token with device name

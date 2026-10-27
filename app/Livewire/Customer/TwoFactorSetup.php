@@ -9,7 +9,9 @@ use Illuminate\Support\Str;
 
 class TwoFactorSetup extends Component
 {
+    #[\Livewire\Attributes\Locked]
     public $qrCodeUrl = '';
+    #[\Livewire\Attributes\Locked]
     public $secret = '';
     public $verificationCode = '';
     public $recoveryCodes = [];

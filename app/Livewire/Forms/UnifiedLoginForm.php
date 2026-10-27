@@ -104,7 +104,7 @@ class UnifiedLoginForm extends Form
             // Check if it's a recovery code
             $recoveryCodes = json_decode($user->recovery_codes, true) ?? [];
             
-            if (in_array($this->otp_code, $recoveryCodes)) {
+            if (in_array($this->otp_code, $recoveryCodes, true)) {
                 // Remove used recovery code
                 $recoveryCodes = array_diff($recoveryCodes, [$this->otp_code]);
                 $user->update(['recovery_codes' => json_encode(array_values($recoveryCodes))]);

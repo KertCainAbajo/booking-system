@@ -18,6 +18,7 @@ class BookingDetail extends Component
      * @var \App\Models\Booking
      */
     public $booking;
+    #[\Livewire\Attributes\Locked]
     public $bookingId;
     public $notes = '';
 

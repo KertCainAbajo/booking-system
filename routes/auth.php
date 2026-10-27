@@ -47,7 +47,8 @@ Route::middleware('auth')->group(function () {
     Volt::route('confirm-password', 'pages.auth.confirm-password')
         ->name('password.confirm');
     
-    Route::match(['get', 'post'], 'logout', function () {
+    // POST only, so another site can't log people out with a hidden link or image
+    Route::post('logout', function () {
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();

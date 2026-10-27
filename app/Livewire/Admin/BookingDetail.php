@@ -16,6 +16,7 @@ class BookingDetail extends Component
     use ManagesMechanic;
 
     public $booking;
+    #[\Livewire\Attributes\Locked]
     public $bookingId;
     public $notes = '';
 

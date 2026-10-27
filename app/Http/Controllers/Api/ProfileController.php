@@ -97,7 +97,7 @@ class ProfileController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'current_password' => 'required',
-            'new_password' => 'required|string|min:8|confirmed',
+            'new_password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
         ]);
 
         if ($validator->fails()) {
@@ -121,6 +121,11 @@ class ProfileController extends Controller
             $user->update([
                 'password' => Hash::make($request->new_password)
             ]);
+
+            // Sign out every other device that had a token
+            $current = $user->currentAccessToken();
+            $currentId = $current instanceof \Laravel\Sanctum\PersonalAccessToken ? $current->id : null;
+            $user->tokens()->when($currentId, fn ($q, $id) => $q->where('id', '!=', $id))->delete();
 
             return response()->json([
                 'success' => true,

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -17,22 +18,21 @@ new #[Layout('layouts.guest')] class extends Component
             'email' => ['required', 'string', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $this->only('email')
-        );
-
-        if ($status != Password::RESET_LINK_SENT) {
-            $this->addError('email', __($status));
+        $key = 'forgot-password:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $this->addError('email', 'Too many requests. Please try again in ' . ceil(RateLimiter::availableIn($key) / 60) . ' minutes.');
 
             return;
         }
+        RateLimiter::hit($key, 900);
 
+        Password::sendResetLink($this->only('email'));
+
+        // Same message whether or not the email has an account, so nobody can use
+        // this form to find out who is registered
         $this->reset('email');
 
-        session()->flash('status', __($status));
+        session()->flash('status', 'If that email has an account, we have sent a link to reset the password.');
     }
 }; ?>
 

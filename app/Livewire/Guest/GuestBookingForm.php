@@ -10,6 +10,7 @@ use App\Models\Vehicle;
 use App\Models\Booking;
 use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Log;
 
 #[Layout('layouts.app')]
@@ -381,6 +382,15 @@ class GuestBookingForm extends Component
             $this->errorMessage = 'Sorry, this date has already been booked by another customer. Please choose a different date.';
             return;
         }
+
+        // Stop fake bookings in bulk: 5 guest bookings an hour per visitor
+        $limitKey = 'guest-booking:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($limitKey, 5)) {
+            $this->showErrorModal = true;
+            $this->errorMessage = 'Too many bookings from this connection. Please call the shop or try again later.';
+            return;
+        }
+        RateLimiter::hit($limitKey, 3600);
 
         // Never trust the total sent from the browser: price the booking from the database
         $this->selectedServices = array_values(array_unique(array_map('intval', $this->selectedServices)));

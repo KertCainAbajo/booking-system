@@ -16,6 +16,7 @@ class ServiceManagement extends Component
     public $search = '';
     public $categoryFilter = '';
     public $showModal = false;
+    #[\Livewire\Attributes\Locked]
     public $serviceId;
     public $name;
     public $description;

@@ -47,7 +47,8 @@ return [
     |
     */
 
-    'expiration' => null,
+    // API tokens stop working after 30 days; the app then has to log in again
+    'expiration' => env('SANCTUM_EXPIRATION', 60 * 24 * 30),
 
     /*
     |--------------------------------------------------------------------------
