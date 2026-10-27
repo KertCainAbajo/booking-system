@@ -3,6 +3,7 @@
 use App\Livewire\Forms\UnifiedLoginForm;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
@@ -30,6 +31,8 @@ new #[Layout('layouts.guest')] class extends Component
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $user->load('role', 'customer');
+
+        Session::flash('toast', ['type' => 'success', 'message' => 'Welcome back, ' . Str::before($user->name, ' ') . '! You are signed in.']);
 
         // Check if user is a customer
         if ($user->customer) {

@@ -74,7 +74,7 @@ class TwoFactorSetup extends Component
         ]);
 
         $this->showRecoveryCodes = true;
-        session()->flash('success', 'Two-Factor Authentication has been enabled successfully!');
+        $this->dispatch('toast', type: 'success', message: 'Two-factor sign-in is on. Save your recovery codes before you continue.');
     }
 
     protected function generateRecoveryCodes()
@@ -88,7 +88,14 @@ class TwoFactorSetup extends Component
 
     public function finishSetup()
     {
-        return redirect()->route('dashboard');
+        session()->flash('toast', ['type' => 'success', 'message' => "Two-factor sign-in is set up. You'll be asked for a code each time you sign in."]);
+
+        // Straight to the right dashboard: the extra /dashboard redirect would use up the message
+        return redirect()->route(match (Auth::user()->role?->name) {
+            'super_admin' => 'admin.dashboard',
+            'business_owner' => 'owner.dashboard',
+            default => 'customer.dashboard',
+        });
     }
 
     public function render()

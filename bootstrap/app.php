@@ -18,6 +18,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
+        // Opening a members-only page while signed out (or after the session expired): say why
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if (! $request->expectsJson()) {
+                session()->flash('toast', ['type' => 'info', 'message' => 'Please sign in to continue.']);
+            }
+
+            return route('login');
+        });
+
         // Render (and similar hosts) end HTTPS at their proxy and forward plain HTTP to the app.
         // Trusting the proxy's X-Forwarded-* headers lets Laravel know the visitor is on HTTPS.
         $middleware->trustProxies(at: '*');

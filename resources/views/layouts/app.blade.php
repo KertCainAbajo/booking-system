@@ -31,5 +31,8 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Pop-up alerts -->
+        <x-toasts />
     </body>
 </html>

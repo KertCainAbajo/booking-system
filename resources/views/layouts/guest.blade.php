@@ -119,5 +119,8 @@
             </main>
         </div>
         </div>
+
+        <!-- Pop-up alerts (e.g. "You've been signed out") -->
+        <x-toasts />
     </body>
 </html>

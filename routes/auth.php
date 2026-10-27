@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
         request()->session()->regenerateToken();
         
         // All users logout to the same unified login page
-        return redirect()->route('login');
+        return redirect()->route('login')
+            ->with('toast', ['type' => 'success', 'message' => "You've been signed out. See you next time!"]);
     })->name('logout');
 });

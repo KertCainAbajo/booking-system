@@ -99,7 +99,7 @@ class WorkflowTest extends TestCase
         $code = (new Google2FA())->getCurrentOtp($setup->get('secret'));
 
         $setup->set('verificationCode', $code)->call('enable2FA')->assertHasNoErrors()
-            ->call('finishSetup')->assertRedirect(route('dashboard'));
+            ->call('finishSetup')->assertRedirect(route('owner.dashboard'));
 
         $this->owner->refresh();
         $this->assertTrue((bool) $this->owner->google2fa_enabled);

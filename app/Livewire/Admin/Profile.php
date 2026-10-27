@@ -74,7 +74,9 @@ class Profile extends Component
     public function logout(Logout $logout)
     {
         $logout();
-        return redirect()->route('guest.home');
+        session()->flash('toast', ['type' => 'success', 'message' => "You've been signed out. See you next time!"]);
+
+        return redirect()->route('login');
     }
 
     public function render()

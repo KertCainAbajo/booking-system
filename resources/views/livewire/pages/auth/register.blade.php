@@ -57,6 +57,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         Auth::login($user);
         session()->regenerate();
+        session()->flash('toast', ['type' => 'success', 'message' => 'Your account is ready. Welcome to Dexter Auto, ' . \Illuminate\Support\Str::before($user->name, ' ') . '!']);
 
         $this->redirect(route('customer.dashboard', absolute: false), navigate: true);
     }

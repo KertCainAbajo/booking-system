@@ -143,22 +143,8 @@
                 </span>
             </div>
 
-            <!-- Flash Messages -->
-            @foreach (['message' => 'emerald', 'error' => 'rose'] as $key => $tone)
-                @if (session($key))
-                    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)" x-transition class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 mt-6">
-                        <div class="flex items-center gap-3 rounded-2xl p-4 ring-1 {{ $tone === 'emerald' ? 'bg-emerald-500/10 ring-emerald-500/30 text-emerald-100' : 'bg-rose-500/10 ring-rose-500/30 text-rose-100' }}">
-                            <svg class="w-5 h-5 flex-shrink-0 {{ $tone === 'emerald' ? 'text-emerald-400' : 'text-rose-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $tone === 'emerald' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }}"/>
-                            </svg>
-                            <p class="font-medium flex-1">{{ session($key) }}</p>
-                            <button @click="show = false" class="text-current/70 hover:text-white" aria-label="Dismiss">✕</button>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-
-            <x-success-modal />
+            <!-- Pop-up alerts (success, errors, sign-in/out) -->
+            <x-toasts />
 
             <main class="py-6 sm:py-10">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">

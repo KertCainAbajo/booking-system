@@ -205,19 +205,8 @@
                 <span class="w-10 h-10" aria-hidden="true"></span><!-- space for the notifications bell -->
             </div>
 
-            <!-- Flash Messages -->
-            @if (session('error'))
-                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 mt-6">
-                    <div class="flex items-center gap-3 rounded-2xl bg-rose-500/10 ring-1 ring-rose-500/30 p-4">
-                        <svg class="w-5 h-5 text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <p class="text-rose-200 font-medium">{{ session('error') }}</p>
-                    </div>
-                </div>
-            @endif
-
-            <x-success-modal />
+            <!-- Pop-up alerts (success, errors, sign-in/out) -->
+            <x-toasts />
 
             <!-- Page Content -->
             <main class="py-6 sm:py-10">

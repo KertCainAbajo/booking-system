@@ -94,7 +94,10 @@ class GoogleAuthController extends Controller
 
         Log::info('Google sign-in', ['user_id' => $user->id]);
 
-        return redirect()->route('customer.dashboard');
+        return redirect()->route('customer.dashboard')->with('toast', [
+            'type' => 'success',
+            'message' => ($user->wasRecentlyCreated ? 'Your account is ready. Welcome, ' : 'Signed in with Google. Welcome back, ') . Str::before($user->name, ' ') . '!',
+        ]);
     }
 
     protected function fail(string $message): RedirectResponse
